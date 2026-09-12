@@ -1,0 +1,40 @@
+/* src/components/LanguageSwitcher.css
+   Stile del selettore di lingua "IT / EN", volutamente minimale. */
+
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.language-switcher-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.language-switcher-button {
+  background: none;
+  border: none;
+  padding: 4px 2px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.language-switcher-button:hover {
+  color: var(--color-text);
+}
+
+/* Lingua attualmente selezionata: evidenziata con il colore accent */
+.language-switcher-button.active {
+  color: var(--color-accent);
+}
+
+.language-switcher-separator {
+  color: var(--color-border);
+  font-size: 14px;
+}

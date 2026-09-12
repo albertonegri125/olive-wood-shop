@@ -1,0 +1,194 @@
+/* src/components/Navbar.css
+   Stili della barra di navigazione.
+   Approccio "mobile-first": le regole di base sono pensate per lo smartphone,
+   poi con una media query (min-width) adattiamo il layout per schermi più larghi. */
+
+.navbar {
+  background: var(--color-bg); /* stesso beige caldo dello sfondo generale */
+  border-bottom: 1px solid var(--color-border); /* separa leggermente la navbar dal contenuto sottostante */
+  position: sticky; /* la navbar resta visibile mentre si scrolla la pagina */
+  top: 0;
+  z-index: 100; /* deve restare sopra al contenuto (e l'overlay mobile sopra a tutto) */
+}
+
+/* Contenitore interno: usiamo flexbox così il logo e il resto si dispongono
+   automaticamente, senza bisogno di larghezze fisse in pixel. */
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+}
+
+/* Blocco logo: nome del negozio + badge "Made in Italy" accanto, sulla
+   stessa riga (vanno a capo su schermi molto stretti grazie a flex-wrap). */
+.navbar-brand {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  z-index: 101; /* resta visibile e cliccabile anche sopra l'overlay del menu mobile */
+}
+
+/* Etichetta "Made in Italy": testo semplice con un trattino decorativo
+   (vedi .eyebrow-tag in index.css), niente più badge/pillola con sfondo
+   pieno — deve leggersi come un'etichetta scritta a mano, non un tag da app. */
+.navbar-badge {
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.navbar-logo {
+  font-size: 19px;
+  font-weight: 700; /* il font serif arriva dalla classe "logo" definita in index.css */
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* --- Pulsante hamburger (mobile) --- */
+.navbar-toggle {
+  display: flex; /* visibile di default: siamo in ottica mobile-first */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 101; /* sopra all'overlay, così resta cliccabile per chiudere il menu */
+}
+
+.navbar-toggle-bar {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--color-text);
+  border-radius: 2px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Quando il menu è aperto, le tre barrette si trasformano in una "X" */
+.navbar-toggle.open .navbar-toggle-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.navbar-toggle.open .navbar-toggle-bar:nth-child(2) {
+  opacity: 0;
+}
+.navbar-toggle.open .navbar-toggle-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* --- Elenco dei link (mobile: overlay a tutto schermo) --- */
+.navbar-links {
+  /* Su mobile il menu è nascosto di default: quando aperto (classe "open")
+     diventa un overlay che copre l'intero schermo, con i link centrati. */
+  display: none;
+  position: fixed;
+  inset: 0; /* top/right/bottom/left: 0, copre tutta la viewport */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--color-bg);
+  z-index: 100;
+}
+
+/* Quando il menu mobile è aperto, lo mostriamo come overlay a schermo intero */
+.navbar-links.open {
+  display: flex;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 16px;
+  text-decoration: none;
+  color: var(--color-text);
+  border-radius: 6px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background: var(--color-accent-soft);
+}
+
+/* Link della pagina corrente, evidenziato */
+.nav-link.active {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+/* Numero di articoli nel carrello: un piccolo "badge" tondo accanto alla scritta "Carrello" */
+.navbar-cart-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Selettore di lingua dentro il menu: nel menu mobile un po' distanziato
+   dai link sopra, ingrandito per essere facile da toccare */
+.navbar-language {
+  margin-top: 12px;
+}
+.navbar-language .language-switcher-button {
+  font-size: 18px;
+}
+
+/* --- Da qui in su: adattamento per schermi più larghi (tablet/desktop) --- */
+@media (min-width: 768px) {
+  .navbar-inner {
+    padding: 14px 32px;
+  }
+
+  /* Su desktop l'hamburger non serve: i link sono sempre visibili in orizzontale */
+  .navbar-toggle {
+    display: none;
+  }
+
+  /* Su desktop l'elenco dei link torna ad essere una riga normale
+     dentro la navbar, non più un overlay a tutto schermo */
+  .navbar-links {
+    display: flex;
+    position: static;
+    inset: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    background: none;
+    gap: 4px;
+  }
+
+  .nav-link {
+    padding: 8px 14px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  /* Su desktop il selettore di lingua torna alla dimensione normale,
+     con un piccolo distacco a sinistra per separarlo dai link */
+  .navbar-language {
+    margin-top: 0;
+    margin-left: 8px;
+    padding-left: 12px;
+    border-left: 1px solid var(--color-border);
+  }
+  .navbar-language .language-switcher-button {
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "navbar": {
+    "badge": "Made in Italy",
+    "home": "Home",
+    "shop": "Shop",
+    "account": "Account",
+    "cart": "Carrello",
+    "openMenu": "Apri il menu",
+    "closeMenu": "Chiudi il menu"
+  },
+  "language": {
+    "it": "IT",
+    "en": "EN",
+    "label": "Lingua",
+    "switchTo": "Passa all'{{language}}"
+  },
+  "hero": {
+    "badge": "Fatto a mano in Lombardia",
+    "title": "Legno d'ulivo, lavorato a mano",
+    "subtitle": "Ogni tagliere nasce da un unico pezzo di legno d'ulivo, lavorato con attrezzi da falegname e rifinito a olio alimentare. Nessuna macchina, nessun pezzo identico all'altro.",
+    "cta": "Vai al negozio",
+    "photoAlt": "Tagliere in legno d'ulivo lavorato a mano"
+  },
+  "process": {
+    "title": "Il nostro processo",
+    "compactTitle": "Come nasce questo pezzo",
+    "step1": {
+      "title": "Il legno",
+      "text": "Selezione di legno d'ulivo massello, scelto per venatura e resistenza."
+    },
+    "step2": {
+      "title": "La lavorazione",
+      "text": "Sagomato e rifinito a mano con attrezzi da falegname, un pezzo alla volta."
+    },
+    "step3": {
+      "title": "La finitura",
+      "text": "Trattato con olio alimentare per proteggere il legno ed esaltarne il colore naturale."
+    }
+  },
+  "trust": {
+    "unique": "Pezzo unico fatto a mano",
+    "shipping": "Spedizione assicurata",
+    "payment": "Pagamento sicuro"
+  },
+  "featured": {
+    "title": "Prodotti in evidenza",
+    "loading": "Caricamento prodotti...",
+    "error": "Non è stato possibile caricare i prodotti in evidenza.",
+    "empty": "Nessun prodotto disponibile al momento."
+  },
+  "shop": {
+    "title": "Shop",
+    "loading": "Caricamento prodotti...",
+    "error": "Non è stato possibile caricare i prodotti. Riprova più tardi.",
+    "empty": "Nessun prodotto disponibile al momento."
+  },
+  "product": {
+    "outOfStock": "Esaurito",
+    "lastOne": "Ultimo pezzo",
+    "addToCart": "Aggiungi al carrello",
+    "added": "Aggiunto ✓"
+  },
+  "cart": {
+    "title": "Il tuo carrello",
+    "empty": "Il tuo carrello è vuoto",
+    "goToShop": "Vai al negozio",
+    "decreaseQuantity": "Diminuisci quantità",
+    "increaseQuantity": "Aumenta quantità",
+    "remove": "Rimuovi dal carrello",
+    "total": "Totale",
+    "checkout": "Procedi al pagamento"
+  },
+  "productDetail": {
+    "loading": "Caricamento prodotto...",
+    "notFound": "Prodotto non trovato.",
+    "addToCart": "Aggiungi al carrello",
+    "outOfStock": "Esaurito",
+    "stock": "Disponibilità: {{count}} pezzi",
+    "unavailable": "Prodotto non disponibile al momento.",
+    "zoomHint": "Clicca per ingrandire",
+    "closeZoom": "Chiudi immagine ingrandita",
+    "personalNote": "Ogni pezzo è diverso dall'altro — le venature che vedi in foto sono uniche di questo esemplare."
+  },
+  "footer": {
+    "badge": "Handcrafted in Italy",
+    "tagline": "Oggetti in legno d'ulivo fatti a mano, pezzo dopo pezzo.",
+    "socialTitle": "Seguici",
+    "languageTitle": "Lingua",
+    "rights": "Tutti i diritti riservati."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "comingSoon": "Questa pagina sarà presto disponibile.",
+    "summary": "Riepilogo ordine",
+    "shippingInfo": "Dati di spedizione",
+    "paymentInfo": "Pagamento",
+    "orderTotal": "Totale",
+    "placeOrder": "Conferma e paga"
+  }
+}

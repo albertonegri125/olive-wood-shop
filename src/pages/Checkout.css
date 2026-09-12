@@ -1,0 +1,17 @@
+/* src/pages/Checkout.css
+   Stile minimo per la pagina segnaposto del checkout. */
+
+.checkout-page {
+  padding: 64px 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.checkout-title {
+  margin-bottom: 12px;
+}
+
+.checkout-placeholder {
+  color: var(--color-text-muted);
+}

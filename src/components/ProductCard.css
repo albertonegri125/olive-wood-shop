@@ -1,0 +1,145 @@
+/* src/components/ProductCard.css
+   Stile della card prodotto: l'immagine domina la composizione, il prezzo
+   è l'ultimo elemento e resta discreto (niente grassetto pesante o colori
+   vistosi), per spostare l'attenzione sul materiale/lavorazione del pezzo. */
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden; /* taglia l'immagine sugli angoli arrotondati della card */
+  background: var(--color-card-bg);
+  box-shadow: var(--shadow-sm); /* ombra leggera, sempre visibile */
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  height: 100%; /* così tutte le card in griglia hanno la stessa altezza */
+  box-sizing: border-box;
+}
+
+/* Effetto hover solo sulle card cliccabili (non su quelle esaurite):
+   ombra un po' più marcata e leggero sollevamento della card */
+.product-card:not(.product-card-disabled):hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Card di un prodotto esaurito: leggermente sbiadita */
+.product-card-disabled {
+  opacity: 0.75;
+}
+
+/* --- Immagine: l'elemento visivamente dominante della card (~70% del suo
+   spazio complessivo), grazie a un rapporto d'aspetto alto invece che
+   quadrato. Sia in versione <Link> (prodotto disponibile) che <div>
+   (esaurito) lo stile è identico. --- */
+.product-card-media {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--color-border);
+  text-decoration: none;
+}
+
+.product-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* l'immagine riempie lo spazio senza deformarsi */
+  display: block;
+}
+
+/* Badge sovrapposto in alto all'immagine (base comune) */
+.product-card-badge {
+  position: absolute;
+  top: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+/* "Esaurito": in alto a destra, scuro e neutro */
+.product-card-badge-out {
+  right: 10px;
+  background: var(--color-text);
+  color: var(--color-card-bg);
+}
+
+/* "Ultimo pezzo": in alto a SINISTRA (come richiesto), ambra tenue e non
+   allarmante — non compare mai insieme al badge "Esaurito" (un prodotto o
+   è esaurito, o ha scorte basse: mai entrambe le cose). */
+.product-card-badge-low {
+  left: 10px;
+  background: var(--color-amber-soft);
+  color: var(--color-amber);
+}
+
+/* --- Corpo della card: nome, riga "pezzo unico", poi prezzo + bottone --- */
+.product-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-grow: 1;
+}
+
+.product-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.product-card-name {
+  margin: 0;
+  font-size: 17px;
+}
+
+/* Badge "pezzo unico": testo piccolo e discreto, con una piccola icona */
+.product-card-unique {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.product-card-unique-icon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: var(--color-accent);
+}
+
+/* Riga finale: prezzo a sinistra, bottone a destra. Spinta in fondo alla
+   card con margin-top:auto, così resta allineata anche se il nome del
+   prodotto va a capo su più righe. */
+.product-card-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+/* Il prezzo resta discreto: dimensione normale, peso medio (non è mai
+   l'elemento più "urlato" della card). */
+.product-card-price {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.product-card-price-muted {
+  color: var(--color-text-muted);
+}
+
+.product-card-add-button {
+  flex-shrink: 0;
+}

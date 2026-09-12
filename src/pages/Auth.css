@@ -1,0 +1,99 @@
+/* src/pages/Auth.css
+   Stile condiviso dalle pagine di autenticazione (Login e Registrazione):
+   un semplice modulo centrato, coerente con il resto del sito. */
+
+.auth-page {
+  display: flex;
+  justify-content: center;
+  padding: 48px 20px 64px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 380px;
+}
+
+.auth-title {
+  margin-bottom: 8px;
+}
+
+.auth-subtitle {
+  margin: 0 0 28px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.auth-input {
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-card-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+}
+
+.auth-input:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* Messaggio di errore (es. "email già registrata"): colore ambra invece di
+   un rosso allarmante, coerente con il resto della palette del sito. */
+.auth-error {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 4px;
+  background: var(--color-amber-soft);
+  color: var(--color-amber);
+  font-size: 13px;
+}
+
+.auth-success {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 4px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 13px;
+}
+
+.auth-submit {
+  margin-top: 4px;
+}
+
+.auth-submit:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.auth-switch {
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.auth-switch a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

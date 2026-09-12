@@ -1,0 +1,351 @@
+// src/pages/ProductDetail.jsx
+//
+// Pagina di dettaglio di un singolo prodotto, identificato dallo "slug"
+// presente nell'URL (es. /shop/tagliere-ulivo).
+//
+// Gerarchia visiva pensata per valorizzare il pezzo PRIMA del prezzo:
+// badge "pezzo unico" -> nome grande in serif -> descrizione -> box con le
+// icone di fiducia -> prezzo (dimensione media, mai il testo più grande
+// della pagina) -> bottone "Aggiungi al carrello" -> mini racconto del
+// processo artigianale specifico per questo pezzo.
+
+import { useEffect, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { supabase } from '../lib/supabaseClient'
+import { useCart } from '../context/CartContext'
+import {
+  IconUnique,
+  IconShipping,
+  IconPayment,
+  IconSketchWood,
+  IconSketchChisel,
+  IconSketchOil,
+} from '../components/icons'
+import './ProductDetail.css'
+
+// Le tre fasi del processo artigianale, riproposte qui in versione compatta
+// (stesse chiavi di traduzione e stesse icone "a schizzo" della sezione
+// "Il nostro processo" nella Home, per coerenza visiva).
+const PROCESS_STEPS = [
+  { key: 'step1', Icon: IconSketchWood },
+  { key: 'step2', Icon: IconSketchChisel },
+  { key: 'step3', Icon: IconSketchOil },
+]
+
+function ProductDetail() {
+  // Leggiamo lo slug direttamente dall'URL grazie a react-router
+  // (deve corrispondere al parametro ":slug" definito nella route in App.jsx)
+  const { slug } = useParams()
+  const { t } = useTranslation()
+  const { addToCart } = useCart()
+
+  const [product, setProduct] = useState(null)
+  const [loading, setLoading] = useState(true)
+  // Conserviamo la CHIAVE di traduzione dell'errore (non il testo già tradotto):
+  // se l'utente cambia lingua mentre l'errore è a schermo, si ritraduce da solo.
+  const [errorKey, setErrorKey] = useState(null)
+
+  // Controlla se la lightbox (immagine ingrandita a schermo intero) è aperta
+  const [isZoomOpen, setIsZoomOpen] = useState(false)
+
+  // Controlla se mostrare la barra sticky mobile con il bottone "Aggiungi al
+  // carrello": deve comparire solo DOPO che l'immagine principale è uscita
+  // dalla vista durante lo scroll (non subito, altrimenti coprirebbe l'immagine).
+  const [showStickyBar, setShowStickyBar] = useState(false)
+  const imageRef = useRef(null)
+
+  // Controlla se mostrare il feedback "Aggiunto ✓" al posto del testo
+  // normale del bottone, subito dopo un click su "Aggiungi al carrello".
+  const [justAdded, setJustAdded] = useState(false)
+
+  // Ogni volta che cambia lo slug nell'URL, rifacciamo la query a Supabase
+  // per caricare il prodotto corrispondente.
+  useEffect(() => {
+    async function fetchProduct() {
+      setLoading(true)
+      setErrorKey(null)
+      setProduct(null)
+
+      // .eq('slug', slug) filtra per lo slug richiesto,
+      // .single() ci dice che ci aspettiamo esattamente una riga di risultato.
+      const { data, error: supabaseError } = await supabase
+        .from('products')
+        .select('*')
+        .eq('slug', slug)
+        .single()
+
+      if (supabaseError) {
+        setErrorKey('productDetail.notFound')
+        console.error(supabaseError)
+      } else {
+        setProduct(data)
+      }
+
+      setLoading(false)
+    }
+
+    fetchProduct()
+  }, [slug])
+
+  // Osserviamo l'immagine principale con un IntersectionObserver nativo
+  // (nessuna libreria esterna): quando esce dalla viewport mostriamo la
+  // barra sticky mobile, quando torna visibile la nascondiamo di nuovo.
+  useEffect(() => {
+    const imageElement = imageRef.current
+    if (!imageElement) return undefined
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowStickyBar(!entry.isIntersecting),
+      { threshold: 0 }
+    )
+    observer.observe(imageElement)
+
+    return () => observer.disconnect()
+  }, [product])
+
+  // Mentre la lightbox è aperta: si chiude con il tasto Escape e blocchiamo
+  // lo scroll della pagina sotto, per un'esperienza da "vero" visualizzatore
+  // a schermo intero (nessuna libreria: solo CSS + un po' di stato React).
+  useEffect(() => {
+    if (!isZoomOpen) return undefined
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        setIsZoomOpen(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = ''
+    }
+  }, [isZoomOpen])
+
+  // Dopo aver mostrato il feedback "Aggiunto ✓" per 1,5 secondi, il bottone
+  // torna al suo testo normale. Il timeout viene ripulito se il componente
+  // viene smontato nel frattempo (es. l'utente cambia pagina), per evitare
+  // di aggiornare lo stato di un componente non più a schermo.
+  useEffect(() => {
+    if (!justAdded) return undefined
+
+    const timeoutId = setTimeout(() => setJustAdded(false), 1500)
+    return () => clearTimeout(timeoutId)
+  }, [justAdded])
+
+  // Aggiunge il prodotto al carrello condiviso (CartContext) e mostra un
+  // breve feedback visivo sul bottone, per confermare che l'azione è avvenuta.
+  function handleAddToCart() {
+    addToCart(product)
+    setJustAdded(true)
+  }
+
+  // Testo del bottone "Aggiungi al carrello": tiene conto sia dello stato
+  // di disponibilità del prodotto sia del feedback temporaneo "Aggiunto ✓".
+  function addToCartLabel() {
+    if (isOutOfStock) return t('productDetail.outOfStock')
+    if (justAdded) return t('product.added')
+    return t('productDetail.addToCart')
+  }
+
+  if (loading) {
+    return (
+      <div className="product-detail-page">
+        <p className="product-detail-message">{t('productDetail.loading')}</p>
+      </div>
+    )
+  }
+
+  if (errorKey || !product) {
+    return (
+      <div className="product-detail-page">
+        <p className="product-detail-message">{t(errorKey ?? 'productDetail.notFound')}</p>
+      </div>
+    )
+  }
+
+  const isOutOfStock = product.stock === 0
+
+  const formattedPrice = new Intl.NumberFormat('it-IT', {
+    style: 'currency',
+    currency: 'EUR',
+  }).format(product.price)
+
+  return (
+    <div className="product-detail-page">
+      <div className="product-detail-content">
+        {/* Immagine grande del prodotto: cliccabile per aprire la lightbox */}
+        <div className="product-detail-image-wrapper" ref={imageRef}>
+          <button
+            type="button"
+            className="product-detail-image-button"
+            onClick={() => setIsZoomOpen(true)}
+            aria-label={t('productDetail.zoomHint')}
+          >
+            <img
+              className="product-detail-image"
+              src={product.image_url}
+              alt={product.name}
+            />
+            <span className="product-detail-zoom-hint">{t('productDetail.zoomHint')}</span>
+          </button>
+        </div>
+
+        {/* Informazioni testuali del prodotto */}
+        <div className="product-detail-info">
+          {/* Etichetta "pezzo unico fatto a mano": prima cosa che si legge,
+              ancora prima del nome del prodotto. Testo semplice con il
+              trattino decorativo (.eyebrow-tag), non un badge/pillola. */}
+          <span className="eyebrow eyebrow-tag trust-chip">{t('trust.unique')}</span>
+
+          <h1 className="product-detail-name">{product.name}</h1>
+
+          {/* Descrizione specifica del pezzo (venatura, dimensioni),
+              caricata da Supabase insieme al resto dei dati del prodotto */}
+          <p className="product-detail-description">{product.description}</p>
+
+          {/* Riga di fiducia: pezzo unico, spedizione, pagamento — semplice
+              testo con icona inline, separati da un punto, senza box/bordo/ombra. */}
+          <p className="product-detail-trust">
+            <span className="product-detail-trust-item">
+              <IconUnique className="product-detail-trust-icon" />
+              {t('trust.unique')}
+            </span>
+            <span className="product-detail-trust-sep" aria-hidden="true">
+              ·
+            </span>
+            <span className="product-detail-trust-item">
+              <IconShipping className="product-detail-trust-icon" />
+              {t('trust.shipping')}
+            </span>
+            <span className="product-detail-trust-sep" aria-hidden="true">
+              ·
+            </span>
+            <span className="product-detail-trust-item">
+              <IconPayment className="product-detail-trust-icon" />
+              {t('trust.payment')}
+            </span>
+          </p>
+
+          {/* Prezzo: dimensione media, volutamente meno importante del
+              titolo del prodotto qui sopra */}
+          {isOutOfStock ? (
+            <p className="product-detail-status">{t('productDetail.outOfStock')}</p>
+          ) : (
+            <p className="product-detail-price">{formattedPrice}</p>
+          )}
+
+          <p className="product-detail-stock">
+            {isOutOfStock
+              ? t('productDetail.unavailable')
+              : t('productDetail.stock', { count: product.stock })}
+          </p>
+
+          {/* Il bottone è disabilitato se il prodotto è esaurito.
+              Usa lo stesso bottone primario (.btn-primary) riutilizzato in tutto il sito. */}
+          <button
+            type="button"
+            className="btn-primary product-detail-add-button"
+            onClick={handleAddToCart}
+            disabled={isOutOfStock}
+          >
+            {addToCartLabel()}
+          </button>
+        </div>
+      </div>
+
+      {/* --- Sezione "Come nasce questo pezzo" ---
+          Le stesse 3 fasi del processo raccontate in Home, qui in versione
+          compatta e specifica per questo prodotto. */}
+      <section className="product-detail-process">
+        <h2 className="product-detail-process-title">{t('process.compactTitle')}</h2>
+        <ol className="product-detail-process-steps">
+          {PROCESS_STEPS.map(({ key, Icon }, index) => (
+            <li className="product-detail-process-step" key={key}>
+              <span className="product-detail-process-number" aria-hidden="true">
+                {index + 1}
+              </span>
+              <Icon className="product-detail-process-icon" />
+              <div>
+                <h3 className="product-detail-process-step-title">
+                  {t(`process.${key}.title`)}
+                </h3>
+                <p className="product-detail-process-step-text">
+                  {t(`process.${key}.text`)}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* --- Nota personale, scritta a mano ---
+          Un piccolo tocco umano in fondo alla pagina: non un testo
+          generico, ma una nota firmata, in font manoscritto. */}
+      <section className="product-detail-note">
+        <p className="product-detail-note-text">{t('productDetail.personalNote')}</p>
+        <div className="product-detail-note-signature">
+          {/* Placeholder per una futura foto profilo tonda e informale */}
+          <span className="product-detail-note-avatar" aria-hidden="true">
+            A
+          </span>
+          <span className="product-detail-note-name">— Alberto</span>
+        </div>
+      </section>
+
+      {/* Lightbox: overlay a schermo intero con l'immagine ingrandita.
+          Un semplice <div> in position:fixed con un alto z-index: niente
+          librerie esterne, solo CSS + lo stato "isZoomOpen". */}
+      {isZoomOpen && (
+        <div
+          className="product-detail-lightbox"
+          onClick={() => setIsZoomOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={product.name}
+        >
+          <button
+            type="button"
+            className="product-detail-lightbox-close"
+            onClick={() => setIsZoomOpen(false)}
+            aria-label={t('productDetail.closeZoom')}
+          >
+            ×
+          </button>
+          <img
+            className="product-detail-lightbox-image"
+            src={product.image_url}
+            alt={product.name}
+          />
+        </div>
+      )}
+
+      {/* Barra sticky in fondo allo schermo, visibile solo su mobile e solo
+          dopo che l'immagine principale è uscita dalla vista durante lo
+          scroll (vedi l'IntersectionObserver qui sopra). */}
+      {showStickyBar && (
+        <div className="product-detail-sticky-bar">
+          <div className="product-detail-sticky-info">
+            <span className="product-detail-sticky-name">{product.name}</span>
+            {!isOutOfStock && (
+              <span className="product-detail-sticky-price">{formattedPrice}</span>
+            )}
+          </div>
+          <button
+            type="button"
+            className="btn-primary product-detail-sticky-button"
+            onClick={handleAddToCart}
+            disabled={isOutOfStock}
+          >
+            {addToCartLabel()}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default ProductDetail

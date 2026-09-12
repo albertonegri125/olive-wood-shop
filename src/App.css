@@ -1,0 +1,10 @@
+/* src/App.css
+   Stili generali del layout dell'app (contenitore principale sotto la Navbar).
+   Gli stili demo del template Vite sono stati rimossi perché non più usati. */
+
+.app-main {
+  flex: 1; /* occupa lo spazio verticale rimanente, spingendo eventuale footer in fondo */
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}

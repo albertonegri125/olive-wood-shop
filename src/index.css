@@ -1,0 +1,184 @@
+/* src/index.css
+   Stili globali dell'app: palette colori, font e reset di base.
+   Estetica ispirata a una bottega artigianale di oggetti in legno d'ulivo
+   Made in Italy: toni caldi e naturali per gli sfondi, verde bosco per gli
+   accenti, font serif per i titoli e sans-serif per il testo. */
+
+:root {
+  /* --- Palette colori --- */
+  --color-bg: #ede9e1; /* sfondo generale, beige caldo */
+  --color-card-bg: #ffffff; /* sfondo delle card e dei riquadri in evidenza */
+  --color-text: #1a1a1a; /* testo principale, quasi nero */
+  --color-text-muted: #6b6b63; /* testo secondario/didascalie */
+  --color-accent: #3d5c3a; /* verde bosco: bottoni, link, prezzi */
+  --color-accent-hover: #2c4429; /* verde bosco più scuro, per l'hover */
+  --color-border: #ddd8cd; /* bordi e separatori leggeri */
+
+  /* Variabili aggiuntive, derivate dalla palette base sopra */
+  --color-accent-soft: rgba(61, 92, 58, 0.08); /* sfondo tenue per hover/badge in tema accent */
+  --color-amber: #a6752c; /* ambra calda, non allarmante: badge "Ultimo pezzo" */
+  --color-amber-soft: #f2e6d3;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.12);
+
+  /* --- Font --- */
+  --font-serif: 'Playfair Display', serif; /* titoli e logo */
+  --font-sans: 'Inter', sans-serif; /* testo corrente */
+  --font-hand: 'Caveat', cursive; /* numeri decorativi e note scritte a mano */
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 16px/1.5 var(--font-sans);
+  color-scheme: light; /* tema unico, caldo e chiaro: niente variante scura */
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Texture "grana di carta" sopra il colore di sfondo: un rumore molto
+   sottile (3-4% di opacità, incorporata direttamente nel SVG tramite
+   l'attributo "opacity" del rettangolo, non nel CSS) generato al volo con
+   un filtro feTurbulence, così lo sfondo sembra un materiale leggermente
+   ruvido invece di un colore piatto "digitale". Nessuna immagine da
+   scaricare: è tutto un SVG inline codificato come data URI. */
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+#root {
+  width: 1126px;
+  max-width: 100%;
+  margin: 0 auto;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* Titoli e logo in font serif, per un tocco più artigianale/elegante */
+h1,
+h2,
+h3,
+.logo {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+h1 {
+  font-size: 36px;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  margin: 0 0 16px;
+
+  @media (min-width: 768px) {
+    font-size: 56px;
+  }
+}
+
+h2 {
+  font-size: 22px;
+  line-height: 1.2;
+  margin: 0 0 8px;
+
+  @media (min-width: 768px) {
+    font-size: 28px;
+  }
+}
+
+h3 {
+  font-size: 18px;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--color-card-bg);
+  color: var(--color-text);
+}
+
+/* --- Etichetta "eyebrow": piccola scritta maiuscola con letter-spacing,
+   usata per badge come "MADE IN ITALY" o "FATTO A MANO IN ITALIA".
+   Definita una sola volta qui e riusata in Navbar, Home e Footer. --- */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+/* Variante "etichetta di carta": un trattino decorativo prima del testo al
+   posto del classico badge/pillola con sfondo pieno e angoli arrotondati.
+   Usata dove prima c'era un badge in stile "app/SaaS" (navbar, prodotto,
+   footer), per un tocco più simile a un'etichetta scritta a mano. */
+.eyebrow-tag {
+  gap: 8px;
+}
+
+.eyebrow-tag::before {
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 1px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* --- Bottone primario, riutilizzato in tutto il sito
+   (es. bottone hero della Home, "Aggiungi al carrello") --- */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--color-accent);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+}
+
+/* Bottone primario disabilitato (es. prodotto esaurito): niente più verde,
+   né puntatore a mano, per comunicare chiaramente che non è cliccabile */
+.btn-primary:disabled {
+  background-color: var(--color-border);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+/* Variante compatta del bottone primario, usata dove lo spazio è ridotto
+   (es. il bottone "Aggiungi al carrello" dentro le card prodotto) */
+.btn-primary.btn-sm {
+  padding: 8px 14px;
+  font-size: 13px;
+}

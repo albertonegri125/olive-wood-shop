@@ -1,0 +1,36 @@
+/* src/pages/Shop.css
+   Stili della pagina Shop: titolo + griglia responsive dei prodotti. */
+
+.shop-page {
+  padding: 24px 20px 48px;
+}
+
+.shop-title {
+  text-align: left;
+}
+
+.shop-message {
+  color: var(--color-text-muted);
+  padding: 24px 0;
+  text-align: left;
+}
+
+/* Griglia mobile-first: 1 colonna su mobile, 2 colonne da tablet in su,
+   3 colonne su schermi da desktop in su. */
+.shop-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 600px) {
+  .shop-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .shop-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

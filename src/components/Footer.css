@@ -1,0 +1,90 @@
+/* src/components/Footer.css
+   Stile del footer: colonne impilate su mobile, affiancate su desktop. */
+
+.footer {
+  margin-top: auto; /* spinge il footer in fondo anche su pagine con poco contenuto */
+  background: var(--color-card-bg);
+  border-top: 1px solid var(--color-border);
+}
+
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 40px 20px 24px;
+
+  @media (min-width: 700px) {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 48px 32px 24px;
+  }
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-brand {
+  gap: 8px;
+
+  @media (min-width: 700px) {
+    max-width: 320px;
+  }
+}
+
+.footer-tagline {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.footer-column-title {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+/* Link social come semplice testo separato da un punto, non più icone
+   dentro cerchi grigi uniformi: si legge come un elenco scritto a mano,
+   non come una riga di pulsanti da app. */
+.footer-social-links {
+  margin: 0;
+  font-size: 14px;
+}
+
+.footer-social-link {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 3px;
+}
+
+.footer-social-link:hover {
+  color: var(--color-accent);
+  text-decoration-color: currentColor;
+}
+
+.footer-social-sep {
+  color: var(--color-border);
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--color-border);
+  padding: 16px 20px;
+  text-align: center;
+
+  @media (min-width: 700px) {
+    padding: 16px 32px;
+  }
+}
+
+.footer-rights {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}

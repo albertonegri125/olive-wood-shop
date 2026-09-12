@@ -1,0 +1,209 @@
+/* src/pages/Home.css
+   Stili della homepage: hero fotografica a due colonne, sezione "processo"
+   (fusa con lo sfondo texturizzato, niente più card bianca) e griglia dei
+   prodotti in evidenza. */
+
+.home-page {
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Hero ---
+   Mobile-first: colonna singola, la foto viene prima (ordine naturale nel
+   markup). Da tablet in su diventa una riga: con "order" rimettiamo il
+   testo a sinistra e la foto a destra senza toccare l'HTML. */
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 32px 20px 48px;
+
+  @media (min-width: 860px) {
+    flex-direction: row;
+    align-items: center;
+    gap: 48px;
+    padding: 56px 20px 64px;
+  }
+}
+
+.hero-photo {
+  /* La foto occupa una porzione ben visibile della hero: non un dettaglio
+     marginale, ma un blocco che pesa quanto (o quasi) il testo accanto. */
+  flex: 1 1 45%;
+
+  @media (min-width: 860px) {
+    order: 2;
+  }
+}
+
+.hero-photo-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+  /* Rotazione minima e volutamente imperfetta: la foto sembra appoggiata
+     lì, non incollata a un allineamento perfetto alla griglia. */
+  transform: rotate(-1.3deg);
+
+  @media (min-width: 860px) {
+    aspect-ratio: 3 / 4;
+  }
+}
+
+.hero-copy {
+  flex: 1 1 55%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 14px;
+
+  @media (min-width: 860px) {
+    order: 1;
+  }
+}
+
+.hero-title {
+  max-width: 480px;
+}
+
+.hero-subtitle {
+  max-width: 460px;
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.hero-button {
+  margin-top: 8px;
+}
+
+/* --- Sezione "Il nostro processo" ---
+   Nessuno sfondo/bordo proprio: si fonde con lo sfondo texturizzato del
+   resto della pagina, invece di isolarsi come una card a sé stante. */
+.process-section {
+  padding: 40px 20px 56px;
+}
+
+.process-title {
+  text-align: center;
+  margin: 0 0 8px;
+}
+
+.process-steps {
+  position: relative;
+  list-style: none;
+  margin: 40px auto 0;
+  padding: 0;
+  max-width: 1000px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 36px;
+
+  @media (min-width: 700px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+}
+
+/* Linea tratteggiata che collega le tre colonne, per dare l'idea di un
+   percorso/sequenza invece di tre blocchi indipendenti. Visibile solo da
+   tablet in su, quando le colonne sono effettivamente in riga. */
+@media (min-width: 700px) {
+  .process-steps::before {
+    content: '';
+    position: absolute;
+    top: 34px;
+    left: 14%;
+    right: 14%;
+    border-top: 1.5px dashed var(--color-border);
+    z-index: 0;
+  }
+}
+
+.process-step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 4px;
+}
+
+/* Numero scritto a mano + piccola illustrazione a schizzo, affiancati */
+.process-step-visual {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+/* Numero decorativo grande: font manoscritto invece del serif pulito,
+   ruotato in modo diverso per ciascuno (vedi lo style inline in Home.jsx),
+   così sembrano scritti a mano libera e non tre copie identiche. */
+.process-step-number {
+  display: inline-block;
+  font-family: var(--font-hand);
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-border);
+}
+
+/* Le icone a schizzo prendono il colore ambra/legno: unico accenno "caldo"
+   di questa sezione, altrimenti verde bosco e beige. */
+.process-step-icon {
+  width: 34px;
+  height: 34px;
+  color: var(--color-amber);
+  flex-shrink: 0;
+}
+
+.process-step-title {
+  margin: 0;
+}
+
+.process-step-text {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* --- Prodotti in evidenza --- */
+.featured-section {
+  padding: 48px 20px 56px;
+}
+
+.featured-title {
+  text-align: left;
+}
+
+.featured-message {
+  color: var(--color-text-muted);
+  padding: 24px 0;
+}
+
+/* Griglia mobile-first: 1 colonna di default, più colonne quando c'è spazio. */
+.featured-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 600px) {
+  .featured-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .featured-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

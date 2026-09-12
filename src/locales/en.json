@@ -1,0 +1,100 @@
+{
+  "navbar": {
+    "badge": "Made in Italy",
+    "home": "Home",
+    "shop": "Shop",
+    "account": "Account",
+    "cart": "Cart",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "language": {
+    "it": "IT",
+    "en": "EN",
+    "label": "Language",
+    "switchTo": "Switch to {{language}}"
+  },
+  "hero": {
+    "badge": "Handcrafted in Lombardy, Italy",
+    "title": "Olive wood, shaped by hand",
+    "subtitle": "Each board starts as a single piece of olive wood, shaped with traditional woodworking tools and finished with food-safe oil. No machines, no two boards alike.",
+    "cta": "Shop now",
+    "photoAlt": "Hand-carved olive wood board"
+  },
+  "process": {
+    "title": "Our process",
+    "compactTitle": "How this piece is made",
+    "step1": {
+      "title": "The wood",
+      "text": "Solid olive wood selected for its grain and durability."
+    },
+    "step2": {
+      "title": "The craft",
+      "text": "Shaped and finished by hand with traditional woodworking tools, one piece at a time."
+    },
+    "step3": {
+      "title": "The finish",
+      "text": "Treated with food-safe oil to protect the wood and bring out its natural color."
+    }
+  },
+  "trust": {
+    "unique": "Handmade, one of a kind",
+    "shipping": "Insured shipping",
+    "payment": "Secure payment"
+  },
+  "featured": {
+    "title": "Featured products",
+    "loading": "Loading products...",
+    "error": "We couldn't load the featured products.",
+    "empty": "No products available at the moment."
+  },
+  "shop": {
+    "title": "Shop",
+    "loading": "Loading products...",
+    "error": "We couldn't load the products. Please try again later.",
+    "empty": "No products available at the moment."
+  },
+  "product": {
+    "outOfStock": "Sold out",
+    "lastOne": "Last one",
+    "addToCart": "Add to cart",
+    "added": "Added ✓"
+  },
+  "cart": {
+    "title": "Your cart",
+    "empty": "Your cart is empty",
+    "goToShop": "Go to shop",
+    "decreaseQuantity": "Decrease quantity",
+    "increaseQuantity": "Increase quantity",
+    "remove": "Remove from cart",
+    "total": "Total",
+    "checkout": "Proceed to checkout"
+  },
+  "productDetail": {
+    "loading": "Loading product...",
+    "notFound": "Product not found.",
+    "addToCart": "Add to cart",
+    "outOfStock": "Sold out",
+    "stock": "In stock: {{count}} pieces",
+    "unavailable": "This product is currently unavailable.",
+    "zoomHint": "Click to zoom",
+    "closeZoom": "Close zoomed image",
+    "personalNote": "Every piece is different — the grain you see in the photo is unique to this exact board."
+  },
+  "footer": {
+    "badge": "Handcrafted in Italy",
+    "tagline": "Olive wood objects handmade, one piece at a time.",
+    "socialTitle": "Follow us",
+    "languageTitle": "Language",
+    "rights": "All rights reserved."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "comingSoon": "This page will be available soon.",
+    "summary": "Order summary",
+    "shippingInfo": "Shipping details",
+    "paymentInfo": "Payment",
+    "orderTotal": "Total",
+    "placeOrder": "Confirm and pay"
+  }
+}

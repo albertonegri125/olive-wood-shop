@@ -1,0 +1,228 @@
+/* src/pages/Cart.css
+   Stili della pagina Carrello.
+   Mobile-first: ogni riga prodotto è su due righe (immagine+info sopra,
+   quantità+totale+rimuovi sotto); da tablet in su diventa un'unica riga,
+   grazie a display:contents sui controlli (si "fondono" nella griglia). */
+
+.cart-page {
+  padding: 24px 20px 56px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.cart-title {
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+/* --- Stato "carrello vuoto" --- */
+.cart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 64px 20px;
+}
+
+.cart-empty-title {
+  margin: 0;
+}
+
+.cart-empty-message {
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+
+/* --- Lista articoli --- */
+.cart-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  grid-template-areas:
+    'image info'
+    'image controls';
+  gap: 4px 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cart-item-image {
+  grid-area: image;
+  width: 64px;
+  height: 64px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--color-border);
+}
+
+.cart-item-info {
+  grid-area: info;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cart-item-name {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cart-item-unit-price {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* Su mobile: quantità, prezzo riga e rimuovi tutti sulla stessa riga sotto */
+.cart-item-controls {
+  grid-area: controls;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cart-item-quantity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cart-quantity-button {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background: var(--color-card-bg);
+  color: var(--color-text);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cart-quantity-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cart-quantity-value {
+  min-width: 20px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cart-item-row-total {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.cart-item-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.cart-item-remove:hover {
+  color: var(--color-amber);
+  background: var(--color-amber-soft);
+}
+
+.cart-item-remove svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* --- Riepilogo totale --- */
+.cart-summary {
+  margin-top: 24px;
+  padding: 20px;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cart-summary-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.cart-summary-label {
+  font-size: 15px;
+  color: var(--color-text-muted);
+}
+
+.cart-summary-total {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.cart-checkout-button {
+  width: 100%;
+}
+
+/* --- Da tablet in su: ogni articolo torna su un'unica riga --- */
+@media (min-width: 640px) {
+  .cart-item {
+    grid-template-columns: 64px 1fr auto auto auto;
+    grid-template-areas: 'image info quantity total remove';
+    align-items: center;
+    gap: 16px;
+  }
+
+  /* "display: contents" fa sparire questo contenitore dalla griglia visiva:
+     i suoi figli diventano celle dirette di .cart-item, posizionabili
+     singolarmente tramite le loro grid-area. */
+  .cart-item-controls {
+    display: contents;
+  }
+
+  .cart-item-quantity {
+    grid-area: quantity;
+  }
+
+  .cart-item-row-total {
+    grid-area: total;
+    text-align: right;
+  }
+
+  .cart-item-remove {
+    grid-area: remove;
+  }
+
+  .cart-summary {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .cart-checkout-button {
+    width: auto;
+  }
+}
