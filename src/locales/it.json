@@ -6,7 +6,8 @@
     "account": "Account",
     "cart": "Carrello",
     "openMenu": "Apri il menu",
-    "closeMenu": "Chiudi il menu"
+    "closeMenu": "Chiudi il menu",
+    "logout": "Esci"
   },
   "language": {
     "it": "IT",
@@ -95,6 +96,184 @@
     "shippingInfo": "Dati di spedizione",
     "paymentInfo": "Pagamento",
     "orderTotal": "Totale",
-    "placeOrder": "Conferma e paga"
+    "placeOrder": "Procedi al pagamento",
+    "paymentComingSoon": "Integrazione pagamento in arrivo."
+  },
+  "auth": {
+    "checkingSession": "Verifica della sessione in corso...",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "confirmPasswordLabel": "Conferma password",
+    "nameLabel": "Nome e cognome",
+    "login": {
+      "title": "Accedi",
+      "subtitle": "Accedi al tuo account per vedere i tuoi ordini.",
+      "submit": "Accedi",
+      "submitting": "Accesso in corso...",
+      "noAccount": "Non hai un account?",
+      "registerLink": "Registrati"
+    },
+    "register": {
+      "title": "Crea un account",
+      "subtitle": "Registrati per salvare i tuoi ordini e i tuoi dati.",
+      "submit": "Registrati",
+      "submitting": "Registrazione in corso...",
+      "hasAccount": "Hai già un account?",
+      "loginLink": "Accedi",
+      "checkEmail": "Controlla la tua casella email per confermare l'account prima di accedere."
+    },
+    "errors": {
+      "invalidCredentials": "Email o password non corretti.",
+      "emailInUse": "Questa email è già registrata. Prova ad accedere.",
+      "weakPassword": "La password deve contenere almeno 6 caratteri.",
+      "invalidEmail": "L'indirizzo email non è valido.",
+      "emailNotConfirmed": "Devi prima confermare la tua email: controlla la posta.",
+      "passwordMismatch": "Le due password non coincidono.",
+      "generic": "Si è verificato un errore. Riprova."
+    }
+  },
+  "account": {
+    "title": "Il tuo account",
+    "profileTitle": "Profilo",
+    "loading": "Caricamento...",
+    "noName": "Nome non impostato",
+    "ordersTitle": "I tuoi ordini",
+    "ordersEmpty": "Non hai ancora effettuato nessun ordine."
+  },
+  "cookieBanner": {
+    "message": "Usiamo solo cookie tecnici e dati salvati nel tuo browser (es. per il carrello): nessun tracciamento pubblicitario.",
+    "accept": "Accetta",
+    "learnMore": "Scopri di più"
+  },
+  "legal": {
+    "footerTitle": "Informazioni legali",
+    "privacyLink": "Privacy",
+    "termsLink": "Termini e Condizioni",
+    "withdrawalLink": "Diritto di Recesso",
+    "cookiesLink": "Cookie Policy",
+    "lastUpdated": "Ultimo aggiornamento: [data] — testo segnaposto, da completare",
+    "privacy": {
+      "title": "Informativa sulla Privacy",
+      "intro": "La presente informativa descrive come OliveWood Creations raccoglie, utilizza e protegge i dati personali di chi visita il sito o effettua un acquisto, in conformità al Regolamento (UE) 2016/679 (GDPR).",
+      "sections": [
+        {
+          "heading": "Titolare del trattamento",
+          "body": "[Ragione sociale o nome e cognome], con sede in [indirizzo completo], [P.IVA/Codice Fiscale] — dati da completare. Email di contatto per la privacy: [email da inserire]."
+        },
+        {
+          "heading": "Dati raccolti",
+          "body": "Raccogliamo i dati forniti volontariamente (nome, email, indirizzo di spedizione) in fase di registrazione o acquisto, oltre a dati tecnici raccolti automaticamente e ai dati salvati localmente nel browser per il funzionamento del carrello (vedi la Cookie Policy)."
+        },
+        {
+          "heading": "Finalità del trattamento",
+          "body": "I dati sono trattati per gestire l'account utente, evadere gli ordini, rispondere a richieste di assistenza e adempiere a obblighi di legge (es. fatturazione)."
+        },
+        {
+          "heading": "Base giuridica",
+          "body": "Il trattamento si basa sull'esecuzione di un contratto (per gli ordini), sul consenso (per eventuali comunicazioni promozionali) e sull'adempimento di obblighi legali."
+        },
+        {
+          "heading": "Conservazione dei dati",
+          "body": "I dati sono conservati per il tempo necessario alle finalità indicate e, in ogni caso, per il periodo previsto dalla normativa fiscale e civilistica applicabile."
+        },
+        {
+          "heading": "Diritti dell'utente",
+          "body": "Hai diritto di accedere ai tuoi dati, rettificarli, cancellarli, limitarne il trattamento, opporti al trattamento e richiederne la portabilità, scrivendo all'email indicata sopra. Hai inoltre diritto di proporre reclamo al Garante per la protezione dei dati personali."
+        },
+        {
+          "heading": "Contatti",
+          "body": "Per qualsiasi domanda relativa al trattamento dei tuoi dati personali puoi scriverci all'indirizzo email indicato in questa pagina."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Termini e Condizioni di Vendita",
+      "intro": "I presenti Termini e Condizioni regolano la vendita dei prodotti tramite il sito OliveWood Creations. Effettuando un ordine, accetti integralmente le condizioni qui descritte.",
+      "sections": [
+        {
+          "heading": "Identità del venditore",
+          "body": "[Ragione sociale o nome e cognome], [indirizzo completo], [P.IVA/Codice Fiscale], email [email da inserire] — dati da completare."
+        },
+        {
+          "heading": "Caratteristiche dei prodotti",
+          "body": "I prodotti in vendita sono oggetti in legno d'ulivo lavorati a mano: essendo pezzi artigianali, ogni esemplare può presentare lievi variazioni di colore, venatura e forma rispetto alle immagini pubblicate, da considerarsi caratteristiche del prodotto e non difetti."
+        },
+        {
+          "heading": "Prezzi e modalità di pagamento",
+          "body": "I prezzi indicati sul sito sono espressi in Euro e comprensivi di IVA. Il pagamento avviene tramite Stripe, con carta di credito/debito o altri metodi eventualmente resi disponibili al checkout."
+        },
+        {
+          "heading": "Tempi e modalità di consegna",
+          "body": "[Da completare: tempi di spedizione stimati, es. \"gli ordini vengono spediti entro X giorni lavorativi dalla conferma del pagamento\"]. I tempi indicati sono stimati e possono variare in base al corriere e alla destinazione."
+        },
+        {
+          "heading": "Diritto di recesso",
+          "body": "Per informazioni sul diritto di recesso, consulta la pagina dedicata \"Diritto di Recesso\", collegata nel footer del sito."
+        },
+        {
+          "heading": "Foro competente",
+          "body": "Per qualsiasi controversia relativa ai presenti Termini è competente il foro di [città da inserire], salvo le norme inderogabili a tutela del consumatore, per cui resta sempre competente il foro del luogo di residenza del consumatore."
+        }
+      ]
+    },
+    "withdrawal": {
+      "title": "Diritto di Recesso",
+      "intro": "Se sei un consumatore (persona fisica che acquista per scopi estranei alla propria attività professionale) residente nell'Unione Europea, hai diritto di recedere dal contratto entro 14 giorni, senza dover fornire alcuna motivazione.",
+      "sections": [
+        {
+          "heading": "Termine per l'esercizio del recesso",
+          "body": "Il termine di 14 giorni decorre dal giorno in cui tu (o un terzo da te designato, diverso dal corriere) ricevi fisicamente i prodotti ordinati."
+        },
+        {
+          "heading": "Come esercitare il recesso",
+          "body": "Per esercitare il diritto di recesso devi informarci della tua decisione tramite una dichiarazione esplicita (ad esempio una email a [email da inserire]), oppure utilizzando il modulo di recesso qui sotto, prima della scadenza del termine di 14 giorni."
+        },
+        {
+          "heading": "Restituzione dei prodotti",
+          "body": "Dopo aver comunicato il recesso, devi rispedire i prodotti entro 14 giorni, in condizioni integre e, se possibile, nella confezione originale."
+        },
+        {
+          "heading": "Chi paga la spedizione di reso",
+          "body": "[Da completare]: salvo diversa indicazione comunicata al momento dell'acquisto, le spese di spedizione per il reso sono a carico del cliente."
+        },
+        {
+          "heading": "Rimborso",
+          "body": "Il rimborso del prezzo pagato (incluse le spese di spedizione iniziali standard) avviene entro 14 giorni dalla data in cui riceviamo la merce restituita, o dalla prova dell'avvenuta spedizione se anteriore, con lo stesso metodo di pagamento usato per l'acquisto."
+        },
+        {
+          "heading": "Esclusioni",
+          "body": "Il diritto di recesso non si applica a prodotti realizzati su misura o chiaramente personalizzati su richiesta del cliente, se applicabile."
+        }
+      ],
+      "formTitle": "Modulo di recesso",
+      "formText": "Puoi usare questo modulo per comunicare il tuo recesso (facoltativo).",
+      "formDownload": "Scarica il modulo di recesso (PDF)",
+      "formPlaceholderNote": "Il file PDF scaricabile sarà disponibile a breve — per ora puoi comunicare il recesso anche via email."
+    },
+    "cookies": {
+      "title": "Cookie Policy",
+      "intro": "Questo sito utilizza esclusivamente cookie tecnici e dati salvati localmente nel tuo browser (localStorage), necessari al funzionamento di base del sito. Al momento non utilizziamo cookie di profilazione o di terze parti a scopo pubblicitario.",
+      "tableName": "Nome",
+      "tablePurpose": "Finalità",
+      "tableDuration": "Durata",
+      "items": [
+        {
+          "name": "cart",
+          "purpose": "Memorizza gli articoli aggiunti al carrello",
+          "duration": "Persistente, fino a rimozione manuale o svuotamento del carrello"
+        },
+        {
+          "name": "oliveWoodShop.language",
+          "purpose": "Ricorda la lingua scelta (Italiano/English)",
+          "duration": "Persistente"
+        },
+        {
+          "name": "oliveWoodShop.cookieConsent",
+          "purpose": "Ricorda che hai già visto e accettato il banner sui cookie",
+          "duration": "Persistente"
+        }
+      ],
+      "outro": "Se in futuro aggiungeremo strumenti di analisi statistica o cookie di terze parti, questa pagina verrà aggiornata e, se richiesto dalla normativa, verrà richiesto un consenso esplicito prima di attivarli."
+    }
   }
 }

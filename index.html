@@ -2,9 +2,29 @@
 <html lang="it">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Favicon: al momento usa il logo completo (src/assets/logo.png), che
+         include anche la scritta "OLIVEWOODCREATION" incorporata nell'immagine.
+         NOTA: a 16-32px (dimensione reale di una favicon nella tab del browser)
+         il testo sarà illeggibile — il file funziona comunque, ma se in futuro
+         sarà disponibile un logo.svg o un ritaglio dedicato con solo l'icona
+         (l'albero), sarà preferibile usare quello al posto di questo PNG. -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>olive-wood-shop</title>
+    <title>OliveWood Creations</title>
+
+    <!-- Immagine di anteprima quando il sito viene condiviso su social/chat
+         (Facebook, LinkedIn, WhatsApp, ecc. leggono "og:image"; Twitter/X
+         legge "twitter:image", e richiede anche "twitter:card" per mostrare
+         l'immagine in grande). "/src/assets/logo.png" viene elaborato da
+         Vite come gli altri asset in src/ (stesso pattern già usato sopra
+         per lo script principale).
+         NOTA: una volta online, per la massima compatibilità con i crawler
+         social conviene sostituire questo percorso con un URL assoluto
+         (es. https://tuodominio.it/...), perché lo standard Open Graph
+         richiede un URL assoluto per og:image. -->
+    <meta property="og:image" content="/src/assets/logo.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="/src/assets/logo.png" />
 
     <!-- Font Google usati in tutto il sito:
          - "Playfair Display" per i titoli (font-serif, look artigianale/elegante)

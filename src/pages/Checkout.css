@@ -1,17 +1,77 @@
 /* src/pages/Checkout.css
-   Stile minimo per la pagina segnaposto del checkout. */
+   Stile della pagina di checkout: riepilogo ordine + bottone di pagamento. */
 
 .checkout-page {
-  padding: 64px 20px;
-  max-width: 600px;
+  max-width: 560px;
   margin: 0 auto;
-  text-align: center;
+  padding: 32px 20px 64px;
 }
 
 .checkout-title {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+}
+
+.checkout-summary-title {
+  margin-top: 24px;
 }
 
 .checkout-placeholder {
   color: var(--color-text-muted);
+  margin-bottom: 16px;
+}
+
+.checkout-summary-list {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+}
+
+.checkout-summary-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 14px;
+}
+
+.checkout-summary-item-qty {
+  color: var(--color-text-muted);
+}
+
+.checkout-summary-item-price {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.checkout-total-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 16px 0;
+  font-size: 16px;
+}
+
+.checkout-total-amount {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.checkout-pay-button {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.checkout-placeholder-message {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 4px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 14px;
+  text-align: center;
 }

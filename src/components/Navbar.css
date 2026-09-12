@@ -39,12 +39,27 @@
   white-space: nowrap;
 }
 
+/* Il logo è solo un'immagine (il nome è già incorporato nel file): questo
+   link fa solo da contenitore cliccabile verso la Home, allineato al
+   centro verticale della navbar tramite "align-items: center" ereditato
+   da .navbar-inner/.navbar-brand. */
 .navbar-logo {
-  font-size: 19px;
-  font-weight: 700; /* il font serif arriva dalla classe "logo" definita in index.css */
-  color: var(--color-text);
-  text-decoration: none;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+/* Logo circolare: dimensione fissa (stesso valore per altezza e larghezza,
+   dato che l'immagine è quadrata/circolare) invece di "altezza fissa,
+   larghezza automatica" usato per un logo rettangolare. */
+.navbar-logo-image {
+  display: block;
+  height: 40px;
+  width: 40px;
+
+  @media (min-width: 768px) {
+    height: 48px;
+    width: 48px;
+  }
 }
 
 /* --- Pulsante hamburger (mobile) --- */
@@ -123,6 +138,72 @@
 .nav-link.active {
   color: var(--color-accent);
   font-weight: 700;
+}
+
+/* --- Menu "Account" (vedi AccountMenu.jsx) --- */
+.account-menu {
+  position: relative;
+}
+
+/* Il trigger riusa lo stile dei link della navbar (.nav-link), ma è un
+   <button>: resettiamo gli stili di default del browser. */
+.account-menu-trigger {
+  background: none;
+  border: none;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  box-shadow: var(--shadow-md);
+  padding: 6px;
+  z-index: 102;
+}
+
+.account-menu-item {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: none;
+  border-radius: 4px;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.account-menu-item:hover {
+  background: var(--color-accent-soft);
+}
+
+.account-menu-signout {
+  color: var(--color-amber);
+}
+
+/* Su mobile il menu a tendina è dentro l'overlay a schermo intero: lo
+   centriamo sotto al nome invece di ancorarlo a sinistra. */
+@media (max-width: 767px) {
+  .account-menu-dropdown {
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+  }
 }
 
 /* Numero di articoli nel carrello: un piccolo "badge" tondo accanto alla scritta "Carrello" */

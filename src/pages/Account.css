@@ -1,0 +1,67 @@
+/* src/pages/Account.css
+   Stile della pagina Account: due sezioni semplici (profilo, ordini). */
+
+.account-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 20px 56px;
+}
+
+.account-title {
+  margin-bottom: 24px;
+}
+
+.account-section {
+  padding: 24px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.account-section:first-of-type {
+  border-top: none;
+}
+
+.account-section-title {
+  margin-bottom: 12px;
+}
+
+.account-message {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.account-details {
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.account-detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.account-detail-row dt {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+
+.account-detail-row dd {
+  margin: 0;
+  font-size: 15px;
+  color: var(--color-text);
+}
+
+.account-signout {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: 14px;
+  cursor: pointer;
+}

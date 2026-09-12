@@ -12,6 +12,8 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '../context/CartContext'
 import LanguageSwitcher from './LanguageSwitcher'
+import AccountMenu from './AccountMenu'
+import logo from '../assets/logo.png'
 import './Navbar.css'
 
 function Navbar() {
@@ -42,11 +44,14 @@ function Navbar() {
   return (
     <header className="navbar">
       <div className="navbar-inner">
-        {/* Blocco logo: piccolo badge "Made in Italy" accanto al nome del
-            negozio, per comunicare fin da subito l'artigianalità italiana. */}
+        {/* Blocco logo: il logo è circolare e contiene già il nome
+            "OliveWoodCreation" e il sottotitolo "Artisanal Craft • Handmade"
+            incorporati nell'immagine, quindi non serve ripetere il testo
+            accanto. Il badge "Made in Italy" resta comunque, per
+            comunicare fin da subito l'artigianalità italiana. */}
         <div className="navbar-brand">
-          <NavLink to="/" className="navbar-logo logo">
-            Olive&nbsp;Wood&nbsp;Shop
+          <NavLink to="/" className="navbar-logo">
+            <img className="navbar-logo-image" src={logo} alt="OliveWood Creation" />
           </NavLink>
           <span className="eyebrow eyebrow-tag navbar-badge">{t('navbar.badge')}</span>
         </div>
@@ -78,9 +83,10 @@ function Navbar() {
           <NavLink to="/shop" className={linkClassName}>
             {t('navbar.shop')}
           </NavLink>
-          <NavLink to="/account" className={linkClassName}>
-            {t('navbar.account')}
-          </NavLink>
+          {/* "Account" diventa un normale link a /login se l'utente non è
+              loggato, oppure il suo nome con un menu a tendina (Account/Esci)
+              se lo è: vedi AccountMenu per la logica completa. */}
+          <AccountMenu />
           <NavLink to="/cart" className={linkClassName}>
             {t('navbar.cart')}
             {/* Il numero di articoli viene mostrato solo se maggiore di 0,

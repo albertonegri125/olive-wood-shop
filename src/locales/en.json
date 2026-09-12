@@ -6,7 +6,8 @@
     "account": "Account",
     "cart": "Cart",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "logout": "Sign out"
   },
   "language": {
     "it": "IT",
@@ -95,6 +96,184 @@
     "shippingInfo": "Shipping details",
     "paymentInfo": "Payment",
     "orderTotal": "Total",
-    "placeOrder": "Confirm and pay"
+    "placeOrder": "Proceed to payment",
+    "paymentComingSoon": "Payment integration coming soon."
+  },
+  "auth": {
+    "checkingSession": "Checking your session...",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "confirmPasswordLabel": "Confirm password",
+    "nameLabel": "Full name",
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Sign in to your account to see your orders.",
+      "submit": "Sign in",
+      "submitting": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Sign up"
+    },
+    "register": {
+      "title": "Create an account",
+      "subtitle": "Sign up to save your orders and your details.",
+      "submit": "Sign up",
+      "submitting": "Signing up...",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Sign in",
+      "checkEmail": "Check your inbox to confirm your account before signing in."
+    },
+    "errors": {
+      "invalidCredentials": "Incorrect email or password.",
+      "emailInUse": "This email is already registered. Try signing in instead.",
+      "weakPassword": "Password must be at least 6 characters long.",
+      "invalidEmail": "This email address is not valid.",
+      "emailNotConfirmed": "Please confirm your email address first: check your inbox.",
+      "passwordMismatch": "The two passwords don't match.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "account": {
+    "title": "Your account",
+    "profileTitle": "Profile",
+    "loading": "Loading...",
+    "noName": "Name not set",
+    "ordersTitle": "Your orders",
+    "ordersEmpty": "You haven't placed any orders yet."
+  },
+  "cookieBanner": {
+    "message": "We only use technical cookies and browser-stored data (e.g. for the cart): no advertising tracking.",
+    "accept": "Accept",
+    "learnMore": "Learn more"
+  },
+  "legal": {
+    "footerTitle": "Legal",
+    "privacyLink": "Privacy",
+    "termsLink": "Terms & Conditions",
+    "withdrawalLink": "Right of Withdrawal",
+    "cookiesLink": "Cookie Policy",
+    "lastUpdated": "Last updated: [date] — placeholder text, to be completed",
+    "privacy": {
+      "title": "Privacy Policy",
+      "intro": "This policy describes how OliveWood Creations collects, uses and protects the personal data of site visitors and customers, in accordance with Regulation (EU) 2016/679 (GDPR).",
+      "sections": [
+        {
+          "heading": "Data controller",
+          "body": "[Company or full name], registered at [full address], [VAT/Tax ID] — to be completed. Privacy contact email: [email to be added]."
+        },
+        {
+          "heading": "Data collected",
+          "body": "We collect data you provide voluntarily (name, email, shipping address) when registering or ordering, plus technical data collected automatically and data stored locally in your browser for the cart to work (see our Cookie Policy)."
+        },
+        {
+          "heading": "Purpose of processing",
+          "body": "Data is processed to manage your account, fulfill orders, respond to support requests, and comply with legal obligations (e.g. invoicing)."
+        },
+        {
+          "heading": "Legal basis",
+          "body": "Processing is based on the performance of a contract (for orders), consent (for any promotional communications), and compliance with legal obligations."
+        },
+        {
+          "heading": "Data retention",
+          "body": "Data is kept for as long as necessary for the purposes above and, in any case, for the period required by applicable tax and civil law."
+        },
+        {
+          "heading": "Your rights",
+          "body": "You have the right to access, correct, delete, restrict or object to the processing of your data, and to request data portability, by writing to the email above. You also have the right to lodge a complaint with your national data protection authority."
+        },
+        {
+          "heading": "Contact",
+          "body": "For any question about how we handle your personal data, you can write to the email address shown on this page."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Terms & Conditions of Sale",
+      "intro": "These Terms & Conditions govern the sale of products through the OliveWood Creations website. By placing an order, you fully accept the terms described here.",
+      "sections": [
+        {
+          "heading": "Seller identity",
+          "body": "[Company or full name], [full address], [VAT/Tax ID], email [email to be added] — to be completed."
+        },
+        {
+          "heading": "Product characteristics",
+          "body": "The products sold are handmade olive wood objects: being artisanal pieces, each one may show slight variations in color, grain and shape compared to the published photos — this is a feature of the product, not a defect."
+        },
+        {
+          "heading": "Prices and payment methods",
+          "body": "Prices shown on the site are in Euro and include VAT. Payment is processed via Stripe, by credit/debit card or any other method made available at checkout."
+        },
+        {
+          "heading": "Delivery times and methods",
+          "body": "[To be completed: estimated shipping times, e.g. \"orders ship within X business days of payment confirmation\"]. Times shown are estimates and may vary depending on the courier and destination."
+        },
+        {
+          "heading": "Right of withdrawal",
+          "body": "For information about the right of withdrawal, see the dedicated \"Right of Withdrawal\" page, linked in the site footer."
+        },
+        {
+          "heading": "Governing jurisdiction",
+          "body": "Any dispute relating to these Terms falls under the jurisdiction of [city to be added], except for the mandatory consumer-protection rules that always grant jurisdiction to the consumer's place of residence."
+        }
+      ]
+    },
+    "withdrawal": {
+      "title": "Right of Withdrawal",
+      "intro": "If you are a consumer (an individual purchasing for purposes unrelated to any trade or profession) residing in the European Union, you have the right to withdraw from the contract within 14 days, without giving any reason.",
+      "sections": [
+        {
+          "heading": "Withdrawal period",
+          "body": "The 14-day period starts from the day you (or a third party you designate, other than the carrier) physically receive the ordered products."
+        },
+        {
+          "heading": "How to exercise the right of withdrawal",
+          "body": "To withdraw, you must inform us of your decision with an explicit statement (for example an email to [email to be added]), or by using the withdrawal form below, before the 14-day period expires."
+        },
+        {
+          "heading": "Returning the products",
+          "body": "After notifying your withdrawal, you must send back the products within 14 days, in good condition and, if possible, in their original packaging."
+        },
+        {
+          "heading": "Who pays for return shipping",
+          "body": "[To be completed]: unless otherwise stated at the time of purchase, return shipping costs are borne by the customer."
+        },
+        {
+          "heading": "Refund",
+          "body": "The amount paid (including standard initial shipping costs) will be refunded within 14 days from the date we receive the returned goods, or proof of shipment if earlier, using the same payment method used for the purchase."
+        },
+        {
+          "heading": "Exceptions",
+          "body": "The right of withdrawal does not apply to products made to measure or clearly personalized at the customer's request, where applicable."
+        }
+      ],
+      "formTitle": "Withdrawal form",
+      "formText": "You can use this form to notify your withdrawal (optional).",
+      "formDownload": "Download the withdrawal form (PDF)",
+      "formPlaceholderNote": "The downloadable PDF will be available soon — for now you can also notify your withdrawal by email."
+    },
+    "cookies": {
+      "title": "Cookie Policy",
+      "intro": "This site uses only technical cookies and data stored locally in your browser (localStorage), necessary for the site's basic functioning. We currently do not use profiling or third-party advertising cookies.",
+      "tableName": "Name",
+      "tablePurpose": "Purpose",
+      "tableDuration": "Duration",
+      "items": [
+        {
+          "name": "cart",
+          "purpose": "Stores the items added to the cart",
+          "duration": "Persistent, until manually removed or the cart is cleared"
+        },
+        {
+          "name": "oliveWoodShop.language",
+          "purpose": "Remembers the chosen language (Italian/English)",
+          "duration": "Persistent"
+        },
+        {
+          "name": "oliveWoodShop.cookieConsent",
+          "purpose": "Remembers that you have already seen and accepted the cookie banner",
+          "duration": "Persistent"
+        }
+      ],
+      "outro": "If we add analytics tools or third-party cookies in the future, this page will be updated and, where required by law, explicit consent will be requested before activating them."
+    }
   }
 }

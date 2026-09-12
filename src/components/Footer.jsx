@@ -6,6 +6,7 @@
 // - link ai social (per ora placeholder, da collegare ai profili reali)
 // - selettore di lingua, ripetuto qui per comodità (già presente in Navbar)
 
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
 import './Footer.css'
@@ -18,6 +19,15 @@ const SOCIAL_LINKS = [
   { name: 'Instagram', href: '#' },
   { name: 'Facebook', href: '#' },
   { name: 'Pinterest', href: '#' },
+]
+
+// Link alle pagine legali obbligatorie per un e-commerce europeo, con la
+// chiave di traduzione dell'etichetta e il percorso della route.
+const LEGAL_LINKS = [
+  { labelKey: 'legal.privacyLink', to: '/privacy' },
+  { labelKey: 'legal.termsLink', to: '/termini' },
+  { labelKey: 'legal.withdrawalLink', to: '/recesso' },
+  { labelKey: 'legal.cookiesLink', to: '/cookie' },
 ]
 
 function Footer() {
@@ -63,8 +73,26 @@ function Footer() {
       </div>
 
       <div className="footer-bottom">
+        {/* Link alle pagine legali obbligatorie, separati da un punto come
+            i link social qui sopra: coerenza visiva in tutto il footer. */}
+        <p className="footer-legal-links">
+          {LEGAL_LINKS.map(({ labelKey, to }, index) => (
+            <span key={to}>
+              <Link to={to} className="footer-legal-link">
+                {t(labelKey)}
+              </Link>
+              {index < LEGAL_LINKS.length - 1 && (
+                <span className="footer-social-sep" aria-hidden="true">
+                  {' '}
+                  •{' '}
+                </span>
+              )}
+            </span>
+          ))}
+        </p>
+
         <p className="footer-rights">
-          © {currentYear} Olive Wood Shop — {t('footer.rights')}
+          © {currentYear} OliveWood Creations — {t('footer.rights')}
         </p>
       </div>
     </footer>
