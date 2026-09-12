@@ -11,6 +11,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import CookieBanner from './components/CookieBanner'
 import RequireAuth from './components/RequireAuth'
+import RequireAdmin from './components/RequireAdmin'
 import Home from './pages/Home'
 import Shop from './pages/Shop'
 import ProductDetail from './pages/ProductDetail'
@@ -19,6 +20,7 @@ import Checkout from './pages/Checkout'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Account from './pages/Account'
+import Admin from './pages/Admin'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import TerminiCondizioni from './pages/TerminiCondizioni'
 import DirittoRecesso from './pages/DirittoRecesso'
@@ -75,6 +77,18 @@ function App() {
                 <RequireAuth>
                   <Account />
                 </RequireAuth>
+              }
+            />
+
+            {/* Pannello admin: gestione prodotti (catalogo, scorte, foto).
+                Protetta: se non loggati o senza is_admin=true nel profilo,
+                si viene rimandati direttamente alla Home. */}
+            <Route
+              path="/admin"
+              element={
+                <RequireAdmin>
+                  <Admin />
+                </RequireAdmin>
               }
             />
 

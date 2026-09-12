@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '../context/CartContext'
+import { useAuth } from '../context/AuthContext'
 import LanguageSwitcher from './LanguageSwitcher'
 import AccountMenu from './AccountMenu'
 import logo from '../assets/logo.png'
@@ -23,6 +24,10 @@ function Navbar() {
   // (es. 2 taglieri + 1 vassoio = 3), preso in tempo reale dal CartContext.
   const { cart } = useCart()
   const cartItemsCount = cart.reduce((total, item) => total + item.quantity, 0)
+
+  // Link "Admin" visibile in menu solo per chi ha is_admin=true nel proprio
+  // profilo (vedi AuthContext e schema_admin.sql).
+  const { isAdmin } = useAuth()
 
   // Stato che controlla se il menu mobile (hamburger) è aperto o chiuso.
   const [menuOpen, setMenuOpen] = useState(false)
@@ -44,14 +49,16 @@ function Navbar() {
   return (
     <header className="navbar">
       <div className="navbar-inner">
-        {/* Blocco logo: il logo è circolare e contiene già il nome
-            "OliveWoodCreation" e il sottotitolo "Artisanal Craft • Handmade"
-            incorporati nell'immagine, quindi non serve ripetere il testo
-            accanto. Il badge "Made in Italy" resta comunque, per
-            comunicare fin da subito l'artigianalità italiana. */}
+        {/* Blocco logo: immagine circolare (contiene già un sottotitolo
+            decorativo "Artisanal Craft • Handmade", ma non sostituisce il
+            nome del brand per esteso) + nome "OliveWood Creations" scritto
+            in font serif accanto, alla stessa altezza visiva del logo.
+            Il badge "Made in Italy" resta comunque, per comunicare fin da
+            subito l'artigianalità italiana. */}
         <div className="navbar-brand">
           <NavLink to="/" className="navbar-logo">
-            <img className="navbar-logo-image" src={logo} alt="OliveWood Creation" />
+            <img className="navbar-logo-image" src={logo} alt="OliveWood Creations" />
+            <span className="navbar-logo-text">OliveWood Creations</span>
           </NavLink>
           <span className="eyebrow eyebrow-tag navbar-badge">{t('navbar.badge')}</span>
         </div>
@@ -87,6 +94,12 @@ function Navbar() {
               loggato, oppure il suo nome con un menu a tendina (Account/Esci)
               se lo è: vedi AccountMenu per la logica completa. */}
           <AccountMenu />
+          {/* Solo per gli admin: link diretto al pannello di gestione prodotti */}
+          {isAdmin && (
+            <NavLink to="/admin" className={linkClassName}>
+              {t('navbar.admin')}
+            </NavLink>
+          )}
           <NavLink to="/cart" className={linkClassName}>
             {t('navbar.cart')}
             {/* Il numero di articoli viene mostrato solo se maggiore di 0,

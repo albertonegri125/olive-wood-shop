@@ -4,6 +4,7 @@
     "home": "Home",
     "shop": "Shop",
     "account": "Account",
+    "admin": "Admin",
     "cart": "Cart",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
@@ -139,6 +140,44 @@
     "noName": "Name not set",
     "ordersTitle": "Your orders",
     "ordersEmpty": "You haven't placed any orders yet."
+  },
+  "admin": {
+    "title": "Admin panel",
+    "newProduct": "New product",
+    "loading": "Loading products...",
+    "error": "We couldn't load the products.",
+    "empty": "No products created yet.",
+    "confirmDelete": "Delete \"{{name}}\"? This cannot be undone.",
+    "deleteError": "We couldn't delete the product.",
+    "stockUpdateError": "We couldn't update the stock.",
+    "table": {
+      "image": "Image",
+      "name": "Name",
+      "price": "Price",
+      "stock": "Stock",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "saveStock": "Save"
+    },
+    "form": {
+      "newTitle": "New product",
+      "editTitle": "Edit product",
+      "name": "Name",
+      "slug": "Slug (URL)",
+      "description": "Description",
+      "price": "Price (€)",
+      "stock": "Stock available",
+      "image": "Image",
+      "imageHint": "Supported formats: JPG, PNG, WebP.",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "uploadError": "We couldn't upload the image.",
+      "saveError": "We couldn't save the product.",
+      "slugInUse": "This slug is already used by another product: choose a different one.",
+      "requiredFields": "Fill in all required fields with valid values."
+    }
   },
   "cookieBanner": {
     "message": "We only use technical cookies and browser-stored data (e.g. for the cart): no advertising tracking.",

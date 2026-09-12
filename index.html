@@ -12,18 +12,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OliveWood Creations</title>
 
-    <!-- Immagine di anteprima quando il sito viene condiviso su social/chat
-         (Facebook, LinkedIn, WhatsApp, ecc. leggono "og:image"; Twitter/X
-         legge "twitter:image", e richiede anche "twitter:card" per mostrare
-         l'immagine in grande). "/src/assets/logo.png" viene elaborato da
-         Vite come gli altri asset in src/ (stesso pattern già usato sopra
-         per lo script principale).
+    <!-- Titolo e descrizione mostrati nell'anteprima quando il sito viene
+         condiviso su social/chat, oltre a immagine di anteprima
+         (Facebook, LinkedIn, WhatsApp, ecc. leggono i tag "og:*"; Twitter/X
+         legge i tag "twitter:*", e richiede anche "twitter:card" per
+         mostrare l'immagine in grande). "/src/assets/logo.png" viene
+         elaborato da Vite come gli altri asset in src/ (stesso pattern già
+         usato sopra per lo script principale).
          NOTA: una volta online, per la massima compatibilità con i crawler
          social conviene sostituire questo percorso con un URL assoluto
          (es. https://tuodominio.it/...), perché lo standard Open Graph
          richiede un URL assoluto per og:image. -->
+    <meta property="og:title" content="OliveWood Creations" />
+    <meta
+      property="og:description"
+      content="Oggetti in legno d'ulivo fatti a mano, un pezzo alla volta."
+    />
     <meta property="og:image" content="/src/assets/logo.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="OliveWood Creations" />
     <meta name="twitter:image" content="/src/assets/logo.png" />
 
     <!-- Font Google usati in tutto il sito:

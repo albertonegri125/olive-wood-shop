@@ -39,13 +39,15 @@
   white-space: nowrap;
 }
 
-/* Il logo è solo un'immagine (il nome è già incorporato nel file): questo
-   link fa solo da contenitore cliccabile verso la Home, allineato al
-   centro verticale della navbar tramite "align-items: center" ereditato
-   da .navbar-inner/.navbar-brand. */
+/* Link cliccabile verso la Home: contiene l'immagine del logo e, accanto,
+   il nome del brand per esteso. "gap" crea il piccolo spazio tra i due,
+   "align-items: center" li allinea verticalmente l'uno rispetto all'altro
+   (oltre ad allineare l'intero blocco al centro della navbar, ereditato
+   da .navbar-inner/.navbar-brand). */
 .navbar-logo {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
 /* Logo circolare: dimensione fissa (stesso valore per altezza e larghezza,
@@ -59,6 +61,25 @@
   @media (min-width: 768px) {
     height: 48px;
     width: 48px;
+  }
+}
+
+/* Nome del brand accanto al logo, in font serif (stesso usato per i titoli
+   in tutto il sito) per dargli un tono più "da insegna artigianale" che da
+   semplice etichetta. "line-height: 1" e una dimensione vicina all'altezza
+   del logo lo fanno percepire come alla stessa "altezza visiva" dell'immagine.
+   Su mobile resta visibile ma un po' più piccolo, per lasciare spazio
+   all'hamburger e al badge accanto, senza mai nasconderlo. */
+.navbar-logo-text {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-text);
+  white-space: nowrap;
+
+  @media (min-width: 768px) {
+    font-size: 22px;
   }
 }
 

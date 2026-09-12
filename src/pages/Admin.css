@@ -1,0 +1,217 @@
+/* src/pages/Admin.css
+   Stile del pannello admin (/admin). Riusa i token di palette/font già
+   definiti in index.css e i campi form di Auth.css (importato in
+   Admin.jsx): qui restano solo gli stili specifici della lista prodotti
+   e del pannello di creazione/modifica. */
+
+.admin-page {
+  padding: 32px 20px 64px;
+}
+
+.admin-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-title {
+  margin: 0;
+}
+
+.admin-message {
+  color: var(--color-text-muted);
+}
+
+/* --- Bottoni secondario/pericoloso, usati solo in questo pannello ---
+   (il resto del sito usa solo .btn-primary: qui servono azioni meno
+   enfatizzate come "Modifica"/"Annulla" e una più delicata per "Elimina",
+   in ambra invece del classico rosso, coerente con il resto della palette
+   del sito, che evita toni allarmanti anche per gli errori). */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-card-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-accent-soft);
+}
+
+.btn-secondary:disabled {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: var(--color-amber-soft);
+  color: var(--color-amber);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  border-color: var(--color-amber);
+}
+
+.btn-secondary.btn-sm,
+.btn-danger.btn-sm {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+/* --- Pannello del form di creazione/modifica --- */
+.admin-form-panel {
+  max-width: 480px;
+  margin: 0 0 40px;
+  padding: 24px;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.admin-form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+
+  @media (min-width: 480px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.admin-textarea {
+  resize: vertical;
+  font-family: var(--font-sans);
+}
+
+.admin-form-hint {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.admin-form-preview {
+  display: block;
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-top: 10px;
+  border: 1px solid var(--color-border);
+}
+
+.admin-form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+/* --- Tabella prodotti ---
+   Su schermi stretti la tabella scorre orizzontalmente dentro il proprio
+   contenitore, invece di far scrollare l'intera pagina in orizzontale. */
+.admin-table-wrapper {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--color-border);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.admin-table-thumb-col {
+  width: 64px;
+}
+
+.admin-table-thumb {
+  display: block;
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+}
+
+.admin-table-thumb-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+}
+
+.admin-stock-editor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-stock-input {
+  width: 64px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-card-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+}
+
+.admin-stock-error {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--color-amber);
+}
+
+.admin-table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  white-space: nowrap;
+}

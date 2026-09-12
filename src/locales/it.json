@@ -4,6 +4,7 @@
     "home": "Home",
     "shop": "Shop",
     "account": "Account",
+    "admin": "Admin",
     "cart": "Carrello",
     "openMenu": "Apri il menu",
     "closeMenu": "Chiudi il menu",
@@ -139,6 +140,44 @@
     "noName": "Nome non impostato",
     "ordersTitle": "I tuoi ordini",
     "ordersEmpty": "Non hai ancora effettuato nessun ordine."
+  },
+  "admin": {
+    "title": "Pannello Admin",
+    "newProduct": "Nuovo prodotto",
+    "loading": "Caricamento prodotti...",
+    "error": "Non è stato possibile caricare i prodotti.",
+    "empty": "Nessun prodotto creato finora.",
+    "confirmDelete": "Eliminare \"{{name}}\"? L'operazione non può essere annullata.",
+    "deleteError": "Non è stato possibile eliminare il prodotto.",
+    "stockUpdateError": "Non è stato possibile aggiornare le scorte.",
+    "table": {
+      "image": "Immagine",
+      "name": "Nome",
+      "price": "Prezzo",
+      "stock": "Scorte",
+      "actions": "Azioni",
+      "edit": "Modifica",
+      "delete": "Elimina",
+      "saveStock": "Salva"
+    },
+    "form": {
+      "newTitle": "Nuovo prodotto",
+      "editTitle": "Modifica prodotto",
+      "name": "Nome",
+      "slug": "Slug (URL)",
+      "description": "Descrizione",
+      "price": "Prezzo (€)",
+      "stock": "Scorte disponibili",
+      "image": "Immagine",
+      "imageHint": "Formati supportati: JPG, PNG, WebP.",
+      "save": "Salva",
+      "saving": "Salvataggio in corso...",
+      "cancel": "Annulla",
+      "uploadError": "Non è stato possibile caricare l'immagine.",
+      "saveError": "Non è stato possibile salvare il prodotto.",
+      "slugInUse": "Questo slug è già usato da un altro prodotto: scegline uno diverso.",
+      "requiredFields": "Compila tutti i campi obbligatori con valori validi."
+    }
   },
   "cookieBanner": {
     "message": "Usiamo solo cookie tecnici e dati salvati nel tuo browser (es. per il carrello): nessun tracciamento pubblicitario.",
