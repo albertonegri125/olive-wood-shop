@@ -48,19 +48,33 @@ function Navbar() {
 
   return (
     <header className="navbar">
+      {/* Sottile barra "Made in Italy", separata dalla riga logo/nome (che
+          altrimenti diventava troppo affollata): striscia a tutta
+          larghezza, sfondo leggermente più scuro dello sfondo generale,
+          testo piccolo e discreto. Nascosta su mobile per non sottrarre
+          spazio verticale prezioso sugli schermi piccoli. */}
+      <div className="navbar-topbar">
+        <span className="navbar-topbar-text">{t('navbar.badge')}</span>
+      </div>
+
       <div className="navbar-inner">
         {/* Blocco logo: immagine circolare (contiene già un sottotitolo
             decorativo "Artisanal Craft • Handmade", ma non sostituisce il
-            nome del brand per esteso) + nome "OliveWood Creations" scritto
-            in font serif accanto, alla stessa altezza visiva del logo.
-            Il badge "Made in Italy" resta comunque, per comunicare fin da
-            subito l'artigianalità italiana. */}
+            nome del brand per esteso) + nome "OliveWood Creations" accanto,
+            alla stessa altezza visiva del logo. Il nome è diviso in due
+            span con pesi diversi ("OliveWood" grassetto, "Creations" più
+            leggero): il contrasto tra i due rende il logotipo meno piatto
+            e più memorabile, in un font (Cormorant Garamond, --font-brand)
+            e un colore (--color-brand-text, un marrone legno scuro) dedicati
+            solo a questo, per farlo risaltare rispetto al resto della navbar. */}
         <div className="navbar-brand">
           <NavLink to="/" className="navbar-logo">
             <img className="navbar-logo-image" src={logo} alt="OliveWood Creations" />
-            <span className="navbar-logo-text">OliveWood Creations</span>
+            <span className="navbar-logo-text">
+              <span className="navbar-logo-text-strong">OliveWood</span>{' '}
+              <span className="navbar-logo-text-light">Creations</span>
+            </span>
           </NavLink>
-          <span className="eyebrow eyebrow-tag navbar-badge">{t('navbar.badge')}</span>
         </div>
 
         {/* Bottone hamburger: visibile solo su mobile (nascosto via CSS su desktop).
@@ -89,6 +103,9 @@ function Navbar() {
           </NavLink>
           <NavLink to="/shop" className={linkClassName}>
             {t('navbar.shop')}
+          </NavLink>
+          <NavLink to="/chi-siamo" className={linkClassName}>
+            {t('navbar.about')}
           </NavLink>
           {/* "Account" diventa un normale link a /login se l'utente non è
               loggato, oppure il suo nome con un menu a tendina (Account/Esci)

@@ -173,6 +173,27 @@ export function IconSketchOil(props) {
   )
 }
 
+// Stella piena: usata per il punteggio (rating) delle recensioni clienti.
+// A differenza delle altre icone qui il riempimento è "currentColor" (non
+// solo il contorno): acceso/spento delle singole stelle è deciso dal CSS
+// del componente che la usa (vedi StarRating.jsx), non da questa icona.
+export function IconStar(props) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      fill="currentColor"
+      stroke="none"
+      aria-hidden="true"
+      focusable="false"
+      {...props}
+    >
+      <path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.1 6.6L12 17.6l-5.8 3 1.1-6.6-4.8-4.6 6.6-.9z" />
+    </svg>
+  )
+}
+
 // Cestino: usata per il bottone "rimuovi" nella pagina Carrello
 export function IconTrash(props) {
   return (

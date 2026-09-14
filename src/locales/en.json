@@ -5,6 +5,7 @@
     "shop": "Shop",
     "account": "Account",
     "admin": "Admin",
+    "about": "About",
     "cart": "Cart",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
@@ -44,6 +45,24 @@
     "shipping": "Insured shipping",
     "payment": "Secure payment"
   },
+  "about": {
+    "title": "About us",
+    "photoAlt": "Alberto at work in his workshop",
+    "paragraph1": "My name is Alberto and I've been working with wood since I was thirteen, spending afternoons in my grandfather's workshop here in Lombardy, watching him shape a piece of wood with nothing more than a chisel and a lot of patience. I never really stopped.",
+    "paragraph2": "I chose to work with olive wood for its unrepeatable grain — no two boards are ever alike — and because every piece tells a different story, just like the hands that shape it. Every board that leaves my workshop is shaped, sanded and finished entirely by hand, with no CNC machines: just traditional woodworking tools, food-safe oil, and the time each piece needs.",
+    "paragraph3": "I don't produce in series: I'd rather make fewer pieces and make them well, knowing exactly where each one comes from. If you have questions about a piece, or want something custom, feel free to write to me — I always answer myself.",
+    "signature": "— Alberto, from my workshop in Lombardy"
+  },
+  "testimonials": {
+    "title": "What people say about us"
+  },
+  "categories": {
+    "kitchen": "Kitchen",
+    "home": "Home",
+    "accessories": "Accessories",
+    "wellness": "Wellness",
+    "other": "Other"
+  },
   "featured": {
     "title": "Featured products",
     "loading": "Loading products...",
@@ -54,11 +73,14 @@
     "title": "Shop",
     "loading": "Loading products...",
     "error": "We couldn't load the products. Please try again later.",
-    "empty": "No products available at the moment."
+    "empty": "No products available at the moment.",
+    "allCategories": "All",
+    "categoriesLabel": "Filter by category"
   },
   "product": {
     "outOfStock": "Sold out",
     "lastOne": "Last one",
+    "lowStock": "Only {{count}} left",
     "addToCart": "Add to cart",
     "added": "Added ✓"
   },
@@ -81,7 +103,13 @@
     "unavailable": "This product is currently unavailable.",
     "zoomHint": "Click to zoom",
     "closeZoom": "Close zoomed image",
-    "personalNote": "Every piece is different — the grain you see in the photo is unique to this exact board."
+    "galleryLabel": "More photos of this product",
+    "personalNote": "Every piece is different — the grain you see in the photo is unique to this exact board.",
+    "reviews": {
+      "title": "Reviews",
+      "empty": "Be the first to review this piece.",
+      "emptyLink": "Get in touch"
+    }
   },
   "footer": {
     "badge": "Handcrafted in Italy",
@@ -165,11 +193,18 @@
       "editTitle": "Edit product",
       "name": "Name",
       "slug": "Slug (URL)",
+      "category": "Category",
+      "categoryPlaceholder": "Select a category",
       "description": "Description",
       "price": "Price (€)",
       "stock": "Stock available",
-      "image": "Image",
-      "imageHint": "Supported formats: JPG, PNG, WebP.",
+      "images": "Photos",
+      "imagesHint": "You can upload more than one: they're automatically resized. The first one is the main photo, shown in the shop.",
+      "imagesLoading": "Loading photos...",
+      "imageMain": "Main",
+      "imageMoveUp": "Move up",
+      "imageMoveDown": "Move down",
+      "imageRemove": "Remove",
       "save": "Save",
       "saving": "Saving...",
       "cancel": "Cancel",

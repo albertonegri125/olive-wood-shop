@@ -1,0 +1,55 @@
+/* src/pages/About.css
+   Pagina "Chi siamo": colonna di lettura centrata, come le pagine legali,
+   ma con una foto grande in apertura (stesso trattamento — angoli
+   arrotondati, ombra, leggera rotazione imperfetta — della foto hero
+   della Home), per dare fin da subito un volto al racconto. */
+
+.about-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.about-title {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.about-photo-wrapper {
+  margin-bottom: 28px;
+}
+
+.about-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+  transform: rotate(-1deg);
+
+  @media (min-width: 600px) {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+.about-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.about-paragraph {
+  margin: 0;
+  color: var(--color-text);
+  line-height: 1.7;
+}
+
+.about-signature {
+  margin: 28px 0 0;
+  font-family: var(--font-hand);
+  font-size: 24px;
+  color: var(--color-text-muted);
+  text-align: right;
+  transform: rotate(-0.6deg);
+}

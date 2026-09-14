@@ -41,6 +41,21 @@
   line-height: 1.6;
 }
 
+/* Link "Chi siamo": stesso trattamento (sottolineato, colore tenue) dei
+   link social/legali del footer, per coerenza visiva. */
+.footer-about-link {
+  align-self: flex-start;
+  margin-top: 2px;
+  color: var(--color-accent);
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer-about-link:hover {
+  color: var(--color-accent-hover);
+}
+
 .footer-column-title {
   text-transform: uppercase;
   letter-spacing: 0.08em;

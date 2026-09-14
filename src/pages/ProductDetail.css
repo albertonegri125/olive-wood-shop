@@ -78,6 +78,48 @@
   font-weight: 600;
 }
 
+/* Striscia di miniature (solo se il prodotto ha più di una foto): riga
+   orizzontale sotto l'immagine principale, scorrevole se le foto non
+   entrano tutte (invece di andare a capo e allungare la pagina). */
+.product-detail-thumbs {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.product-detail-thumb {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  overflow: hidden;
+  background: none;
+  cursor: pointer;
+  opacity: 0.65;
+  transition: opacity 0.2s ease, border-color 0.2s ease;
+}
+
+.product-detail-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.product-detail-thumb:hover {
+  opacity: 1;
+}
+
+/* Miniatura corrispondente alla foto attualmente mostrata come principale */
+.product-detail-thumb-active {
+  opacity: 1;
+  border-color: var(--color-accent);
+}
+
 /* Overlay a schermo intero della lightbox */
 .product-detail-lightbox {
   position: fixed;
@@ -126,6 +168,26 @@
    arrivano da .eyebrow/.eyebrow-tag in index.css: qui solo l'allineamento. */
 .trust-chip {
   align-self: flex-start;
+}
+
+/* Tag categoria (breadcrumb): testo piccolo cliccabile sopra il titolo,
+   coerente con il resto del sito dove le etichette sono testo semplice
+   (niente pillole/badge con sfondo pieno). */
+.product-detail-category-link {
+  align-self: flex-start;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.product-detail-category-link:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .product-detail-name {
@@ -191,6 +253,36 @@
   font-size: 14px;
 }
 
+/* Scorte basse (1 o 2 pezzi): diventa un'etichetta ambra pulsante, come il
+   badge equivalente in ProductCard — un dato reale, comunicato con
+   sicurezza invece che nascosto in un testo grigio come le altre volte. */
+.product-detail-stock-low {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--color-amber);
+  color: #fff;
+  font-weight: 700;
+  animation: low-stock-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes low-stock-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-detail-stock-low {
+    animation: none;
+  }
+}
+
 /* Colori, padding e stato disabilitato del bottone arrivano già dalla
    classe globale .btn-primary (definita in index.css): qui aggiungiamo
    solo il posizionamento specifico di questa pagina. */
@@ -201,6 +293,83 @@
   @media (min-width: 480px) {
     align-self: flex-start;
   }
+}
+
+/* --- Sezione recensioni clienti (riprova sociale) --- */
+.product-detail-reviews {
+  max-width: 1000px;
+  margin: 48px auto 0;
+  padding: 32px 20px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.product-detail-reviews-title {
+  margin: 0 0 20px;
+}
+
+/* Invito a lasciare la prima recensione, quando il prodotto non ne ha
+   ancora: testo discreto, non un vero e proprio messaggio d'errore. */
+.product-detail-reviews-empty {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.product-detail-reviews-empty-link {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.product-detail-reviews-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+
+  @media (min-width: 700px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Singola recensione: niente card bianca con ombra come le altre card del
+   sito, solo un bordo sottile — coerente con il tono "diario di bottega",
+   non "sito e-commerce generico", del resto della pagina. */
+.review-card {
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.review-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.review-card-name {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.review-card-comment {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.review-card-photo {
+  width: 100%;
+  max-width: 160px;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-top: 4px;
 }
 
 /* --- Sezione "Come nasce questo pezzo" (versione compatta del processo) --- */

@@ -117,14 +117,57 @@
   color: var(--color-text-muted);
 }
 
-.admin-form-preview {
-  display: block;
-  width: 96px;
-  height: 96px;
-  object-fit: cover;
-  border-radius: 6px;
-  margin-top: 10px;
+/* --- Galleria foto del form (più immagini per prodotto) ---
+   Ogni riga: miniatura + etichetta (principale/#2/#3...) + frecce su/giù
+   per riordinare (niente drag-and-drop: più semplice, funziona anche a
+   tocco su mobile senza librerie aggiuntive) + bottone rimuovi. */
+.admin-image-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-image-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
   border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+.admin-image-item-preview {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.admin-image-item-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.admin-image-item-index {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.admin-image-item-buttons {
+  display: flex;
+  gap: 6px;
 }
 
 .admin-form-actions {

@@ -21,22 +21,39 @@
   padding: 12px 20px;
 }
 
-/* Blocco logo: nome del negozio + badge "Made in Italy" accanto, sulla
-   stessa riga (vanno a capo su schermi molto stretti grazie a flex-wrap). */
-.navbar-brand {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  z-index: 101; /* resta visibile e cliccabile anche sopra l'overlay del menu mobile */
+/* Sottile barra superiore con il badge "Made in Italy", separata dalla
+   riga logo/nome: striscia a tutta larghezza con uno sfondo leggermente
+   più scuro di --color-bg (riusiamo --color-border, già nella palette,
+   invece di introdurre un nuovo colore), per distinguerla appena dal
+   resto della navbar senza pesare visivamente. */
+.navbar-topbar {
+  background: var(--color-border);
+  padding: 5px 20px;
+  text-align: center;
 }
 
-/* Etichetta "Made in Italy": testo semplice con un trattino decorativo
-   (vedi .eyebrow-tag in index.css), niente più badge/pillola con sfondo
-   pieno — deve leggersi come un'etichetta scritta a mano, non un tag da app. */
-.navbar-badge {
-  font-size: 10px;
-  white-space: nowrap;
+.navbar-topbar-text {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-text-muted);
+}
+
+/* Su mobile la nascondiamo: lo spazio verticale è più prezioso che su
+   desktop, e il badge non è un'informazione indispensabile alla navigazione. */
+@media (max-width: 767px) {
+  .navbar-topbar {
+    display: none;
+  }
+}
+
+/* Blocco logo: solo il link verso la Home (logo + nome), ora che il badge
+   "Made in Italy" è stato spostato nella sua barra dedicata qui sopra. */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  z-index: 101; /* resta visibile e cliccabile anche sopra l'overlay del menu mobile */
 }
 
 /* Link cliccabile verso la Home: contiene l'immagine del logo e, accanto,
@@ -48,6 +65,12 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  /* È un <NavLink> (quindi un <a>): resettiamo esplicitamente lo stile
+     "da link" che il browser applica di default (sottolineatura, colore
+     blu), altrimenti il nome del brand accanto al logo rischia di leggersi
+     come un link di testo qualunque invece che come un logotipo. */
+  text-decoration: none;
+  color: inherit;
 }
 
 /* Logo circolare: dimensione fissa (stesso valore per altezza e larghezza,
@@ -64,23 +87,48 @@
   }
 }
 
-/* Nome del brand accanto al logo, in font serif (stesso usato per i titoli
-   in tutto il sito) per dargli un tono più "da insegna artigianale" che da
-   semplice etichetta. "line-height: 1" e una dimensione vicina all'altezza
-   del logo lo fanno percepire come alla stessa "altezza visiva" dell'immagine.
-   Su mobile resta visibile ma un po' più piccolo, per lasciare spazio
-   all'hamburger e al badge accanto, senza mai nasconderlo. */
+/* Nome del brand accanto al logo: font dedicato (Cormorant Garamond,
+   --font-brand) più alto/elegante di quello usato per i titoli del sito,
+   colore marrone legno scuro (--color-brand-text) invece del testo
+   standard — così risalta chiaramente come logotipo invece di confondersi
+   con il resto della navbar. Resta comunque un link (verso la Home): niente
+   sottolineatura né l'aspetto "cliccabile" di un link di testo qualsiasi.
+   "line-height: 1" e una dimensione vicina all'altezza del logo lo fanno
+   percepire alla stessa "altezza visiva" dell'immagine accanto. Su mobile
+   resta visibile ma un po' più piccolo, per lasciare spazio all'hamburger,
+   senza mai nasconderlo. */
 .navbar-logo-text {
-  font-family: var(--font-serif);
-  font-size: 18px;
-  font-weight: 700;
+  font-family: var(--font-brand);
+  font-size: 21px;
+  font-weight: 600;
   line-height: 1;
-  color: var(--color-text);
+  letter-spacing: 0.3px;
+  color: var(--color-brand-text);
+  text-decoration: none;
   white-space: nowrap;
 
   @media (min-width: 768px) {
-    font-size: 22px;
+    font-size: 27px;
   }
+}
+
+/* Le due parole del nome hanno pesi diversi: "OliveWood" più marcato,
+   "Creations" più leggero. Il contrasto tra i due rende il logotipo meno
+   piatto e più memorabile di un testo tutto dello stesso peso. */
+.navbar-logo-text-strong {
+  font-weight: 700;
+}
+
+.navbar-logo-text-light {
+  font-weight: 400;
+}
+
+/* Nessun effetto "link cliccabile" vistoso al passaggio del mouse: resta
+   cliccabile verso la Home, ma senza sottolineatura che lo farebbe
+   somigliare a un link di testo qualsiasi (il colore non cambia: resta
+   sempre lo stesso marrone del logotipo, a riposo come in hover). */
+.navbar-logo:hover .navbar-logo-text {
+  text-decoration: none;
 }
 
 /* --- Pulsante hamburger (mobile) --- */

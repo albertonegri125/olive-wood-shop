@@ -15,6 +15,42 @@
   text-align: left;
 }
 
+/* Tab categorie: riga orizzontale sempre scrollabile (mai a capo), così
+   funziona identica su mobile e desktop qualunque sia il numero di
+   categorie. Bordo inferiore continuo a fare da "binario" per le tab. */
+.shop-categories {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  margin: 20px 0 28px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.shop-category-tab {
+  flex-shrink: 0;
+  padding: 8px 14px 10px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.shop-category-tab:hover {
+  color: var(--color-text);
+}
+
+/* Categoria selezionata: colore ed etichetta della tab in accento verde,
+   con un piccolo bordo inferiore a evidenziarla ulteriormente. */
+.shop-category-tab-active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
 /* Griglia mobile-first: 1 colonna su mobile, 2 colonne da tablet in su,
    3 colonne su schermi da desktop in su. */
 .shop-grid {

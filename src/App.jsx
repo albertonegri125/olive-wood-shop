@@ -21,6 +21,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Account from './pages/Account'
 import Admin from './pages/Admin'
+import About from './pages/About'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import TerminiCondizioni from './pages/TerminiCondizioni'
 import DirittoRecesso from './pages/DirittoRecesso'
@@ -91,6 +92,11 @@ function App() {
                 </RequireAdmin>
               }
             />
+
+            {/* Pagina "Chi siamo": due percorsi equivalenti verso la stessa
+                pagina, così funzionano sia link in italiano sia in inglese. */}
+            <Route path="/chi-siamo" element={<About />} />
+            <Route path="/about" element={<About />} />
 
             {/* Pagine legali obbligatorie per un e-commerce europeo */}
             <Route path="/privacy" element={<PrivacyPolicy />} />

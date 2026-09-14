@@ -1,0 +1,19 @@
+/* src/components/StarRating.css
+   Stelline di valutazione: colore ambra per quelle "accese" (stesso tono
+   usato per i badge di scarsità e le altre note di fiducia del sito),
+   grigio/bordo tenue per quelle spente. */
+
+.star-rating {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.star-rating-icon {
+  width: 15px;
+  height: 15px;
+  color: var(--color-border);
+}
+
+.star-rating-icon-filled {
+  color: var(--color-amber);
+}

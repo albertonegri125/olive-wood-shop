@@ -9,14 +9,21 @@
 //   "Salva" per riga), per le modifiche rapide più frequenti.
 // - "Modifica" ed "Elimina" agiscono sulla riga corrispondente.
 // - "Nuovo prodotto" apre lo stesso form usato per "Modifica" (vuoto).
-// - Le immagini vengono caricate su Supabase Storage, nel bucket pubblico
-//   "product-images" (vedi schema_admin.sql per crearlo e per le policy
-//   di Row Level Security necessarie): dopo l'upload salviamo l'URL
-//   pubblico nel campo "image_url" del prodotto.
+// - Il form permette di caricare PIÙ foto per prodotto (galleria): ogni
+//   immagine viene ridimensionata lato client (vedi imageResize.js, max
+//   1600px sul lato lungo, JPEG qualità 85%) prima di essere caricata su
+//   Supabase Storage, nel bucket pubblico "product-images" (vedi
+//   schema_admin.sql per crearlo e le sue policy). L'elenco delle foto è
+//   riordinabile con le frecce su/giù: la prima è quella "principale".
+//   Le righe in "product_images" (vedi schema_product_images.sql) tengono
+//   traccia dell'ordine; il campo "image_url" del prodotto resta sempre
+//   allineato alla foto principale, per compatibilità con il codice che
+//   mostra una sola immagine (es. ProductCard.jsx e la miniatura qui sotto).
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabaseClient'
+import { resizeImageForUpload } from '../lib/imageResize'
 // Riusiamo gli stili dei campi di Auth.css (.auth-field, .auth-label,
 // .auth-input, .auth-error): stesso aspetto dei form di Login/Registrazione,
 // invece di ridefinire da capo gli stessi input anche qui.
@@ -57,6 +64,7 @@ const EMPTY_FORM = {
   description: '',
   price: '',
   stock: '',
+  categoryId: '',
 }
 
 function Admin() {
@@ -89,6 +97,22 @@ function Admin() {
   // un'eliminazione), non solo al primo caricamento.
   useEffect(() => {
     void fetchProducts()
+  }, [])
+
+  // --- Categorie (per la select nel form prodotto) ---
+  const [categories, setCategories] = useState([])
+
+  useEffect(() => {
+    async function fetchCategories() {
+      const { data, error } = await supabase.from('categories').select('*').order('created_at')
+      if (error) {
+        console.error(error)
+      } else {
+        setCategories(data ?? [])
+      }
+    }
+
+    fetchCategories()
   }, [])
 
   // --- Modifica rapida delle scorte dalla lista ------------------------
@@ -145,24 +169,45 @@ function Admin() {
   // rigeneriamo più automaticamente digitando il nome, per non sovrascrivere
   // una scelta fatta apposta dall'admin.
   const [slugEditedManually, setSlugEditedManually] = useState(false)
-  const [imageFile, setImageFile] = useState(null)
-  // Anteprima dell'immagine: l'URL già salvato (in modifica) oppure
-  // un object URL temporaneo generato dal file appena scelto.
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null)
+  // Elenco delle foto del prodotto, nell'ordine mostrato nell'editor (la
+  // prima è la "principale"). Ogni voce è:
+  //   { key, file, previewUrl }
+  // "file" è presente solo per le foto appena scelte dall'admin (non
+  // ancora caricate): "previewUrl" in quel caso è un object URL locale,
+  // altrimenti è l'URL pubblico già salvato su Storage.
+  const [images, setImages] = useState([])
+  // URL delle foto collegate al prodotto PRIMA di aprire il form: serve
+  // solo per capire, al salvataggio, quali file non servono più e vanno
+  // ripuliti dallo Storage (vedi handleSubmit).
+  const [originalImageUrls, setOriginalImageUrls] = useState([])
+  // true mentre carichiamo le foto esistenti di un prodotto in modifica:
+  // l'editor delle immagini resta disabilitato in questa finestra, per
+  // evitare che un'aggiunta/rimozione fatta troppo in fretta venga persa
+  // quando arriva la risposta di Supabase.
+  const [loadingFormImages, setLoadingFormImages] = useState(false)
   const [saving, setSaving] = useState(false)
   const [formErrorKey, setFormErrorKey] = useState(null)
+
+  // Contatore per generare chiavi React uniche per le foto appena
+  // aggiunte (non hanno ancora un id di riga in "product_images").
+  const nextImageKeyRef = useRef(0)
+  function makeImageKey() {
+    nextImageKeyRef.current += 1
+    return `new-${nextImageKeyRef.current}`
+  }
 
   function openNewForm() {
     setEditingProduct(null)
     setForm(EMPTY_FORM)
     setSlugEditedManually(false)
-    setImageFile(null)
-    setImagePreviewUrl(null)
+    setImages([])
+    setOriginalImageUrls([])
+    setLoadingFormImages(false)
     setFormErrorKey(null)
     setShowForm(true)
   }
 
-  function openEditForm(product) {
+  async function openEditForm(product) {
     setEditingProduct(product)
     setForm({
       name: product.name ?? '',
@@ -170,23 +215,60 @@ function Admin() {
       description: product.description ?? '',
       price: String(product.price ?? ''),
       stock: String(product.stock ?? ''),
+      // "" se il prodotto non ha ancora una categoria (es. un prodotto già
+      // esistente creato prima di questa funzionalità): la select del form
+      // resta senza scelta finché l'admin non ne seleziona una.
+      categoryId: product.category_id ?? '',
     })
     // In modifica consideriamo lo slug già "manuale": ritoccare il nome per
     // correggere un refuso non deve cambiare di nascosto l'URL del prodotto
     // (che potrebbe già essere stato condiviso).
     setSlugEditedManually(true)
-    setImageFile(null)
-    setImagePreviewUrl(product.image_url ?? null)
     setFormErrorKey(null)
+    setImages([])
+    setOriginalImageUrls([])
     setShowForm(true)
+    setLoadingFormImages(true)
+
+    // Carichiamo le foto già presenti nella galleria di questo prodotto.
+    const { data, error } = await supabase
+      .from('product_images')
+      .select('*')
+      .eq('product_id', product.id)
+      .order('display_order')
+
+    if (error) {
+      console.error(error)
+    }
+
+    const rows = data ?? []
+
+    if (rows.length > 0) {
+      setImages(rows.map((row) => ({ key: row.id, file: null, previewUrl: row.image_url })))
+      setOriginalImageUrls(rows.map((row) => row.image_url))
+    } else if (product.image_url) {
+      // Prodotto "storico": nessuna riga in product_images, solo il campo
+      // image_url. La mostriamo comunque come un'unica foto nell'editor,
+      // gestibile come tutte le altre (rimuovibile, o affiancabile ad
+      // altre foto aggiunte adesso).
+      setImages([{ key: 'legacy-main', file: null, previewUrl: product.image_url }])
+      setOriginalImageUrls([product.image_url])
+    }
+
+    setLoadingFormImages(false)
   }
 
   function closeForm() {
     setShowForm(false)
     setEditingProduct(null)
     setForm(EMPTY_FORM)
-    setImageFile(null)
-    setImagePreviewUrl(null)
+    // Le foto appena scelte (non ancora caricate) hanno un object URL
+    // locale: lo rilasciamo per non lasciare riferimenti inutili in memoria.
+    images.forEach((img) => {
+      if (img.file) URL.revokeObjectURL(img.previewUrl)
+    })
+    setImages([])
+    setOriginalImageUrls([])
     setFormErrorKey(null)
   }
 
@@ -210,12 +292,44 @@ function Admin() {
     return (event) => setForm((current) => ({ ...current, [field]: event.target.value }))
   }
 
-  function handleImageChange(event) {
-    const file = event.target.files?.[0] ?? null
-    setImageFile(file)
-    if (file) {
-      setImagePreviewUrl(URL.createObjectURL(file))
+  // Aggiunge alla galleria le foto appena scelte con il selettore file
+  // (l'attributo "multiple" permette di sceglierne più di una in un colpo
+  // solo, ma l'admin può anche ripetere l'operazione più volte: ogni volta
+  // le nuove foto si aggiungono in fondo all'elenco esistente).
+  function handleAddImages(event) {
+    const files = Array.from(event.target.files ?? [])
+    if (files.length > 0) {
+      setImages((current) => [
+        ...current,
+        ...files.map((file) => ({ key: makeImageKey(), file, previewUrl: URL.createObjectURL(file) })),
+      ])
     }
+    // Azzeriamo il valore dell'input: senza questo, scegliere di nuovo lo
+    // stesso file non riattiverebbe l'evento "change".
+    event.target.value = ''
+  }
+
+  function handleRemoveImage(key) {
+    setImages((current) => {
+      const target = current.find((img) => img.key === key)
+      if (target?.file) URL.revokeObjectURL(target.previewUrl)
+      return current.filter((img) => img.key !== key)
+    })
+  }
+
+  // Sposta una foto di una posizione avanti (direction: 1) o indietro
+  // (direction: -1) nell'elenco: è così che l'admin riordina la galleria
+  // e sceglie quale foto diventa la "principale" (la prima).
+  function handleMoveImage(key, direction) {
+    setImages((current) => {
+      const index = current.findIndex((img) => img.key === key)
+      const targetIndex = index + direction
+      if (index === -1 || targetIndex < 0 || targetIndex >= current.length) return current
+
+      const next = [...current]
+      ;[next[index], next[targetIndex]] = [next[targetIndex], next[index]]
+      return next
+    })
   }
 
   async function handleSubmit(event) {
@@ -227,6 +341,7 @@ function Admin() {
     if (
       !form.name.trim() ||
       !form.slug.trim() ||
+      !form.categoryId ||
       form.price === '' ||
       Number.isNaN(priceNumber) ||
       priceNumber < 0 ||
@@ -241,31 +356,45 @@ function Admin() {
     setSaving(true)
     setFormErrorKey(null)
 
-    // URL immagine finale: quella già salvata sul prodotto (se in modifica
-    // e non è stata scelta una nuova foto), altrimenti quella ottenuta
-    // dall'upload appena sotto.
-    let imageUrl = editingProduct?.image_url ?? null
+    // 1. Carichiamo (ridimensionando lato client, vedi imageResize.js) le
+    //    foto appena scelte, mantenendo l'ordine deciso nell'editor. Le
+    //    foto già esistenti (senza "file") restano semplicemente il loro
+    //    URL già salvato.
+    let uploadedImages
+    try {
+      uploadedImages = await Promise.all(
+        images.map(async (img, index) => {
+          if (!img.file) {
+            return { url: img.previewUrl }
+          }
 
-    if (imageFile) {
-      const fileExt = imageFile.name.split('.').pop()
-      const filePath = `${form.slug}-${Date.now()}.${fileExt}`
+          const resizedBlob = await resizeImageForUpload(img.file)
+          const filePath = `${form.slug}-${Date.now()}-${index}.jpg`
 
-      const { error: uploadError } = await supabase.storage
-        .from('product-images')
-        .upload(filePath, imageFile)
+          const { error: uploadError } = await supabase.storage
+            .from('product-images')
+            .upload(filePath, resizedBlob, { contentType: 'image/jpeg' })
 
-      if (uploadError) {
-        console.error(uploadError)
-        setFormErrorKey('admin.form.uploadError')
-        setSaving(false)
-        return
-      }
+          if (uploadError) throw uploadError
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from('product-images').getPublicUrl(filePath)
-      imageUrl = publicUrl
+          const {
+            data: { publicUrl },
+          } = supabase.storage.from('product-images').getPublicUrl(filePath)
+
+          return { url: publicUrl }
+        })
+      )
+    } catch (uploadError) {
+      console.error(uploadError)
+      setFormErrorKey('admin.form.uploadError')
+      setSaving(false)
+      return
     }
+
+    // "image_url" sul prodotto resta allineato alla prima foto della
+    // galleria (o null se non ce n'è nessuna): è il campo che legge il
+    // resto del sito (es. ProductCard) quando mostra una sola immagine.
+    const mainImageUrl = uploadedImages[0]?.url ?? null
 
     const payload = {
       name: form.name.trim(),
@@ -273,12 +402,13 @@ function Admin() {
       description: form.description.trim() || null,
       price: priceNumber,
       stock: stockNumber,
-      image_url: imageUrl,
+      image_url: mainImageUrl,
+      category_id: form.categoryId,
     }
 
-    const { error } = editingProduct
-      ? await supabase.from('products').update(payload).eq('id', editingProduct.id)
-      : await supabase.from('products').insert(payload)
+    const { data: savedProduct, error } = editingProduct
+      ? await supabase.from('products').update(payload).eq('id', editingProduct.id).select().single()
+      : await supabase.from('products').insert(payload).select().single()
 
     if (error) {
       console.error(error)
@@ -288,6 +418,44 @@ function Admin() {
       setFormErrorKey(error.code === '23505' ? 'admin.form.slugInUse' : 'admin.form.saveError')
       setSaving(false)
       return
+    }
+
+    // 2. Sincronizza "product_images" con l'elenco finale di foto. Con
+    //    poche foto per prodotto, sostituire tutte le righe esistenti con
+    //    quelle nuove è più semplice e robusto di calcolare un diff fine
+    //    (cosa è stata aggiunta/spostata/rimossa), e non lascia ambiguità
+    //    sull'ordine.
+    //    ECCEZIONE: se alla fine resta al massimo UNA foto, non serve
+    //    nessuna riga in product_images — "image_url" sul prodotto la
+    //    rappresenta già da sola (stesso stato di un prodotto "storico"
+    //    con una sola foto, per piena retrocompatibilità).
+    await supabase.from('product_images').delete().eq('product_id', savedProduct.id)
+
+    if (uploadedImages.length > 1) {
+      const rows = uploadedImages.map((img, index) => ({
+        product_id: savedProduct.id,
+        image_url: img.url,
+        display_order: index,
+      }))
+
+      const { error: imagesError } = await supabase.from('product_images').insert(rows)
+      if (imagesError) {
+        console.error(imagesError)
+      }
+    }
+
+    // 3. Ripulisce dallo Storage le foto non più usate da questo prodotto
+    //    (rimosse nell'editor, o sostituite). Best-effort: se fallisce non
+    //    blocchiamo il salvataggio, già andato a buon fine.
+    const finalUrls = uploadedImages.map((img) => img.url)
+    const removedUrls = originalImageUrls.filter((url) => !finalUrls.includes(url))
+    const removedPaths = removedUrls.map(getStoragePathFromPublicUrl).filter(Boolean)
+
+    if (removedPaths.length > 0) {
+      const { error: removeError } = await supabase.storage.from('product-images').remove(removedPaths)
+      if (removeError) {
+        console.error(removeError)
+      }
     }
 
     setSaving(false)
@@ -300,6 +468,15 @@ function Admin() {
     const confirmed = window.confirm(t('admin.confirmDelete', { name: product.name }))
     if (!confirmed) return
 
+    // Recuperiamo prima le eventuali foto aggiuntive della galleria: le
+    // relative righe in "product_images" vengono eliminate automaticamente
+    // dal database (foreign key "on delete cascade"), ma i file su Storage
+    // no, quindi ci serve il loro URL PRIMA di cancellare il prodotto.
+    const { data: extraImages } = await supabase
+      .from('product_images')
+      .select('image_url')
+      .eq('product_id', product.id)
+
     const { error } = await supabase.from('products').delete().eq('id', product.id)
 
     if (error) {
@@ -308,15 +485,19 @@ function Admin() {
       return
     }
 
-    // Proviamo a eliminare anche il file dell'immagine dal bucket, per non
+    // Proviamo a eliminare anche i file delle immagini dal bucket, per non
     // lasciare foto "orfane" nello Storage. Se fallisce (es. immagine già
     // rimossa, o permessi) non blocchiamo comunque l'eliminazione del
     // prodotto, già andata a buon fine: registriamo solo l'errore.
-    const storagePath = getStoragePathFromPublicUrl(product.image_url)
-    if (storagePath) {
+    const allImageUrls = [product.image_url, ...(extraImages ?? []).map((row) => row.image_url)]
+    // "new Set" toglie i duplicati: la foto principale spesso coincide con
+    // la prima riga di product_images.
+    const storagePaths = [...new Set(allImageUrls.map(getStoragePathFromPublicUrl).filter(Boolean))]
+
+    if (storagePaths.length > 0) {
       const { error: storageError } = await supabase.storage
         .from('product-images')
-        .remove([storagePath])
+        .remove(storagePaths)
       if (storageError) {
         console.error(storageError)
       }
@@ -367,6 +548,28 @@ function Admin() {
             </div>
 
             <div className="auth-field">
+              <label className="auth-label" htmlFor="admin-category">
+                {t('admin.form.category')}
+              </label>
+              <select
+                id="admin-category"
+                className="auth-input"
+                value={form.categoryId}
+                onChange={handleFieldChange('categoryId')}
+                required
+              >
+                <option value="" disabled>
+                  {t('admin.form.categoryPlaceholder')}
+                </option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {t(`categories.${category.slug}`, { defaultValue: category.name })}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="auth-field">
               <label className="auth-label" htmlFor="admin-description">
                 {t('admin.form.description')}
               </label>
@@ -414,20 +617,71 @@ function Admin() {
             </div>
 
             <div className="auth-field">
-              <label className="auth-label" htmlFor="admin-image">
-                {t('admin.form.image')}
+              <label className="auth-label" htmlFor="admin-images">
+                {t('admin.form.images')}
               </label>
-              <input id="admin-image" type="file" accept="image/*" onChange={handleImageChange} />
-              <p className="admin-form-hint">{t('admin.form.imageHint')}</p>
-              {imagePreviewUrl && (
-                <img className="admin-form-preview" src={imagePreviewUrl} alt="" />
+              <input
+                id="admin-images"
+                type="file"
+                accept="image/*"
+                multiple
+                disabled={loadingFormImages}
+                onChange={handleAddImages}
+              />
+              <p className="admin-form-hint">{t('admin.form.imagesHint')}</p>
+
+              {loadingFormImages && (
+                <p className="admin-form-hint">{t('admin.form.imagesLoading')}</p>
+              )}
+
+              {images.length > 0 && (
+                <ul className="admin-image-list">
+                  {images.map((img, index) => (
+                    <li className="admin-image-item" key={img.key}>
+                      <img className="admin-image-item-preview" src={img.previewUrl} alt="" />
+                      <div className="admin-image-item-actions">
+                        <span className="admin-image-item-index">
+                          {index === 0 ? t('admin.form.imageMain') : `#${index + 1}`}
+                        </span>
+                        <div className="admin-image-item-buttons">
+                          <button
+                            type="button"
+                            className="btn-secondary btn-sm"
+                            onClick={() => handleMoveImage(img.key, -1)}
+                            disabled={loadingFormImages || index === 0}
+                            aria-label={t('admin.form.imageMoveUp')}
+                          >
+                            ↑
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-secondary btn-sm"
+                            onClick={() => handleMoveImage(img.key, 1)}
+                            disabled={loadingFormImages || index === images.length - 1}
+                            aria-label={t('admin.form.imageMoveDown')}
+                          >
+                            ↓
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-danger btn-sm"
+                            onClick={() => handleRemoveImage(img.key)}
+                            disabled={loadingFormImages}
+                          >
+                            {t('admin.form.imageRemove')}
+                          </button>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
 
             {formErrorKey && <p className="auth-error">{t(formErrorKey)}</p>}
 
             <div className="admin-form-actions">
-              <button type="submit" className="btn-primary" disabled={saving}>
+              <button type="submit" className="btn-primary" disabled={saving || loadingFormImages}>
                 {saving ? t('admin.form.saving') : t('admin.form.save')}
               </button>
               <button type="button" className="btn-secondary" onClick={closeForm}>

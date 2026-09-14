@@ -5,6 +5,7 @@
     "shop": "Shop",
     "account": "Account",
     "admin": "Admin",
+    "about": "Chi siamo",
     "cart": "Carrello",
     "openMenu": "Apri il menu",
     "closeMenu": "Chiudi il menu",
@@ -44,6 +45,24 @@
     "shipping": "Spedizione assicurata",
     "payment": "Pagamento sicuro"
   },
+  "about": {
+    "title": "Chi siamo",
+    "photoAlt": "Alberto al lavoro nel suo laboratorio",
+    "paragraph1": "Mi chiamo Alberto e lavoro il legno da quando avevo tredici anni, quando passavo i pomeriggi nella bottega di mio nonno, qui in Lombardia, a guardarlo dare forma a un pezzo di legno con niente più di uno scalpello e tanta pazienza. Da lì non mi sono più fermato.",
+    "paragraph2": "Ho scelto di lavorare l'ulivo per la sua venatura irripetibile — non esistono due tavole uguali — e perché ogni pezzo racconta una storia diversa, proprio come le mani che lo lavorano. Ogni tagliere che esce dal mio laboratorio è sagomato, levigato e rifinito completamente a mano, senza macchine a controllo numerico: solo attrezzi da falegname, olio alimentare e il tempo che ogni pezzo richiede.",
+    "paragraph3": "Non produco in serie: preferisco fare meno pezzi, ma farli bene, e sapere esattamente da dove viene ognuno di essi. Se hai domande su un pezzo o vuoi qualcosa di personalizzato, scrivimi pure — a risponderti sono sempre io.",
+    "signature": "— Alberto, dal mio laboratorio in Lombardia"
+  },
+  "testimonials": {
+    "title": "Cosa dicono di noi"
+  },
+  "categories": {
+    "kitchen": "Cucina",
+    "home": "Casa",
+    "accessories": "Accessori",
+    "wellness": "Benessere",
+    "other": "Altro"
+  },
   "featured": {
     "title": "Prodotti in evidenza",
     "loading": "Caricamento prodotti...",
@@ -54,11 +73,14 @@
     "title": "Shop",
     "loading": "Caricamento prodotti...",
     "error": "Non è stato possibile caricare i prodotti. Riprova più tardi.",
-    "empty": "Nessun prodotto disponibile al momento."
+    "empty": "Nessun prodotto disponibile al momento.",
+    "allCategories": "Tutti",
+    "categoriesLabel": "Filtra per categoria"
   },
   "product": {
     "outOfStock": "Esaurito",
     "lastOne": "Ultimo pezzo",
+    "lowStock": "Solo {{count}} disponibili",
     "addToCart": "Aggiungi al carrello",
     "added": "Aggiunto ✓"
   },
@@ -81,7 +103,13 @@
     "unavailable": "Prodotto non disponibile al momento.",
     "zoomHint": "Clicca per ingrandire",
     "closeZoom": "Chiudi immagine ingrandita",
-    "personalNote": "Ogni pezzo è diverso dall'altro — le venature che vedi in foto sono uniche di questo esemplare."
+    "galleryLabel": "Altre foto di questo prodotto",
+    "personalNote": "Ogni pezzo è diverso dall'altro — le venature che vedi in foto sono uniche di questo esemplare.",
+    "reviews": {
+      "title": "Recensioni",
+      "empty": "Sii il primo a recensire questo pezzo.",
+      "emptyLink": "Scrivici"
+    }
   },
   "footer": {
     "badge": "Handcrafted in Italy",
@@ -165,11 +193,18 @@
       "editTitle": "Modifica prodotto",
       "name": "Nome",
       "slug": "Slug (URL)",
+      "category": "Categoria",
+      "categoryPlaceholder": "Seleziona una categoria",
       "description": "Descrizione",
       "price": "Prezzo (€)",
       "stock": "Scorte disponibili",
-      "image": "Immagine",
-      "imageHint": "Formati supportati: JPG, PNG, WebP.",
+      "images": "Foto",
+      "imagesHint": "Puoi caricarne più di una: vengono ridimensionate automaticamente. La prima in alto è quella principale, mostrata nella vetrina.",
+      "imagesLoading": "Caricamento foto...",
+      "imageMain": "Principale",
+      "imageMoveUp": "Sposta su",
+      "imageMoveDown": "Sposta giù",
+      "imageRemove": "Rimuovi",
       "save": "Salva",
       "saving": "Salvataggio in corso...",
       "cancel": "Annulla",

@@ -15,8 +15,12 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabaseClient'
 import ProductCard from '../components/ProductCard'
+import StarRating from '../components/StarRating'
 import { IconSketchWood, IconSketchChisel, IconSketchOil } from '../components/icons'
 import './Home.css'
+
+// Quante testimonianze mostrare al massimo nella sezione "Cosa dicono di noi".
+const TESTIMONIALS_LIMIT = 3
 
 // Le tre fasi del processo artigianale raccontate nella sezione dedicata:
 // titolo e testo arrivano da locales/*.json, qui basta abbinare icona e
@@ -48,9 +52,13 @@ function Home() {
       setLoading(true)
       setErrorKey(null)
 
+      // "categories(...)" sfrutta la relazione (category_id -> categories.id)
+      // per farsi restituire anche nome/slug della categoria di ogni
+      // prodotto: serve al piccolo badge categoria mostrato da ProductCard
+      // sull'angolo dell'immagine.
       const { data, error: supabaseError } = await supabase
         .from('products')
-        .select('*')
+        .select('*, categories(id, name, slug)')
         .order('created_at')
         .limit(4)
 
@@ -65,6 +73,40 @@ function Home() {
     }
 
     fetchFeaturedProducts()
+  }, [])
+
+  // --- Testimonianze in evidenza (riprova sociale) ---
+  // Riusa le stesse recensioni approvate mostrate in ProductDetail, ma
+  // pescate da qualunque prodotto: le più recenti, in un piccolo numero
+  // fisso. Se non ce n'è ancora nessuna, la sezione semplicemente non
+  // compare (niente placeholder finti).
+  const [testimonials, setTestimonials] = useState([])
+  const [loadingTestimonials, setLoadingTestimonials] = useState(true)
+
+  useEffect(() => {
+    async function fetchTestimonials() {
+      setLoadingTestimonials(true)
+
+      const { data, error } = await supabase
+        .from('reviews')
+        .select('*')
+        .eq('approved', true)
+        .order('created_at', { ascending: false })
+        .limit(TESTIMONIALS_LIMIT)
+
+      if (error) {
+        // Non è una sezione critica per l'uso del sito: in caso di errore
+        // la nascondiamo semplicemente, senza un messaggio d'errore a video.
+        console.error(error)
+        setTestimonials([])
+      } else {
+        setTestimonials(data ?? [])
+      }
+
+      setLoadingTestimonials(false)
+    }
+
+    fetchTestimonials()
   }, [])
 
   return (
@@ -124,6 +166,28 @@ function Home() {
           ))}
         </ol>
       </section>
+
+      {/* --- Sezione "Cosa dicono di noi" (testimonianze) ---
+          Riprova sociale, mostrata PRIMA della vetrina prodotti: chi arriva
+          fin qui vede che altre persone hanno già acquistato e sono
+          rimaste soddisfatte, prima ancora di scegliere un pezzo.
+          Se non ci sono ancora recensioni approvate, niente sezione vuota. */}
+      {!loadingTestimonials && testimonials.length > 0 && (
+        <section className="testimonials-section">
+          <h2 className="testimonials-title">{t('testimonials.title')}</h2>
+          <div className="testimonials-grid">
+            {testimonials.map((review) => (
+              <figure className="testimonial-card" key={review.id}>
+                <StarRating rating={review.rating} />
+                {review.comment && (
+                  <blockquote className="testimonial-quote">“{review.comment}”</blockquote>
+                )}
+                <figcaption className="testimonial-name">— {review.customer_name}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* --- Sezione prodotti in evidenza --- */}
       <section className="featured-section">

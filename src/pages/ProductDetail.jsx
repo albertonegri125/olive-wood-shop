@@ -10,7 +10,7 @@
 // processo artigianale specifico per questo pezzo.
 
 import { useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabaseClient'
 import { useCart } from '../context/CartContext'
@@ -22,6 +22,7 @@ import {
   IconSketchChisel,
   IconSketchOil,
 } from '../components/icons'
+import StarRating from '../components/StarRating'
 import './ProductDetail.css'
 
 // Le tre fasi del processo artigianale, riproposte qui in versione compatta
@@ -32,6 +33,11 @@ const PROCESS_STEPS = [
   { key: 'step2', Icon: IconSketchChisel },
   { key: 'step3', Icon: IconSketchOil },
 ]
+
+// TODO: sostituire con l'indirizzo email reale del negozio (vedi anche i
+// segnaposto "[email da inserire]" nelle pagine legali). Usato nell'invito
+// a lasciare la prima recensione quando un prodotto non ne ha ancora.
+const CONTACT_EMAIL = 'info@olivewoodcreations.it'
 
 function ProductDetail() {
   // Leggiamo lo slug direttamente dall'URL grazie a react-router
@@ -69,9 +75,12 @@ function ProductDetail() {
 
       // .eq('slug', slug) filtra per lo slug richiesto,
       // .single() ci dice che ci aspettiamo esattamente una riga di risultato.
+      // "categories(...)" sfrutta la relazione (category_id -> categories.id)
+      // per farsi restituire anche nome/slug della categoria, se impostata
+      // (null per un prodotto senza categoria: retrocompatibile).
       const { data, error: supabaseError } = await supabase
         .from('products')
-        .select('*')
+        .select('*, categories(id, name, slug)')
         .eq('slug', slug)
         .single()
 
@@ -87,6 +96,91 @@ function ProductDetail() {
 
     fetchProduct()
   }, [slug])
+
+  // --- Recensioni clienti (riprova sociale) ---
+  const [reviews, setReviews] = useState([])
+  const [loadingReviews, setLoadingReviews] = useState(true)
+
+  // Una volta noto l'id del prodotto (dopo il fetch sopra), carichiamo le
+  // sue recensioni GIÀ APPROVATE (vedi schema_reviews.sql: quelle non
+  // ancora moderate non sono comunque leggibili pubblicamente, per via
+  // della Row Level Security, ma filtriamo esplicitamente anche qui).
+  useEffect(() => {
+    if (!product?.id) return undefined
+
+    let isCurrent = true
+
+    async function fetchReviews() {
+      setLoadingReviews(true)
+
+      const { data, error } = await supabase
+        .from('reviews')
+        .select('*')
+        .eq('product_id', product.id)
+        .eq('approved', true)
+        .order('created_at', { ascending: false })
+
+      if (!isCurrent) return
+
+      if (error) {
+        console.error(error)
+        setReviews([])
+      } else {
+        setReviews(data ?? [])
+      }
+
+      setLoadingReviews(false)
+    }
+
+    fetchReviews()
+
+    // Evita di aggiornare lo stato se l'utente cambia pagina (o prodotto)
+    // prima che la richiesta sia terminata.
+    return () => {
+      isCurrent = false
+    }
+  }, [product?.id])
+
+  // --- Galleria immagini (più foto per prodotto) ---
+  // "image_url" sul prodotto resta la foto principale/di fallback: se il
+  // prodotto non ha righe in "product_images" (caso comune per i prodotti
+  // già esistenti, o per chi ne carica una sola), la galleria è
+  // semplicemente quella singola immagine, striscia di miniature esclusa.
+  const [galleryImages, setGalleryImages] = useState([])
+  const [activeImageIndex, setActiveImageIndex] = useState(0)
+
+  useEffect(() => {
+    if (!product?.id) return undefined
+
+    let isCurrent = true
+
+    async function fetchGallery() {
+      const { data, error } = await supabase
+        .from('product_images')
+        .select('image_url')
+        .eq('product_id', product.id)
+        .order('display_order')
+
+      if (!isCurrent) return
+
+      if (!error && data && data.length > 0) {
+        setGalleryImages(data.map((row) => row.image_url))
+      } else {
+        if (error) console.error(error)
+        setGalleryImages(product.image_url ? [product.image_url] : [])
+      }
+
+      // Ripartiamo sempre dalla prima foto quando cambia il prodotto (o la
+      // sua galleria viene ricaricata).
+      setActiveImageIndex(0)
+    }
+
+    fetchGallery()
+
+    return () => {
+      isCurrent = false
+    }
+  }, [product?.id, product?.image_url])
 
   // Osserviamo l'immagine principale con un IntersectionObserver nativo
   // (nessuna libreria esterna): quando esce dalla viewport mostriamo la
@@ -168,11 +262,18 @@ function ProductDetail() {
   }
 
   const isOutOfStock = product.stock === 0
+  // "Scorte basse": 1 o 2 pezzi rimasti (ma non esaurito) — stessa soglia
+  // usata in ProductCard, per coerenza tra vetrina e pagina di dettaglio.
+  const isLowStock = product.stock > 0 && product.stock <= 2
 
   const formattedPrice = new Intl.NumberFormat('it-IT', {
     style: 'currency',
     currency: 'EUR',
   }).format(product.price)
+
+  // Foto attualmente mostrata come principale (grande, zoomabile): quella
+  // selezionata nella striscia di miniature, o la prima della galleria.
+  const mainImageUrl = galleryImages[activeImageIndex] ?? product.image_url
 
   return (
     <div className="product-detail-page">
@@ -187,11 +288,36 @@ function ProductDetail() {
           >
             <img
               className="product-detail-image"
-              src={product.image_url}
+              src={mainImageUrl}
               alt={product.name}
             />
             <span className="product-detail-zoom-hint">{t('productDetail.zoomHint')}</span>
           </button>
+
+          {/* Striscia di miniature: solo se il prodotto ha più di una
+              foto. Con una sola immagine (o nessuna riga in
+              product_images, il caso di un prodotto già esistente) niente
+              cambia rispetto a prima. */}
+          {galleryImages.length > 1 && (
+            <div className="product-detail-thumbs" role="tablist" aria-label={t('productDetail.galleryLabel')}>
+              {galleryImages.map((url, index) => (
+                <button
+                  key={url}
+                  type="button"
+                  role="tab"
+                  aria-selected={index === activeImageIndex}
+                  className={
+                    index === activeImageIndex
+                      ? 'product-detail-thumb product-detail-thumb-active'
+                      : 'product-detail-thumb'
+                  }
+                  onClick={() => setActiveImageIndex(index)}
+                >
+                  <img src={url} alt="" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Informazioni testuali del prodotto */}
@@ -200,6 +326,18 @@ function ProductDetail() {
               ancora prima del nome del prodotto. Testo semplice con il
               trattino decorativo (.eyebrow-tag), non un badge/pillola. */}
           <span className="eyebrow eyebrow-tag trust-chip">{t('trust.unique')}</span>
+
+          {/* Tag categoria, cliccabile: torna a Shop già filtrato su questa
+              categoria (/shop?category=slug). Assente per i prodotti senza
+              categoria (retrocompatibilità con quelli già esistenti). */}
+          {product.categories && (
+            <Link
+              to={`/shop?category=${product.categories.slug}`}
+              className="product-detail-category-link"
+            >
+              {t(`categories.${product.categories.slug}`, { defaultValue: product.categories.name })}
+            </Link>
+          )}
 
           <h1 className="product-detail-name">{product.name}</h1>
 
@@ -238,10 +376,22 @@ function ProductDetail() {
             <p className="product-detail-price">{formattedPrice}</p>
           )}
 
-          <p className="product-detail-stock">
+          {/* Scorte: quando restano solo 1 o 2 pezzi, diventa un'etichetta
+              ambra con un leggero pulse (stesso trattamento del badge in
+              ProductCard) — è un dato reale, va comunicato con sicurezza,
+              non nascosto in un testo grigio qualunque. */}
+          <p
+            className={
+              isLowStock ? 'product-detail-stock product-detail-stock-low' : 'product-detail-stock'
+            }
+          >
             {isOutOfStock
               ? t('productDetail.unavailable')
-              : t('productDetail.stock', { count: product.stock })}
+              : isLowStock
+                ? product.stock === 1
+                  ? t('product.lastOne')
+                  : t('product.lowStock', { count: product.stock })
+                : t('productDetail.stock', { count: product.stock })}
           </p>
 
           {/* Il bottone è disabilitato se il prodotto è esaurito.
@@ -256,6 +406,41 @@ function ProductDetail() {
           </button>
         </div>
       </div>
+
+      {/* --- Recensioni clienti (riprova sociale) ---
+          Solo le recensioni approvate (vedi fetch sopra). Se non ce n'è
+          ancora nessuna per questo prodotto, niente sezione vuota: un
+          piccolo invito a essere il primo a recensirlo, con un link di
+          contatto, invece di uno spazio silenziosamente vuoto. */}
+      {!loadingReviews && (
+        <section className="product-detail-reviews">
+          <h2 className="product-detail-reviews-title">{t('productDetail.reviews.title')}</h2>
+
+          {reviews.length === 0 ? (
+            <p className="product-detail-reviews-empty">
+              {t('productDetail.reviews.empty')}{' '}
+              <a href={`mailto:${CONTACT_EMAIL}`} className="product-detail-reviews-empty-link">
+                {t('productDetail.reviews.emptyLink')}
+              </a>
+            </p>
+          ) : (
+            <div className="product-detail-reviews-list">
+              {reviews.map((review) => (
+                <article className="review-card" key={review.id}>
+                  <div className="review-card-header">
+                    <StarRating rating={review.rating} />
+                    <span className="review-card-name">{review.customer_name}</span>
+                  </div>
+                  {review.comment && <p className="review-card-comment">{review.comment}</p>}
+                  {review.photo_url && (
+                    <img className="review-card-photo" src={review.photo_url} alt="" />
+                  )}
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* --- Sezione "Come nasce questo pezzo" ---
           Le stesse 3 fasi del processo raccontate in Home, qui in versione
@@ -317,7 +502,7 @@ function ProductDetail() {
           </button>
           <img
             className="product-detail-lightbox-image"
-            src={product.image_url}
+            src={mainImageUrl}
             alt={product.name}
           />
         </div>

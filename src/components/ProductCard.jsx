@@ -23,7 +23,11 @@ import './ProductCard.css'
 function ProductCard({ product }) {
   const { t } = useTranslation()
   const { addToCart } = useCart()
-  const { name, price, image_url: imageUrl, stock, slug } = product
+  // "categories" arriva dalla relazione (category_id -> categories.id) se
+  // la query di chi usa questo componente la include (Home e Shop la
+  // includono): è "undefined"/null per un prodotto senza categoria
+  // impostata, gestito semplicemente non mostrando il relativo badge.
+  const { name, price, image_url: imageUrl, stock, slug, categories: category } = product
 
   // Controlla se mostrare il feedback "Aggiunto ✓" al posto del testo
   // normale del bottone, subito dopo un click su "Aggiungi al carrello".
@@ -83,10 +87,21 @@ function ProductCard({ product }) {
           </span>
         )}
         {/* Badge di scarsità: solo se il prodotto è ancora acquistabile
-            ma restano 1 o 2 pezzi. Colore ambra tenue, non allarmante. */}
+            ma restano 1 o 2 pezzi. È un dato reale (scorte vere, non una
+            finta urgenza), quindi va comunicato con sicurezza: colore ambra
+            più marcato e una leggerissima animazione "pulse" (vedi CSS),
+            invece del trattamento discreto riservato alle altre etichette. */}
         {isLowStock && (
           <span className="product-card-badge product-card-badge-low">
-            {t('product.lastOne')}
+            {stock === 1 ? t('product.lastOne') : t('product.lowStock', { count: stock })}
+          </span>
+        )}
+        {/* Badge categoria: piccola etichetta sull'angolo opposto ai badge
+            di disponibilità qui sopra, per non sovrapporsi mai a loro.
+            Assente per i prodotti senza categoria (retrocompatibilità). */}
+        {category && (
+          <span className="product-card-category-badge">
+            {t(`categories.${category.slug}`, { defaultValue: category.name })}
           </span>
         )}
       </MediaTag>

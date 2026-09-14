@@ -30,6 +30,11 @@ const LEGAL_LINKS = [
   { labelKey: 'legal.cookiesLink', to: '/cookie' },
 ]
 
+// Link "Chi siamo", mostrato nella colonna brand del footer (oltre al link
+// in Navbar): la storia personale merita un richiamo anche qui, non solo
+// nel menu principale.
+const ABOUT_LINK = { labelKey: 'navbar.about', to: '/chi-siamo' }
+
 function Footer() {
   const { t } = useTranslation()
 
@@ -43,6 +48,9 @@ function Footer() {
         <div className="footer-column footer-brand">
           <span className="eyebrow eyebrow-tag footer-badge">{t('footer.badge')}</span>
           <p className="footer-tagline">{t('footer.tagline')}</p>
+          <Link to={ABOUT_LINK.to} className="footer-about-link">
+            {t(ABOUT_LINK.labelKey)}
+          </Link>
         </div>
 
         {/* Colonna social: nomi separati da un punto, niente icone in cerchio */}

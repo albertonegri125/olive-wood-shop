@@ -66,13 +66,54 @@
   color: var(--color-card-bg);
 }
 
-/* "Ultimo pezzo": in alto a SINISTRA (come richiesto), ambra tenue e non
-   allarmante — non compare mai insieme al badge "Esaurito" (un prodotto o
-   è esaurito, o ha scorte basse: mai entrambe le cose). */
+/* "Ultimo pezzo"/"Solo X disponibili": in alto a SINISTRA (come richiesto).
+   È un dato di scarsità reale (le scorte effettive), non un trucco di
+   marketing: per questo il trattamento è più marcato delle altre etichette
+   del sito (sfondo ambra pieno anziché tenue, testo bianco) e pulsa
+   leggermente, per farsi notare senza risultare allarmante o invasivo.
+   Non compare mai insieme al badge "Esaurito" (un prodotto o è esaurito, o
+   ha scorte basse: mai entrambe le cose). */
 .product-card-badge-low {
   left: 10px;
-  background: var(--color-amber-soft);
-  color: var(--color-amber);
+  background: var(--color-amber);
+  color: #fff;
+  animation: low-stock-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes low-stock-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+/* Chi preferisce ridurre le animazioni non deve vedere nessun pulsare */
+@media (prefers-reduced-motion: reduce) {
+  .product-card-badge-low {
+    animation: none;
+  }
+}
+
+/* Badge categoria: angolo in basso a sinistra dell'immagine (gli altri due
+   badge sopra occupano gli angoli superiori, mai in conflitto tra loro).
+   Sfondo scuro semi-trasparente invece del solito testo semplice usato
+   altrove nel sito: qui serve leggibilità sopra una foto qualsiasi, non
+   sullo sfondo uniforme della pagina. */
+.product-card-category-badge {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(26, 26, 26, 0.65);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* --- Corpo della card: nome, riga "pezzo unico", poi prezzo + bottone --- */
