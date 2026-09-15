@@ -92,7 +92,11 @@
     "increaseQuantity": "Increase quantity",
     "remove": "Remove from cart",
     "total": "Total",
-    "checkout": "Proceed to checkout"
+    "checkout": "Proceed to checkout",
+    "distinctProductsCount": "You have {{count}} different products in your cart",
+    "bundleDiscount": "Bundle discount ({{percentage}}%)",
+    "incentiveAddSecond": "Add another piece and save 10%.",
+    "incentiveAddThird": "Add a third piece for 15% off."
   },
   "productDetail": {
     "loading": "Loading product...",

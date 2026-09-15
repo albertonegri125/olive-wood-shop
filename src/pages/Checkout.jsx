@@ -25,7 +25,11 @@ function formatPrice(value) {
 
 function Checkout() {
   const { t } = useTranslation()
-  const { cart, getTotal } = useCart()
+  const { cart, getTotal, getDiscountPercentage, getDiscountedTotal } = useCart()
+
+  const discountPercentage = getDiscountPercentage()
+  const total = getTotal()
+  const discountedTotal = getDiscountedTotal()
 
   // Mostrato dopo il click su "Procedi al pagamento": per ora un semplice
   // messaggio, in attesa della vera integrazione con Stripe.
@@ -63,9 +67,26 @@ function Checkout() {
         ))}
       </ul>
 
+      {/* Sconto bundle: stessa logica e stesso badge in accento verde già
+          mostrati nel Carrello (vedi CartContext.getDiscountPercentage/
+          getDiscountedTotal), per coerenza tra le due pagine. */}
+      {discountPercentage > 0 && (
+        <div className="checkout-discount-row">
+          <span className="checkout-discount-badge">
+            {t('cart.bundleDiscount', { percentage: discountPercentage })}
+          </span>
+          <span className="checkout-discount-amount">−{formatPrice(total - discountedTotal)}</span>
+        </div>
+      )}
+
       <div className="checkout-total-row">
         <span>{t('checkout.orderTotal')}</span>
-        <span className="checkout-total-amount">{formatPrice(getTotal())}</span>
+        <span className="checkout-total-wrapper">
+          {discountPercentage > 0 && (
+            <span className="checkout-total-original">{formatPrice(total)}</span>
+          )}
+          <span className="checkout-total-amount">{formatPrice(discountedTotal)}</span>
+        </span>
       </div>
 
       <button

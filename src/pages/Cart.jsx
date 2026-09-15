@@ -21,7 +21,15 @@ function formatPrice(value) {
 
 function Cart() {
   const { t } = useTranslation()
-  const { cart, removeFromCart, updateQuantity, getTotal } = useCart()
+  const { cart, removeFromCart, updateQuantity, getTotal, getDiscountPercentage, getDiscountedTotal } =
+    useCart()
+
+  // Il carrello ha sempre una sola riga per prodotto (vedi CartContext):
+  // il numero di righe è quindi già il numero di prodotti DIVERSI.
+  const distinctProductsCount = cart.length
+  const discountPercentage = getDiscountPercentage()
+  const total = getTotal()
+  const discountedTotal = getDiscountedTotal()
 
   // --- Carrello vuoto: messaggio + invito a tornare al negozio ---
   if (cart.length === 0) {
@@ -96,14 +104,65 @@ function Cart() {
         ))}
       </ul>
 
-      {/* Riepilogo in fondo alla pagina: totale complessivo + CTA checkout.
-          Il checkout vero e proprio (pagamento) verrà implementato in uno
-          step successivo: per ora il bottone porta a una pagina segnaposto. */}
+      {/* Riepilogo in fondo alla pagina: numero di prodotti diversi, sconto
+          bundle (o messaggio incentivante se non ancora raggiunto), totale
+          (scontato, con quello pieno barrato accanto per trasparenza) e CTA
+          checkout. Il checkout vero e proprio (pagamento) verrà implementato
+          in uno step successivo: per ora il bottone porta a una pagina
+          segnaposto. */}
       <div className="cart-summary">
-        <div className="cart-summary-row">
-          <span className="cart-summary-label">{t('cart.total')}</span>
-          <span className="cart-summary-total">{formatPrice(getTotal())}</span>
+        {/* Tutto il "riepilogo informativo" è raggruppato in un unico
+            contenitore (invece di essere figlio diretto di .cart-summary)
+            così da tablet in su, quando .cart-summary diventa una riga
+            (info a sinistra, bottone a destra), i vari elementi restano
+            impilati verticalmente qui dentro invece di allinearsi tutti
+            sulla stessa riga. */}
+        <div className="cart-summary-info">
+          <p className="cart-products-count">
+            {t('cart.distinctProductsCount', { count: distinctProductsCount })}
+          </p>
+
+          {/* Sconto già applicato: badge in accento verde con la percentuale,
+              più l'importo risparmiato. Compare da 2 prodotti diversi in su. */}
+          {discountPercentage > 0 && (
+            <div className="cart-discount-row">
+              <span className="cart-discount-badge">
+                {t('cart.bundleDiscount', { percentage: discountPercentage })}
+              </span>
+              <span className="cart-discount-amount">−{formatPrice(total - discountedTotal)}</span>
+            </div>
+          )}
+
+          {/* Messaggio incentivante: con 1 solo prodotto invita ad aggiungerne
+              un secondo (con link diretto al negozio); con 2 prodotti (che
+              hanno già il 10% di sconto qui sopra) invita ad aggiungerne un
+              terzo per salire al 15%. Con 3+ prodotti si è già al tetto
+              massimo, quindi nessun messaggio ulteriore. */}
+          {distinctProductsCount === 1 && (
+            <p className="cart-incentive">
+              {t('cart.incentiveAddSecond')}{' '}
+              <Link to="/shop" className="cart-incentive-link">
+                {t('cart.goToShop')}
+              </Link>
+            </p>
+          )}
+          {distinctProductsCount === 2 && (
+            <p className="cart-incentive">{t('cart.incentiveAddThird')}</p>
+          )}
+
+          <div className="cart-summary-row">
+            <span className="cart-summary-label">{t('cart.total')}</span>
+            <span className="cart-summary-total-wrapper">
+              {/* Totale pieno barrato: mostrato solo se lo sconto è
+                  applicato, per trasparenza su quanto si sta risparmiando. */}
+              {discountPercentage > 0 && (
+                <span className="cart-summary-total-original">{formatPrice(total)}</span>
+              )}
+              <span className="cart-summary-total">{formatPrice(discountedTotal)}</span>
+            </span>
+          </div>
         </div>
+
         <Link to="/checkout" className="btn-primary cart-checkout-button">
           {t('cart.checkout')}
         </Link>

@@ -92,7 +92,11 @@
     "increaseQuantity": "Aumenta quantità",
     "remove": "Rimuovi dal carrello",
     "total": "Totale",
-    "checkout": "Procedi al pagamento"
+    "checkout": "Procedi al pagamento",
+    "distinctProductsCount": "Hai {{count}} prodotti diversi nel carrello",
+    "bundleDiscount": "Sconto bundle ({{percentage}}%)",
+    "incentiveAddSecond": "Aggiungi un altro pezzo e risparmia il 10%.",
+    "incentiveAddThird": "Aggiungi un terzo pezzo per il 15% di sconto."
   },
   "productDetail": {
     "loading": "Caricamento prodotto...",

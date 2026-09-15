@@ -46,12 +46,58 @@
   white-space: nowrap;
 }
 
+/* Sconto bundle: stesso trattamento (badge in accento verde + importo
+   risparmiato) usato nel Carrello, per coerenza tra le due pagine. */
+.checkout-discount-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.checkout-discount-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.checkout-discount-amount {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
 .checkout-total-row {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   padding: 16px 0;
   font-size: 16px;
+}
+
+.checkout-total-wrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+/* Totale pieno, barrato: mostrato solo se lo sconto è applicato, per
+   trasparenza su quanto si sta risparmiando (stesso trattamento del
+   Carrello). */
+.checkout-total-original {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-text-muted);
+  text-decoration: line-through;
 }
 
 .checkout-total-amount {

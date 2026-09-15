@@ -161,6 +161,43 @@ export function CartProvider({ children }) {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0)
   }
 
+  // --- Sconto "bundle" a scaglioni ------------------------------------
+  //
+  // Incentiva l'acquisto di PIÙ PRODOTTI DIVERSI nello stesso ordine (non
+  // di più pezzi dello stesso prodotto): comprare 3 taglieri uguali non
+  // dà diritto allo sconto, comprare 3 prodotti diversi sì.
+  //
+  //   1 prodotto diverso        -> nessuno sconto
+  //   2 prodotti diversi        -> 10%
+  //   3 o più prodotti diversi  -> 15% (tetto massimo: non cresce oltre)
+  //
+  // Il carrello ha già, per costruzione, UNA sola riga per ogni prodotto
+  // (vedi ADD_TO_CART nel reducer sopra: se il prodotto è già presente se
+  // ne incrementa solo la quantità, non si crea una seconda riga), quindi
+  // "numero di prodotti diversi" coincide semplicemente con "cart.length"
+  // — non serve calcolare un Set di product_id a parte.
+  function getDiscountPercentage() {
+    const distinctProductsCount = cart.length
+
+    if (distinctProductsCount >= 3) return 15
+    if (distinctProductsCount === 2) return 10
+    return 0
+  }
+
+  // Applica la percentuale di sconto calcolata sopra al totale pieno.
+  //
+  // NOTA: questo calcolo vive solo lato client, per mostrare subito il
+  // prezzo scontato nell'interfaccia (Cart.jsx, Checkout.jsx). Quando sarà
+  // collegato il pagamento reale con Stripe, il totale scontato andrà
+  // RICALCOLATO anche lato server/webhook prima di creare la sessione di
+  // pagamento: non ci si può fidare di un totale calcolato nel browser per
+  // decidere quanto far pagare un cliente (potrebbe essere alterato).
+  function getDiscountedTotal() {
+    const total = getTotal()
+    const discountPercentage = getDiscountPercentage()
+    return total - (total * discountPercentage) / 100
+  }
+
   // Il valore esposto a tutti i componenti che useranno useCart().
   const value = {
     cart,
@@ -169,6 +206,8 @@ export function CartProvider({ children }) {
     updateQuantity,
     clearCart,
     getTotal,
+    getDiscountPercentage,
+    getDiscountedTotal,
   }
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
