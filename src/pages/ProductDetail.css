@@ -2,8 +2,9 @@
    Stili della pagina di dettaglio prodotto.
    Mobile-first: immagine e testo impilati verticalmente su mobile,
    affiancati (immagine a sinistra, info a destra) su schermi più larghi.
-   Il prezzo resta volutamente discreto: il nome del prodotto (in serif,
-   grande) è il vero protagonista della gerarchia visiva. */
+   Il prezzo (redesign 2026) è in accento terracotta per risaltare
+   visivamente, pur restando dimensionalmente più piccolo del nome del
+   prodotto (che in serif, grande, resta comunque il primo elemento letto). */
 
 .product-detail-page {
   padding: 24px 20px 48px;
@@ -185,7 +186,12 @@
 }
 
 .product-detail-category-link:hover {
-  color: var(--color-accent);
+  /* --color-accent-hover (non --color-accent): questo testo compare
+     direttamente sullo sfondo della pagina (niente card bianca dietro),
+     dove il terracotta "normale" non raggiunge il contrasto AA richiesto
+     per il testo (4.24:1 invece del minimo 4.5:1) — la tonalità più
+     scura sì (5.77:1). */
+  color: var(--color-accent-hover);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -223,7 +229,7 @@
   flex-shrink: 0;
   width: 16px;
   height: 16px;
-  color: var(--color-accent);
+  color: var(--color-secondary); /* icona decorativa: verde oliva, non terracotta */
 }
 
 .product-detail-trust-sep {
@@ -231,13 +237,19 @@
 }
 
 /* Il prezzo: dimensione MEDIA, mai il testo più grande della pagina
-   (il nome del prodotto, in serif, resta il vero protagonista). */
+   (il nome del prodotto, in serif, resta il vero protagonista) — ma in
+   accento terracotta (redesign 2026) per risaltare comunque all'occhio.
+   --color-accent-hover invece di --color-accent: qui il prezzo è
+   direttamente sullo sfondo della pagina (nessuna card bianca dietro),
+   dove il terracotta "normale" non raggiunge il contrasto AA richiesto
+   per il testo (4.24:1 invece del minimo 4.5:1) — la tonalità più scura
+   sì (5.77:1). */
 .product-detail-price {
   margin: 0;
   font-family: var(--font-sans);
   font-size: 19px;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-accent-hover);
 }
 
 .product-detail-status {
@@ -315,7 +327,9 @@
 }
 
 .product-detail-reviews-empty-link {
-  color: var(--color-accent);
+  /* --color-accent-hover per lo stesso motivo del link categoria sopra:
+     nessuna card bianca dietro, serve il terracotta più scuro per l'AA. */
+  color: var(--color-accent-hover);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -404,6 +418,9 @@
   gap: 12px;
 }
 
+/* Numero e icona di questo mini-processo sono decorativi (non cliccabili):
+   verde oliva (--color-secondary/-soft), non terracotta, per coerenza con
+   la regola "il verde resta alle icone/dettagli minori". */
 .product-detail-process-number {
   display: inline-flex;
   align-items: center;
@@ -412,8 +429,8 @@
   width: 24px;
   height: 24px;
   border-radius: 999px;
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
+  background: var(--color-secondary-soft);
+  color: var(--color-secondary);
   font-family: var(--font-serif);
   font-weight: 700;
   font-size: 13px;
@@ -423,7 +440,7 @@
   flex-shrink: 0;
   width: 20px;
   height: 20px;
-  color: var(--color-accent);
+  color: var(--color-secondary);
   margin-top: 2px;
 }
 
@@ -531,7 +548,10 @@
 
 .product-detail-sticky-price {
   font-size: 13px;
-  color: var(--color-text-muted);
+  font-weight: 600;
+  /* Qui invece --color-accent "normale" basta: la barra sticky ha sfondo
+     bianco (--color-card-bg), dove il terracotta raggiunge ~4.57:1 (AA). */
+  color: var(--color-accent);
 }
 
 .product-detail-sticky-button {

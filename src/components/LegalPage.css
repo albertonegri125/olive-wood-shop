@@ -61,7 +61,10 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: var(--color-accent);
+  /* --color-accent-hover: nessuna card bianca dietro questo link (è
+     direttamente sullo sfondo pagina), dove il terracotta "normale" non
+     raggiunge il minimo AA per il testo. */
+  color: var(--color-accent-hover);
   text-decoration: underline;
   text-underline-offset: 3px;
   font-size: 14px;

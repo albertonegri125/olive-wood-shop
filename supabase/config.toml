@@ -1,0 +1,17 @@
+# supabase/config.toml
+#
+# Configurazione del progetto Supabase per la CLI. Qui ci interessa solo
+# la sezione delle Edge Function: per default, ogni Edge Function richiede
+# un JWT Supabase valido nell'header Authorization prima ancora di eseguire
+# il codice. Va bene per "create-checkout-session" (chiamata dal browser
+# con la sessione dell'utente loggato), ma NON per "stripe-webhook", che
+# riceve richieste direttamente da Stripe — Stripe manda la propria firma
+# nell'header "stripe-signature", non un JWT Supabase, quindi la verifica
+# automatica del JWT bloccherebbe ogni chiamata di Stripe con un 401 prima
+# ancora di poterne verificare la firma nel codice.
+
+[functions.create-checkout-session]
+verify_jwt = true
+
+[functions.stripe-webhook]
+verify_jwt = false

@@ -1,0 +1,89 @@
+/* src/components/SocialAuthButtons.css
+   Separatore "oppure" + bottoni di login social. A differenza del resto
+   del sito, qui i colori NON vengono dai token della palette: Google e
+   Apple hanno entrambi linee guida di branding precise per il loro
+   bottone di accesso (colori, bordo, logo), pensate apposta per restare
+   identiche su qualunque sito le usi — personalizzarle le renderebbe
+   meno immediatamente riconoscibili. */
+
+.social-auth {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Riga "oppure"/"or": una linea sottile con il testo al centro, invece di
+   un semplice titolo, per segnalare visivamente che è un'alternativa al
+   form sopra, non una nuova sezione. */
+.social-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.social-auth-divider::before,
+.social-auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+/* Base comune ai due bottoni: stessa forma/dimensione dei bottoni del
+   form sopra, così restano allineati nella pagina anche se i colori sono
+   diversi (dettati dal branding di ciascun provider). */
+.social-auth-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.social-auth-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.social-auth-icon {
+  flex-shrink: 0;
+}
+
+/* --- Google: sfondo bianco, bordo grigio chiaro, testo grigio scuro
+   (non nero pieno) — colori esatti dalle linee guida "Google Identity
+   Services" per il bottone "Sign in with Google". --- */
+.social-auth-button-google {
+  background: #ffffff;
+  border: 1px solid #dadce0;
+  color: #3c4043;
+}
+
+.social-auth-button-google:hover:not(:disabled) {
+  background: #f7f8f8;
+  box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3);
+}
+
+/* --- Apple: sfondo nero, testo e logo bianchi — stile "Sign in with
+   Apple" nero, una delle varianti ufficiali previste dalle Apple Human
+   Interface Guidelines (le altre sono bianca con bordo, o bianca piena:
+   il nero è quella più universalmente riconoscibile su ogni sfondo). --- */
+.social-auth-button-apple {
+  background: #000000;
+  border: 1px solid #000000;
+  color: #ffffff;
+}
+
+.social-auth-button-apple:hover:not(:disabled) {
+  background: #1a1a1a;
+}

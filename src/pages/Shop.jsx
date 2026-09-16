@@ -105,36 +105,43 @@ function Shop() {
 
       {/* Tab categorie: "Tutti" + una per categoria. Riga orizzontale
           scrollabile (non va mai a capo), così funziona anche con molte
-          categorie su schermi stretti. */}
+          categorie su schermi stretti. Il wrapper esterno serve solo a
+          posizionare il fade sul bordo destro (vedi CSS: ".shop-categories"
+          è la parte che scorre, il fade sta sopra di lei senza scorrere
+          insieme, per restare sempre visibile come indicatore). */}
       {categories.length > 0 && (
-        <div className="shop-categories" role="tablist" aria-label={t('shop.categoriesLabel')}>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={!activeCategorySlug}
-            className={
-              !activeCategorySlug ? 'shop-category-tab shop-category-tab-active' : 'shop-category-tab'
-            }
-            onClick={() => handleSelectCategory(null)}
-          >
-            {t('shop.allCategories')}
-          </button>
-          {categories.map((category) => (
+        <div className="shop-categories-wrapper">
+          <div className="shop-categories" role="tablist" aria-label={t('shop.categoriesLabel')}>
             <button
-              key={category.id}
               type="button"
               role="tab"
-              aria-selected={activeCategorySlug === category.slug}
+              aria-selected={!activeCategorySlug}
               className={
-                activeCategorySlug === category.slug
+                !activeCategorySlug
                   ? 'shop-category-tab shop-category-tab-active'
                   : 'shop-category-tab'
               }
-              onClick={() => handleSelectCategory(category.slug)}
+              onClick={() => handleSelectCategory(null)}
             >
-              {t(`categories.${category.slug}`, { defaultValue: category.name })}
+              {t('shop.allCategories')}
             </button>
-          ))}
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                type="button"
+                role="tab"
+                aria-selected={activeCategorySlug === category.slug}
+                className={
+                  activeCategorySlug === category.slug
+                    ? 'shop-category-tab shop-category-tab-active'
+                    : 'shop-category-tab'
+                }
+                onClick={() => handleSelectCategory(category.slug)}
+              >
+                {t(`categories.${category.slug}`, { defaultValue: category.name })}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 

@@ -130,7 +130,18 @@
     "paymentInfo": "Pagamento",
     "orderTotal": "Totale",
     "placeOrder": "Procedi al pagamento",
-    "paymentComingSoon": "Integrazione pagamento in arrivo."
+    "redirecting": "Reindirizzamento al pagamento...",
+    "paymentError": "Non è stato possibile avviare il pagamento. Riprova più tardi.",
+    "success": {
+      "title": "Grazie per il tuo ordine!",
+      "message": "Il pagamento è andato a buon fine. Riceverai a breve la conferma via email, e potrai seguire il tuo ordine dalla pagina del tuo account.",
+      "ordersLink": "Vai ai tuoi ordini"
+    },
+    "cancel": {
+      "title": "Pagamento annullato",
+      "message": "Non ti abbiamo addebitato nulla. I tuoi articoli sono ancora nel carrello, pronti per riprovare quando vuoi.",
+      "cartLink": "Torna al carrello"
+    }
   },
   "auth": {
     "checkingSession": "Verifica della sessione in corso...",
@@ -138,6 +149,9 @@
     "passwordLabel": "Password",
     "confirmPasswordLabel": "Conferma password",
     "nameLabel": "Nome e cognome",
+    "orDivider": "oppure",
+    "continueWithGoogle": "Continua con Google",
+    "continueWithApple": "Continua con Apple",
     "login": {
       "title": "Accedi",
       "subtitle": "Accedi al tuo account per vedere i tuoi ordini.",
@@ -171,7 +185,16 @@
     "loading": "Caricamento...",
     "noName": "Nome non impostato",
     "ordersTitle": "I tuoi ordini",
-    "ordersEmpty": "Non hai ancora effettuato nessun ordine."
+    "ordersEmpty": "Non hai ancora effettuato nessun ordine.",
+    "ordersError": "Non è stato possibile caricare i tuoi ordini.",
+    "orderItemUnknown": "Prodotto non più disponibile",
+    "orderStatus": {
+      "pending": "In attesa",
+      "paid": "Pagato",
+      "paid_stock_issue": "Pagato — scorte da verificare",
+      "shipped": "Spedito",
+      "cancelled": "Annullato"
+    }
   },
   "admin": {
     "title": "Pannello Admin",

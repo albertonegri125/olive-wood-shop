@@ -1,33 +1,43 @@
 /* src/index.css
    Stili globali dell'app: palette colori, font e reset di base.
-   Estetica ispirata a una bottega artigianale di oggetti in legno d'ulivo
-   Made in Italy: toni caldi e naturali per gli sfondi, verde bosco per gli
-   accenti, font serif per i titoli e sans-serif per il testo. */
+
+   REDESIGN 2026: palette calda "terracotta" — sfondo quasi bianco, testo
+   bruno caldo, accento terracotta per bottoni/link/prezzi, verde oliva
+   (--color-secondary) riservato a icone lineart e dettagli decorativi
+   minori (mai su bottoni o altri elementi cliccabili principali: quel
+   ruolo spetta solo a --color-accent). Font serif per i titoli, sans per
+   il testo corrente. */
 
 :root {
   /* --- Palette colori --- */
-  --color-bg: #ede9e1; /* sfondo generale, beige caldo */
+  --color-bg: #faf6f0; /* sfondo generale, quasi bianco caldo */
   --color-card-bg: #ffffff; /* sfondo delle card e dei riquadri in evidenza */
-  --color-text: #1a1a1a; /* testo principale, quasi nero */
-  --color-text-muted: #6b6b63; /* testo secondario/didascalie */
-  --color-accent: #3d5c3a; /* verde bosco: bottoni, link, prezzi */
-  --color-accent-hover: #2c4429; /* verde bosco più scuro, per l'hover */
-  --color-border: #ddd8cd; /* bordi e separatori leggeri */
+  --color-text: #2b1810; /* testo principale, bruno caldo scuro */
+  --color-text-muted: #7a6a5c; /* testo secondario/didascalie */
+  --color-accent: #c2542c; /* terracotta: bottoni e altri elementi cliccabili principali */
+  --color-accent-hover: #a3431f; /* terracotta più scuro: hover dei bottoni, e testo in accent quando serve più contrasto (vedi sotto) */
+  --color-border: #e8ddd0; /* bordi e separatori leggeri */
 
   /* Variabili aggiuntive, derivate dalla palette base sopra */
-  --color-accent-soft: rgba(61, 92, 58, 0.08); /* sfondo tenue per hover/badge in tema accent */
+  --color-accent-soft: #f0d9cc; /* sfondo tenue per hover/badge in tema accent */
+  --color-secondary: #4a5d3a; /* verde oliva: SOLO icone lineart e dettagli decorativi minori, mai bottoni/link principali (quelli usano --color-accent) */
+  --color-secondary-soft: rgba(74, 93, 58, 0.08); /* variante tenue di --color-secondary, stessa logica dell'8% di opacità già usata altrove nella palette */
   --color-amber: #a6752c; /* ambra calda, non allarmante: badge "Ultimo pezzo" */
   --color-amber-soft: #f2e6d3;
   --color-brand-text: #2b1f16; /* marrone legno scuro, solo per il nome del brand in Navbar: più ricco del nero/testo standard, per farlo risaltare come logotipo */
 
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.12);
+  /* Ombra più decisa, riservata alla card prodotto (vedi ProductCard.css):
+     stesso bruno del testo invece del nero puro, per restare nella nuova
+     palette calda anche nelle ombre. */
+  --shadow-card: 0 4px 16px rgba(43, 24, 16, 0.08);
 
   /* --- Font --- */
-  --font-serif: 'Playfair Display', serif; /* titoli */
-  --font-sans: 'Inter', sans-serif; /* testo corrente */
+  --font-serif: 'Fraunces', serif; /* titoli */
+  --font-sans: 'Work Sans', sans-serif; /* testo corrente */
   --font-hand: 'Caveat', cursive; /* numeri decorativi e note scritte a mano */
-  --font-brand: 'Cormorant Garamond', serif; /* solo il nome del brand in Navbar: serif più alto/elegante di Playfair, riservato al logotipo */
+  --font-brand: 'Cormorant Garamond', serif; /* solo il nome del brand in Navbar: serif più alto/elegante di Fraunces, riservato al logotipo */
   --mono: ui-monospace, Consolas, monospace;
 
   font: 16px/1.5 var(--font-sans);
@@ -64,17 +74,19 @@ body {
   box-sizing: border-box;
 }
 
-/* Titoli e logo in font serif, per un tocco più artigianale/elegante */
+/* Titoli e logo in font serif, per un tocco più artigianale/elegante.
+   Pesi differenziati per livello (redesign 2026): h1 più marcato (600),
+   h2/h3 più leggeri (500), per una gerarchia meno "tutta uguale". */
 h1,
 h2,
 h3,
 .logo {
   font-family: var(--font-serif);
-  font-weight: 600;
   color: var(--color-text);
 }
 
 h1 {
+  font-weight: 600;
   font-size: 36px;
   line-height: 1.15;
   letter-spacing: -0.5px;
@@ -83,6 +95,11 @@ h1 {
   @media (min-width: 768px) {
     font-size: 56px;
   }
+}
+
+h2,
+h3 {
+  font-weight: 500;
 }
 
 h2 {
@@ -116,7 +133,10 @@ code {
 
 /* --- Etichetta "eyebrow": piccola scritta maiuscola con letter-spacing,
    usata per badge come "MADE IN ITALY" o "FATTO A MANO IN ITALIA".
-   Definita una sola volta qui e riusata in Navbar, Home e Footer. --- */
+   Definita una sola volta qui e riusata in Navbar, Home e Footer.
+   Colore: verde oliva (--color-secondary), non terracotta — sono etichette
+   decorative, non elementi cliccabili, quindi restano nel "verde per i
+   dettagli" invece di competere visivamente con i bottoni in accent. --- */
 .eyebrow {
   display: inline-flex;
   align-items: center;
@@ -126,7 +146,7 @@ code {
   font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 700;
-  color: var(--color-accent);
+  color: var(--color-secondary);
 }
 
 /* Variante "etichetta di carta": un trattino decorativo prima del testo al

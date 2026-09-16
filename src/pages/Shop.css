@@ -15,20 +15,59 @@
   text-align: left;
 }
 
+/* Wrapper delle tab categoria: "position: relative" serve solo da àncora
+   per il fade sul bordo destro (vedi ::after sotto), che deve restare
+   fermo mentre le tab scorrono sotto di lui. Il margine orizzontale è 0
+   (eredita i 20px di padding già impostati su .shop-page): così il bordo
+   sinistro/destro della zona scrollabile resta allineato al resto del
+   contenuto della pagina, invece di avere un rientro diverso. */
+.shop-categories-wrapper {
+  position: relative;
+  margin: 20px 0 28px;
+}
+
 /* Tab categorie: riga orizzontale sempre scrollabile (mai a capo), così
    funziona identica su mobile e desktop qualunque sia il numero di
-   categorie. Bordo inferiore continuo a fare da "binario" per le tab. */
+   categorie. Bordo inferiore continuo a fare da "binario" per le tab.
+   Scrollbar nascosta (resta comunque scrollabile con dito/trackpad): una
+   barra di scroll visibile su una riga di tab così bassa è solo rumore
+   visivo, non un'informazione utile. */
 .shop-categories {
   display: flex;
-  gap: 4px;
+  gap: 8px;
   overflow-x: auto;
-  margin: 20px 0 28px;
   border-bottom: 1px solid var(--color-border);
+  /* Scroll fluido "a inerzia" su iOS Safari (senza non scatta lo scroll
+     momentum, e la riga risulta "scattosa" al dito). */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* vecchio Edge/IE */
+}
+
+.shop-categories::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Edge Chromium */
+}
+
+/* Fade sul bordo destro: un accenno di sfumatura verso il colore di sfondo
+   della pagina, per segnalare che c'è altro contenuto scrollabile oltre il
+   bordo. "position: absolute" sul wrapper (non scrollabile) invece che
+   dentro ".shop-categories": così il fade resta fermo nello stesso punto
+   invece di scorrere via insieme alle tab. "pointer-events: none" lascia
+   passare i click ai bottoni sottostanti. */
+.shop-categories-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 28px;
+  background: linear-gradient(to right, transparent, var(--color-bg));
+  pointer-events: none;
 }
 
 .shop-category-tab {
   flex-shrink: 0;
-  padding: 8px 14px 10px;
+  padding: 10px 16px;
   border: none;
   border-bottom: 2px solid transparent;
   background: none;
@@ -44,11 +83,18 @@
   color: var(--color-text);
 }
 
-/* Categoria selezionata: colore ed etichetta della tab in accento verde,
-   con un piccolo bordo inferiore a evidenziarla ulteriormente. */
+/* Categoria selezionata: oltre al colore in accento terracotta, uno
+   sfondo tenue (stesso tono già usato per gli hover in tutto il sito) e
+   un peso del testo più marcato, così resta ben distinguibile dalle altre
+   tab a colpo d'occhio invece di affidarsi al solo colore del testo.
+   --color-accent-hover (non --color-accent): su questo sfondo tenue il
+   terracotta "normale" scende sotto il minimo AA per il testo. */
 .shop-category-tab-active {
-  color: var(--color-accent);
-  border-bottom-color: var(--color-accent);
+  color: var(--color-accent-hover);
+  font-weight: 700;
+  background: var(--color-accent-soft);
+  border-bottom-color: var(--color-accent-hover);
+  border-radius: 6px 6px 0 0;
 }
 
 /* Griglia mobile-first: 1 colonna su mobile, 2 colonne da tablet in su,

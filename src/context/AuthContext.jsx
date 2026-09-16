@@ -4,8 +4,9 @@
 // appoggiandosi a Supabase Auth. Espone l'utente attualmente loggato (o
 // null se nessuno ha fatto login), il suo profilo (tabella "profiles",
 // incluso il flag "is_admin" usato dal pannello /admin) e le funzioni per
-// accedere, registrarsi e uscire, così ogni pagina/componente può usarle
-// tramite useAuth() senza doversi occupare direttamente di Supabase.
+// accedere (email/password, Google, Apple), registrarsi e uscire, così
+// ogni pagina/componente può usarle tramite useAuth() senza doversi
+// occupare direttamente di Supabase.
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
@@ -106,17 +107,11 @@ export function AuthProvider({ children }) {
     return { error }
   }
 
-  // Registra un nuovo utente con email, password e nome completo.
-  // Dopo la registrazione creiamo anche la riga corrispondente nella
-  // tabella "profiles" (id collegato all'utente, email, nome).
-  //
-  // NOTA: se nel progetto Supabase è attiva la conferma via email, subito
-  // dopo signUp() non esiste ancora una sessione attiva (l'utente deve
-  // prima cliccare il link ricevuto via email): in quel caso l'inserimento
-  // in "profiles" fallirebbe per via delle policy di Row Level Security
-  // (che richiedono auth.uid() = id). Una soluzione più robusta per quel
-  // caso sarebbe un trigger lato database su auth.users, ma per questo
-  // step creiamo il profilo lato client, come richiesto.
+  // Registra un nuovo utente con email, password e nome completo. La riga
+  // corrispondente in "profiles" viene creata automaticamente da un
+  // trigger sul database (vedi schema_oauth.sql) non appena l'utente viene
+  // creato in auth.users — anche se il progetto richiede la conferma email
+  // e quindi qui non esiste ancora una sessione attiva.
   async function signUp(email, password, fullName) {
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -130,31 +125,51 @@ export function AuthProvider({ children }) {
       return { error }
     }
 
-    // Se la registrazione ha creato subito una sessione attiva (nessuna
-    // conferma email richiesta), possiamo creare la riga del profilo.
+    // La riga in "profiles" viene ormai creata automaticamente da un
+    // trigger sul database (vedi schema_oauth.sql, funzione
+    // handle_new_user): scatta alla creazione dell'utente in auth.users,
+    // quindi esiste già a questo punto. Qui ci limitiamo a caricarla, se
+    // la registrazione ha creato subito una sessione attiva (nessuna
+    // conferma email richiesta) — altrimenti non c'è ancora nulla da
+    // mostrare, in attesa che l'utente confermi l'email.
     if (data.user && data.session) {
-      const { data: newProfile, error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: data.user.id,
-          email,
-          full_name: fullName,
-        })
-        .select()
-        .single()
-
-      if (profileError) {
-        console.error('Errore nella creazione del profilo:', profileError)
-      } else {
-        // Aggiorniamo subito lo stato locale: l'ascoltatore onAuthStateChange
-        // qui sopra potrebbe aver già provato a caricare il profilo un
-        // istante prima che questo insert venisse eseguito (trovando
-        // ancora nessuna riga), quindi non possiamo affidarci solo a lui.
-        setProfile(newProfile)
-      }
+      const profileData = await loadProfile(data.user.id)
+      setProfile(profileData)
     }
 
     return { error: null, needsEmailConfirmation: !data.session }
+  }
+
+  // Accede (o si registra automaticamente al primo accesso) tramite un
+  // provider OAuth esterno. A differenza di signIn/signUp, questa funzione
+  // non ritorna una sessione: reindirizza l'intera pagina al provider
+  // (Google/Apple), che poi reindirizza di nuovo al sito una volta
+  // completata l'autenticazione — da quel momento in poi tutto il resto
+  // (creazione utente, riga in "profiles" via trigger, sessione) avviene
+  // automaticamente, esattamente come per l'email/password.
+  //
+  // "redirectTo" fissa la pagina di arrivo dopo il login: usiamo sempre
+  // /account (e non "la pagina di partenza") perché quest'ultima andrebbe
+  // ricordata attraverso un redirect completo verso un altro sito e
+  // ritorno, cosa che l'URL da solo non permette senza complicare parecchio
+  // il flusso — /account è comunque una destinazione sensata per chi ha
+  // appena effettuato il login.
+  async function signInWithOAuthProvider(provider) {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/account`,
+      },
+    })
+    return { error }
+  }
+
+  function signInWithGoogle() {
+    return signInWithOAuthProvider('google')
+  }
+
+  function signInWithApple() {
+    return signInWithOAuthProvider('apple')
   }
 
   // Esce dall'account attualmente loggato.
@@ -166,7 +181,17 @@ export function AuthProvider({ children }) {
   // dover ripetere il controllo (e l'optional chaining) in ogni componente.
   const isAdmin = profile?.is_admin === true
 
-  const value = { user, profile, isAdmin, loading, signIn, signUp, signOut }
+  const value = {
+    user,
+    profile,
+    isAdmin,
+    loading,
+    signIn,
+    signUp,
+    signInWithGoogle,
+    signInWithApple,
+    signOut,
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

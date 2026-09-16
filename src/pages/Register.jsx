@@ -9,6 +9,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { getAuthErrorKey } from '../lib/authErrors'
+import SocialAuthButtons from '../components/SocialAuthButtons'
 import './Auth.css'
 
 function Register() {
@@ -145,6 +146,10 @@ function Register() {
             {submitting ? t('auth.register.submitting') : t('auth.register.submit')}
           </button>
         </form>
+
+        {/* I provider OAuth non hanno un "modulo di registrazione" a sé:
+            creano l'account automaticamente al primo utilizzo. */}
+        <SocialAuthButtons />
 
         <p className="auth-switch">
           {t('auth.register.hasAccount')} <Link to="/login">{t('auth.register.loginLink')}</Link>

@@ -1,19 +1,32 @@
 // src/pages/Checkout.jsx
 //
 // Pagina di checkout (/checkout, protetta da RequireAuth): mostra il
-// riepilogo dell'ordine (articoli nel carrello + totale) e per ora un
-// bottone che si limita a mostrare un messaggio placeholder.
+// riepilogo dell'ordine (articoli nel carrello + totale) e il bottone che
+// avvia il pagamento vero e proprio con Stripe.
 //
-// Il collegamento reale a Stripe Checkout (creazione della sessione di
-// pagamento) e il webhook che scala lo stock e crea l'ordine in "orders"/
-// "order_items" richiedono una funzione server-side (non può girare solo
-// nel browser, per motivi di sicurezza): li implementeremo in uno step
-// successivo. src/lib/stripeClient.js è già pronto per quando servirà.
+// Il bottone "Procedi al pagamento" NON crea la sessione di pagamento qui
+// nel browser (impossibile farlo in sicurezza: servirebbe la chiave
+// segreta di Stripe, che non deve mai finire nel frontend). Chiama invece
+// la Edge Function "create-checkout-session" (vedi
+// supabase/functions/create-checkout-session/index.ts), che gira lato
+// server: verifica prezzi/stock reali sul database, ricalcola lo sconto
+// bundle in modo indipendente e crea la sessione Stripe. Riceve indietro
+// solo l'URL della pagina di pagamento ospitata da Stripe, a cui il
+// browser viene reindirizzato con un semplice window.location.href — non
+// serve nessuna libreria Stripe.js lato client per questo flusso.
+//
+// Dopo il pagamento, Stripe reindirizza a /checkout/success o
+// /checkout/cancel (vedi CheckoutSuccess.jsx). La creazione VERA
+// dell'ordine (riga in "orders"/"order_items", scalo dello stock) avviene
+// però nel webhook "stripe-webhook", non in questa pagina: è l'unico modo
+// per essere certi che venga registrata solo quando Stripe conferma che il
+// pagamento è stato effettivamente completato.
 
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '../context/CartContext'
+import { supabase } from '../lib/supabaseClient'
 import './Checkout.css'
 
 function formatPrice(value) {
@@ -25,15 +38,44 @@ function formatPrice(value) {
 
 function Checkout() {
   const { t } = useTranslation()
+  // "getDiscountPercentage"/"getDiscountedTotal" servono SOLO per mostrare
+  // un'anteprima all'utente in questa pagina: il valore che conta davvero
+  // (quello effettivamente addebitato) viene ricalcolato da zero lato
+  // server nella Edge Function, che non riceve né si fida di questi numeri.
   const { cart, getTotal, getDiscountPercentage, getDiscountedTotal } = useCart()
 
   const discountPercentage = getDiscountPercentage()
   const total = getTotal()
   const discountedTotal = getDiscountedTotal()
 
-  // Mostrato dopo il click su "Procedi al pagamento": per ora un semplice
-  // messaggio, in attesa della vera integrazione con Stripe.
-  const [showPlaceholderMessage, setShowPlaceholderMessage] = useState(false)
+  const [processing, setProcessing] = useState(false)
+  const [errorKey, setErrorKey] = useState(null)
+
+  async function handleCheckout() {
+    setErrorKey(null)
+    setProcessing(true)
+
+    // Mandiamo SOLO product_id e quantity: nessun prezzo, nessuno sconto.
+    // supabase.functions.invoke() allega automaticamente il token
+    // dell'utente loggato nell'header Authorization, che la funzione usa
+    // per sapere chi sta pagando (non ci fidiamo di un user_id nel corpo).
+    const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+      body: {
+        items: cart.map((item) => ({ product_id: item.product_id, quantity: item.quantity })),
+      },
+    })
+
+    if (error || !data?.url) {
+      console.error(error)
+      setErrorKey('checkout.paymentError')
+      setProcessing(false)
+      return
+    }
+
+    // Redirect completo del browser verso la pagina di pagamento ospitata
+    // da Stripe: non torniamo indietro da qui, la pagina cambia del tutto.
+    window.location.href = data.url
+  }
 
   // Se l'utente arriva qui a carrello vuoto (es. link diretto), non ha
   // senso mostrare un riepilogo vuoto: lo invitiamo a tornare al negozio.
@@ -92,14 +134,13 @@ function Checkout() {
       <button
         type="button"
         className="btn-primary checkout-pay-button"
-        onClick={() => setShowPlaceholderMessage(true)}
+        onClick={handleCheckout}
+        disabled={processing}
       >
-        {t('checkout.placeOrder')}
+        {processing ? t('checkout.redirecting') : t('checkout.placeOrder')}
       </button>
 
-      {showPlaceholderMessage && (
-        <p className="checkout-placeholder-message">{t('checkout.paymentComingSoon')}</p>
-      )}
+      {errorKey && <p className="checkout-error">{t(errorKey)}</p>}
     </div>
   )
 }

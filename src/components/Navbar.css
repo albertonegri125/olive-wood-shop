@@ -203,9 +203,13 @@
   background: var(--color-accent-soft);
 }
 
-/* Link della pagina corrente, evidenziato */
+/* Link della pagina corrente, evidenziato in accento terracotta (redesign
+   2026, era verde). --color-accent-hover invece di --color-accent: la
+   navbar ha lo stesso sfondo della pagina (--color-bg), dove il terracotta
+   "normale" non raggiunge il contrasto AA minimo per il testo (4.24:1
+   invece di 4.5:1) — la tonalità più scura sì (5.77:1). */
 .nav-link.active {
-  color: var(--color-accent);
+  color: var(--color-accent-hover);
   font-weight: 700;
 }
 

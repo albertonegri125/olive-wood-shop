@@ -29,9 +29,13 @@
   color: var(--color-text);
 }
 
-/* Lingua attualmente selezionata: evidenziata con il colore accent */
+/* Lingua attualmente selezionata: evidenziata con il colore accent.
+   --color-accent-hover: questo componente è usato sia in Navbar (sfondo
+   pagina, dove il terracotta "normale" non raggiunge il minimo AA) sia
+   nel Footer (sfondo bianco, dove passerebbe) — la tonalità più scura va
+   bene in entrambi i contesti. */
 .language-switcher-button.active {
-  color: var(--color-accent);
+  color: var(--color-accent-hover);
 }
 
 .language-switcher-separator {

@@ -1,0 +1,58 @@
+/* src/pages/CheckoutResult.css
+   Stile condiviso da CheckoutSuccess.jsx e CheckoutCancel.jsx: una card
+   centrata con messaggio ed eventuali link di uscita, coerente con lo
+   stile delle pagine di autenticazione (Auth.css). */
+
+.checkout-result-page {
+  display: flex;
+  justify-content: center;
+  padding: 48px 20px 64px;
+}
+
+.checkout-result-card {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+.checkout-result-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  background: var(--color-secondary-soft);
+  color: var(--color-secondary);
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.checkout-result-title {
+  margin-bottom: 8px;
+}
+
+.checkout-result-text {
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.checkout-result-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.checkout-result-secondary-link {
+  color: var(--color-text-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: 14px;
+}
+
+.checkout-result-secondary-link:hover {
+  color: var(--color-text);
+}

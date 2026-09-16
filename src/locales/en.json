@@ -130,7 +130,18 @@
     "paymentInfo": "Payment",
     "orderTotal": "Total",
     "placeOrder": "Proceed to payment",
-    "paymentComingSoon": "Payment integration coming soon."
+    "redirecting": "Redirecting to payment...",
+    "paymentError": "We couldn't start the payment. Please try again later.",
+    "success": {
+      "title": "Thank you for your order!",
+      "message": "Your payment was successful. You'll receive a confirmation email shortly, and you can follow your order from your account page.",
+      "ordersLink": "Go to your orders"
+    },
+    "cancel": {
+      "title": "Payment cancelled",
+      "message": "You haven't been charged. Your items are still in your cart, ready whenever you want to try again.",
+      "cartLink": "Back to cart"
+    }
   },
   "auth": {
     "checkingSession": "Checking your session...",
@@ -138,6 +149,9 @@
     "passwordLabel": "Password",
     "confirmPasswordLabel": "Confirm password",
     "nameLabel": "Full name",
+    "orDivider": "or",
+    "continueWithGoogle": "Continue with Google",
+    "continueWithApple": "Continue with Apple",
     "login": {
       "title": "Sign in",
       "subtitle": "Sign in to your account to see your orders.",
@@ -171,7 +185,16 @@
     "loading": "Loading...",
     "noName": "Name not set",
     "ordersTitle": "Your orders",
-    "ordersEmpty": "You haven't placed any orders yet."
+    "ordersEmpty": "You haven't placed any orders yet.",
+    "ordersError": "We couldn't load your orders.",
+    "orderItemUnknown": "Product no longer available",
+    "orderStatus": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "paid_stock_issue": "Paid — stock to verify",
+      "shipped": "Shipped",
+      "cancelled": "Cancelled"
+    }
   },
   "admin": {
     "title": "Admin panel",

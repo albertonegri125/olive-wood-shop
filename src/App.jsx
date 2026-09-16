@@ -17,6 +17,8 @@ import Shop from './pages/Shop'
 import ProductDetail from './pages/ProductDetail'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
+import CheckoutSuccess from './pages/CheckoutSuccess'
+import CheckoutCancel from './pages/CheckoutCancel'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Account from './pages/Account'
@@ -55,8 +57,9 @@ function App() {
             {/* Carrello: mostra gli articoli aggiunti, con quantità e totale */}
             <Route path="/cart" element={<Cart />} />
 
-            {/* Checkout: riepilogo ordine + bottone di pagamento (per ora
-                solo un placeholder). Protetta: bisogna essere loggati. */}
+            {/* Checkout: riepilogo ordine + bottone di pagamento, che
+                reindirizza a Stripe Checkout. Protetta: bisogna essere
+                loggati. */}
             <Route
               path="/checkout"
               element={
@@ -65,6 +68,21 @@ function App() {
                 </RequireAuth>
               }
             />
+
+            {/* Pagine di arrivo dopo il pagamento su Stripe (vedi
+                success_url/cancel_url in create-checkout-session). Solo
+                "success" è protetta: ha senso solo per chi ha appena
+                effettuato un acquisto da loggato; "cancel" resta pubblica,
+                non mostra nessun dato sensibile. */}
+            <Route
+              path="/checkout/success"
+              element={
+                <RequireAuth>
+                  <CheckoutSuccess />
+                </RequireAuth>
+              }
+            />
+            <Route path="/checkout/cancel" element={<CheckoutCancel />} />
 
             {/* Accesso e registrazione */}
             <Route path="/login" element={<Login />} />

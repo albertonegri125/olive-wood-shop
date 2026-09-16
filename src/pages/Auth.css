@@ -72,7 +72,9 @@
   padding: 10px 12px;
   border-radius: 4px;
   background: var(--color-accent-soft);
-  color: var(--color-accent);
+  /* --color-accent-hover: sopra questo sfondo tenue il terracotta
+     "normale" non raggiunge il contrasto AA minimo per il testo. */
+  color: var(--color-accent-hover);
   font-size: 13px;
 }
 
@@ -93,7 +95,10 @@
 }
 
 .auth-switch a {
-  color: var(--color-accent);
+  /* --color-accent-hover: questo link è direttamente sullo sfondo della
+     pagina (nessuna card bianca dietro), dove il terracotta "normale" non
+     raggiunge il minimo AA per il testo (4.24:1 invece di 4.5:1). */
+  color: var(--color-accent-hover);
   text-decoration: underline;
   text-underline-offset: 3px;
 }

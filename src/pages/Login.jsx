@@ -8,6 +8,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { getAuthErrorKey } from '../lib/authErrors'
+import SocialAuthButtons from '../components/SocialAuthButtons'
 import './Auth.css'
 
 function Login() {
@@ -86,6 +87,8 @@ function Login() {
             {submitting ? t('auth.login.submitting') : t('auth.login.submit')}
           </button>
         </form>
+
+        <SocialAuthButtons />
 
         <p className="auth-switch">
           {t('auth.login.noAccount')} <Link to="/register">{t('auth.login.registerLink')}</Link>

@@ -1,7 +1,8 @@
 /* src/components/ProductCard.css
-   Stile della card prodotto: l'immagine domina la composizione, il prezzo
-   è l'ultimo elemento e resta discreto (niente grassetto pesante o colori
-   vistosi), per spostare l'attenzione sul materiale/lavorazione del pezzo. */
+   Stile della card prodotto: l'immagine domina la composizione. Il prezzo
+   (redesign 2026) è invece in evidenza in accento terracotta, così l'occhio
+   ci si posa subito dopo il nome del prodotto. Ombra più decisa
+   (--shadow-card) per dare più profondità e invito al click. */
 
 .product-card {
   display: flex;
@@ -9,7 +10,7 @@
   border-radius: 8px;
   overflow: hidden; /* taglia l'immagine sugli angoli arrotondati della card */
   background: var(--color-card-bg);
-  box-shadow: var(--shadow-sm); /* ombra leggera, sempre visibile */
+  box-shadow: var(--shadow-card);
   transition: box-shadow 0.2s ease, transform 0.2s ease;
   height: 100%; /* così tutte le card in griglia hanno la stessa altezza */
   box-sizing: border-box;
@@ -153,7 +154,7 @@
   flex-shrink: 0;
   width: 14px;
   height: 14px;
-  color: var(--color-accent);
+  color: var(--color-secondary); /* icona decorativa: verde oliva, non terracotta (riservata a bottoni/link) */
 }
 
 /* Riga finale: prezzo a sinistra, bottone a destra. Spinta in fondo alla
@@ -168,13 +169,15 @@
   padding-top: 4px;
 }
 
-/* Il prezzo resta discreto: dimensione normale, peso medio (non è mai
-   l'elemento più "urlato" della card). */
+/* Il prezzo (redesign 2026) è in accento terracotta, per risaltare come
+   elemento su cui l'occhio si posa — non più nel colore testo standard.
+   Contrasto verificato: la card ha sfondo bianco (--color-card-bg), dove
+   il testo in --color-accent raggiunge un rapporto di ~4.57:1 (WCAG AA). */
 .product-card-price {
   font-family: var(--font-sans);
   font-size: 15px;
-  font-weight: 500;
-  color: var(--color-text);
+  font-weight: 600;
+  color: var(--color-accent);
 }
 
 .product-card-price-muted {

@@ -59,9 +59,94 @@
   background: none;
   border: none;
   padding: 0;
-  color: var(--color-accent);
+  /* --color-accent-hover: nessuna card bianca dietro questo testo (è
+     direttamente sullo sfondo pagina), dove il terracotta "normale" non
+     raggiunge il minimo AA per il testo. */
+  color: var(--color-accent-hover);
   text-decoration: underline;
   text-underline-offset: 3px;
   font-size: 14px;
   cursor: pointer;
+}
+
+/* --- Storico ordini --- */
+.account-orders-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.account-order {
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.account-order-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.account-order-date {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.account-order-status {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-secondary);
+}
+
+/* Ordine pagato ma con un problema di scorte insufficienti (vedi
+   stripe-webhook): colore ambra, coerente con gli altri avvisi "da
+   controllare" del sito, non un errore bloccante. */
+.account-order-status-issue {
+  color: var(--color-amber);
+}
+
+.account-order-items {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.account-order-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.account-order-item-qty {
+  color: var(--color-text-muted);
+}
+
+.account-order-discount {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--color-secondary);
+}
+
+.account-order-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-border);
+  font-weight: 600;
+  color: var(--color-text);
 }

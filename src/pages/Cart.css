@@ -198,7 +198,10 @@
   padding: 4px 10px;
   border-radius: 999px;
   background: var(--color-accent-soft);
-  color: var(--color-accent);
+  /* --color-accent-hover, non --color-accent: su questo sfondo tenue il
+     terracotta "normale" scende a ~3.37:1 (sotto il minimo AA di 4.5:1
+     per il testo); la tonalità più scura torna a ~4.59:1. */
+  color: var(--color-accent-hover);
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
@@ -219,13 +222,15 @@
   padding: 10px 12px;
   border-radius: 4px;
   background: var(--color-accent-soft);
-  color: var(--color-accent);
+  /* --color-accent-hover: stesso motivo del badge sconto qui sopra (il
+     terracotta "normale" non raggiunge l'AA su questo sfondo tenue). */
+  color: var(--color-accent-hover);
   font-size: 13px;
   line-height: 1.5;
 }
 
 .cart-incentive-link {
-  color: var(--color-accent);
+  color: var(--color-accent-hover);
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 2px;
