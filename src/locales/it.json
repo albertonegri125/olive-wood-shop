@@ -188,6 +188,7 @@
     "ordersEmpty": "Non hai ancora effettuato nessun ordine.",
     "ordersError": "Non è stato possibile caricare i tuoi ordini.",
     "orderItemUnknown": "Prodotto non più disponibile",
+    "shippingAddressTitle": "Indirizzo di spedizione",
     "orderStatus": {
       "pending": "In attesa",
       "paid": "Pagato",

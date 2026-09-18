@@ -167,6 +167,33 @@ function Account() {
                   </p>
                 )}
 
+                {order.shipping_address?.address && (
+                  <div className="account-order-shipping">
+                    <span className="account-order-shipping-title">
+                      {t('account.shippingAddressTitle')}
+                    </span>
+                    <address>
+                      {order.shipping_address.name && <div>{order.shipping_address.name}</div>}
+                      <div>
+                        {order.shipping_address.address.line1}
+                        {order.shipping_address.address.line2
+                          ? `, ${order.shipping_address.address.line2}`
+                          : ''}
+                      </div>
+                      <div>
+                        {[
+                          order.shipping_address.address.postal_code,
+                          order.shipping_address.address.city,
+                          order.shipping_address.address.state,
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                      </div>
+                      <div>{order.shipping_address.address.country}</div>
+                    </address>
+                  </div>
+                )}
+
                 <div className="account-order-total">
                   <span>{t('checkout.orderTotal')}</span>
                   <span>{formatPrice(order.total)}</span>

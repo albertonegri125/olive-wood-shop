@@ -146,6 +146,19 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const amountSubtotal = (session.amount_subtotal ?? session.amount_total ?? 0) / 100
   const discountAmount = Math.max(amountSubtotal - total, 0)
 
+  // --- Indirizzo di spedizione --------------------------------------------
+  // Popolato da Stripe stesso perché create-checkout-session imposta
+  // "shipping_address_collection": l'utente lo inserisce nella pagina di
+  // pagamento di Stripe, non nel nostro sito. Salviamo l'oggetto così com'è
+  // (nome + indirizzo strutturato) in una colonna jsonb: è un dato di sola
+  // lettura per noi (mostrato in Account.jsx), non serve normalizzarlo in
+  // colonne separate. Può essere null se, per qualche motivo, Stripe non
+  // l'ha raccolto (es. sessione creata prima di questa modifica).
+  const shippingDetails = session.shipping_details ?? null
+  const shippingAddress = shippingDetails
+    ? { name: shippingDetails.name, address: shippingDetails.address }
+    : null
+
   // --- Scalo atomico dello stock -----------------------------------------
   // Per ogni prodotto, un'unica UPDATE con condizione "stock >= quantity"
   // (vedi la funzione SQL decrement_product_stock, schema_stripe_orders.sql):
@@ -191,6 +204,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       total,
       discount_percentage: discountPercentage,
       discount_amount: discountAmount,
+      shipping_address: shippingAddress,
     })
     .select()
     .single()

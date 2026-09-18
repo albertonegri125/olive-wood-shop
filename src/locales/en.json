@@ -188,6 +188,7 @@
     "ordersEmpty": "You haven't placed any orders yet.",
     "ordersError": "We couldn't load your orders.",
     "orderItemUnknown": "Product no longer available",
+    "shippingAddressTitle": "Shipping address",
     "orderStatus": {
       "pending": "Pending",
       "paid": "Paid",

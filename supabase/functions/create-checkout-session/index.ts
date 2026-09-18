@@ -228,6 +228,14 @@ Deno.serve(async (req: Request) => {
       // sessione mostra SOLO i metodi elencati, anche se altri sono
       // abilitati in dashboard.
       payment_method_types: ['card'],
+      // Fa comparire nella pagina di pagamento di Stripe stessa il modulo per
+      // l'indirizzo di spedizione: lo raccoglie e lo verifica Stripe (CAP,
+      // formato via, ecc.), non dobbiamo costruire noi nessun form. Per ora
+      // limitato all'Italia ('IT'); per spedire anche altrove basta
+      // aggiungere altri codici paese ISO 3166-1 alpha-2 all'elenco.
+      shipping_address_collection: {
+        allowed_countries: ['IT'],
+      },
       line_items: lineItems,
       discounts: discountsParam,
       customer_email: user.email,
