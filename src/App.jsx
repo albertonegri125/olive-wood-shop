@@ -23,6 +23,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Account from './pages/Account'
 import Admin from './pages/Admin'
+import AdminUsers from './pages/AdminUsers'
 import About from './pages/About'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import TerminiCondizioni from './pages/TerminiCondizioni'
@@ -107,6 +108,19 @@ function App() {
               element={
                 <RequireAdmin>
                   <Admin />
+                </RequireAdmin>
+              }
+            />
+
+            {/* Sezione "Gestione Admin" del pannello: promuovere/rimuovere
+                altri amministratori. Stessa protezione di /admin: ogni
+                lettura/scrittura passa dalla Edge Function "manage-admin",
+                non da query dirette sul client (vedi AdminUsers.jsx). */}
+            <Route
+              path="/admin/utenti"
+              element={
+                <RequireAdmin>
+                  <AdminUsers />
                 </RequireAdmin>
               }
             />

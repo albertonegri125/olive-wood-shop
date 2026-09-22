@@ -198,6 +198,11 @@
     }
   },
   "admin": {
+    "nav": {
+      "label": "Admin panel sections",
+      "products": "Products",
+      "users": "Administrators"
+    },
     "title": "Admin panel",
     "newProduct": "New product",
     "loading": "Loading products...",
@@ -241,6 +246,31 @@
       "slugInUse": "This slug is already used by another product: choose a different one.",
       "requiredFields": "Fill in all required fields with valid values."
     }
+  },
+  "adminUsers": {
+    "title": "Admin management",
+    "currentAdminsTitle": "Current administrators",
+    "loading": "Loading administrators...",
+    "error": "We couldn't complete the operation.",
+    "empty": "No administrators found.",
+    "you": "you",
+    "promotedBy": "Promoted by {{email}} on {{date}}",
+    "promotedByUnknown": "Promoted manually from the SQL Editor (no record available).",
+    "promotedByUnknownEmail": "an admin no longer available",
+    "revoke": "Remove admin privileges",
+    "revoking": "Removing...",
+    "confirmRevoke": "Remove admin privileges from \"{{email}}\"? You can promote them again later if needed.",
+    "confirmRevokeSelf": "You're about to remove YOUR OWN admin privileges: after this you'll lose access to this panel. Continue?",
+    "searchTitle": "Promote a user",
+    "searchHint": "Search among users already registered on the site: you can't create a new account from here.",
+    "searchLabel": "Search by email",
+    "searchPlaceholder": "email@example.com",
+    "searchButton": "Search",
+    "searching": "Searching...",
+    "searchEmpty": "No user found with this email.",
+    "alreadyAdmin": "Already an administrator",
+    "promote": "Promote to admin",
+    "promoting": "Promoting..."
   },
   "cookieBanner": {
     "message": "We only use technical cookies and browser-stored data (e.g. for the cart): no advertising tracking.",

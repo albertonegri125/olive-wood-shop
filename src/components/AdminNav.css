@@ -1,0 +1,29 @@
+/* src/components/AdminNav.css
+   Stile della navigazione tra le sezioni del pannello admin. */
+
+.admin-nav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin-nav-link {
+  padding: 10px 4px;
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.admin-nav-link:hover {
+  color: var(--color-text);
+}
+
+.admin-nav-link-active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}

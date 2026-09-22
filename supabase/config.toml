@@ -15,3 +15,9 @@ verify_jwt = true
 
 [functions.stripe-webhook]
 verify_jwt = false
+
+# manage-admin: chiamata dal browser (pannello /admin/utenti) da un admin già
+# loggato, esattamente come create-checkout-session — richiede un JWT
+# Supabase valido.
+[functions.manage-admin]
+verify_jwt = true

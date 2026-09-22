@@ -198,6 +198,11 @@
     }
   },
   "admin": {
+    "nav": {
+      "label": "Sezioni pannello admin",
+      "products": "Prodotti",
+      "users": "Amministratori"
+    },
     "title": "Pannello Admin",
     "newProduct": "Nuovo prodotto",
     "loading": "Caricamento prodotti...",
@@ -241,6 +246,31 @@
       "slugInUse": "Questo slug è già usato da un altro prodotto: scegline uno diverso.",
       "requiredFields": "Compila tutti i campi obbligatori con valori validi."
     }
+  },
+  "adminUsers": {
+    "title": "Gestione Admin",
+    "currentAdminsTitle": "Amministratori attuali",
+    "loading": "Caricamento amministratori...",
+    "error": "Non è stato possibile completare l'operazione.",
+    "empty": "Nessun amministratore trovato.",
+    "you": "tu",
+    "promotedBy": "Promosso da {{email}} il {{date}}",
+    "promotedByUnknown": "Promosso manualmente da SQL Editor (nessuna traccia disponibile).",
+    "promotedByUnknownEmail": "un admin non più disponibile",
+    "revoke": "Rimuovi privilegi admin",
+    "revoking": "Rimozione in corso...",
+    "confirmRevoke": "Rimuovere i privilegi admin di \"{{email}}\"? Potrai ripromuoverlo in seguito, se serve.",
+    "confirmRevokeSelf": "Stai per rimuovere i TUOI privilegi admin: dopo questa operazione perderai l'accesso a questo pannello. Continuare?",
+    "searchTitle": "Promuovi un utente",
+    "searchHint": "Cerca tra gli utenti già registrati sul sito: da qui non è possibile creare un nuovo account.",
+    "searchLabel": "Cerca per email",
+    "searchPlaceholder": "email@esempio.it",
+    "searchButton": "Cerca",
+    "searching": "Ricerca in corso...",
+    "searchEmpty": "Nessun utente trovato con questa email.",
+    "alreadyAdmin": "Già amministratore",
+    "promote": "Promuovi ad admin",
+    "promoting": "Promozione in corso..."
   },
   "cookieBanner": {
     "message": "Usiamo solo cookie tecnici e dati salvati nel tuo browser (es. per il carrello): nessun tracciamento pubblicitario.",

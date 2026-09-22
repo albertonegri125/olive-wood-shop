@@ -24,6 +24,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabaseClient'
 import { resizeImageForUpload } from '../lib/imageResize'
+import AdminNav from '../components/AdminNav'
 // Riusiamo gli stili dei campi di Auth.css (.auth-field, .auth-label,
 // .auth-input, .auth-error): stesso aspetto dei form di Login/Registrazione,
 // invece di ridefinire da capo gli stessi input anche qui.
@@ -508,6 +509,8 @@ function Admin() {
 
   return (
     <div className="admin-page">
+      <AdminNav />
+
       <div className="admin-header">
         <h1 className="admin-title">{t('admin.title')}</h1>
         <button type="button" className="btn-primary" onClick={openNewForm}>
