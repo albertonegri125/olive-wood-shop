@@ -131,6 +131,14 @@ Deno.serve(async (req: Request) => {
 
     const session = event.data.object as Stripe.Checkout.Session
 
+    // DEBUG TEMPORANEO — DA RIMUOVERE dopo aver individuato il percorso
+    // corretto per l'indirizzo di spedizione: stampa l'intero oggetto
+    // session così come arriva da Stripe, prima di qualunque logica di
+    // salvataggio, per vedere il nome/percorso esatto del campo indirizzo
+    // in questa apiVersion (potrebbe essere shipping_details.address,
+    // customer_details.address, o altro).
+    console.log('[DEBUG] session ricevuta da Stripe:', JSON.stringify(session, null, 2))
+
     try {
       await handleCheckoutCompleted(session, adminClient)
     } catch (error) {
