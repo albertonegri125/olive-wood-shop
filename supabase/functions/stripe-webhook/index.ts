@@ -18,16 +18,20 @@
 // Per questo leggiamo il corpo come testo grezzo PRIMA di qualunque
 // parsing: la firma è calcolata sui byte esatti inviati da Stripe.
 
+// NOTA DIAGNOSTICA: questi due import girano PRIMA di qualsiasi nostro
+// codice (comprese le righe seguenti): se uno dei due moduli non si
+// risolvesse a runtime, Deno farebbe fallire il boot della function ancora
+// prima che si possa loggare qualcosa da qui. Non c'è modo di intercettarlo
+// con un try/catch in questo file: se in futuro si sospetta un problema di
+// import, va controllato nei log di deploy/boot della function, non in
+// quelli delle singole richieste.
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 import Stripe from 'npm:stripe@^17.0.0'
 
+console.log('[stripe-webhook] Modulo in fase di inizializzazione...')
+
 const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY')
 const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET')
-
-const stripe = new Stripe(stripeSecretKey ?? '', {
-  apiVersion: '2024-06-20',
-  httpClient: Stripe.createFetchHttpClient(),
-})
 
 // Il client va creato con la Service Role Key: questa funzione scrive
 // ordini, righe d'ordine e aggiorna lo stock per conto del sistema, non
@@ -35,65 +39,125 @@ const stripe = new Stripe(stripeSecretKey ?? '', {
 // utente) — serve quindi un accesso che bypassi la Row Level Security.
 const supabaseUrl = Deno.env.get('SUPABASE_URL')
 const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
-const adminClient = createClient(supabaseUrl ?? '', supabaseServiceRoleKey ?? '')
 
-// La verifica della firma richiede l'implementazione "SubtleCrypto" invece
-// di quella basata sul modulo "crypto" di Node: necessaria per farla
-// funzionare nel runtime Deno delle Edge Function di Supabase.
-const cryptoProvider = Stripe.createSubtleCryptoProvider()
+// DIAGNOSTICA: la creazione dei client Stripe/Supabase qui sotto girava
+// prima d'ora a livello di modulo, FUORI da Deno.serve e senza try/catch.
+// Se una delle env var qui sopra manca (es. una variabile rinominata o non
+// configurata nel progetto Supabase), "new Stripe('')" o "createClient('',
+// ...)" possono lanciare un'eccezione: il modulo intero fallisce a
+// caricarsi, Deno.serve non viene MAI registrato, e ogni richiesta di
+// Stripe riceve un 500 generico senza che compaia una sola riga nei log
+// applicativi (il crash avviene prima che qualunque nostro console.log
+// possa girare). Avvolgendo tutto in questo try/catch, un'eventuale
+// eccezione viene almeno loggata in modo esplicito qui sotto, e l'handler
+// può comunque rispondere in modo diagnosticabile invece di un crash muto.
+let stripe!: Stripe
+let adminClient!: ReturnType<typeof createClient>
+let cryptoProvider!: ReturnType<typeof Stripe.createSubtleCryptoProvider>
+let initError: unknown = null
+
+try {
+  stripe = new Stripe(stripeSecretKey ?? '', {
+    apiVersion: '2024-06-20',
+    httpClient: Stripe.createFetchHttpClient(),
+  })
+
+  adminClient = createClient(supabaseUrl ?? '', supabaseServiceRoleKey ?? '')
+
+  // La verifica della firma richiede l'implementazione "SubtleCrypto" invece
+  // di quella basata sul modulo "crypto" di Node: necessaria per farla
+  // funzionare nel runtime Deno delle Edge Function di Supabase.
+  cryptoProvider = Stripe.createSubtleCryptoProvider()
+
+  console.log('[stripe-webhook] Inizializzazione del modulo completata.')
+} catch (error) {
+  initError = error
+  console.error(
+    '[stripe-webhook] ERRORE CRITICO durante l\'inizializzazione del modulo (Stripe/Supabase client):',
+    error
+  )
+}
 
 Deno.serve(async (req: Request) => {
-  if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 })
-  }
+  // Primissima riga eseguita per OGNI richiesta: se questo log non compare
+  // mai nei log di Supabase, la function non sta nemmeno partendo (crash a
+  // livello di modulo/boot, vedi il try/catch di inizializzazione sopra).
+  console.log('Webhook invocato')
 
-  if (!stripeSecretKey || !webhookSecret) {
-    console.error('STRIPE_SECRET_KEY e/o STRIPE_WEBHOOK_SECRET non impostate.')
-    return new Response('Configurazione mancante lato server.', { status: 500 })
-  }
-
-  const signature = req.headers.get('stripe-signature')
-  const rawBody = await req.text()
-
-  let event: Stripe.Event
   try {
-    if (!signature) throw new Error('Header stripe-signature mancante.')
-    event = await stripe.webhooks.constructEventAsync(
-      rawBody,
-      signature,
-      webhookSecret,
-      undefined,
-      cryptoProvider
-    )
-  } catch (error) {
-    console.error('Firma webhook non valida:', error)
-    return new Response('Firma non valida.', { status: 400 })
-  }
+    if (initError) {
+      console.error(
+        '[stripe-webhook] Richiesta ricevuta ma l\'inizializzazione del modulo era fallita in precedenza:',
+        initError
+      )
+      return new Response('Errore di inizializzazione lato server.', { status: 500 })
+    }
 
-  // Rispondiamo comunque 200 a qualsiasi evento che non ci interessa:
-  // altrimenti Stripe continuerebbe a ritentare la consegna all'infinito
-  // pensando che la ricezione sia fallita.
-  if (event.type !== 'checkout.session.completed') {
+    if (req.method !== 'POST') {
+      return new Response('Method not allowed', { status: 405 })
+    }
+
+    if (!stripeSecretKey || !webhookSecret || !supabaseUrl || !supabaseServiceRoleKey) {
+      console.error(
+        'Variabili d\'ambiente mancanti: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, SUPABASE_URL e/o SUPABASE_SERVICE_ROLE_KEY non impostate.'
+      )
+      return new Response('Configurazione mancante lato server.', { status: 500 })
+    }
+
+    const signature = req.headers.get('stripe-signature')
+    const rawBody = await req.text()
+
+    let event: Stripe.Event
+    try {
+      if (!signature) throw new Error('Header stripe-signature mancante.')
+      event = await stripe.webhooks.constructEventAsync(
+        rawBody,
+        signature,
+        webhookSecret,
+        undefined,
+        cryptoProvider
+      )
+    } catch (error) {
+      console.error('Firma webhook non valida:', error)
+      return new Response('Firma non valida.', { status: 400 })
+    }
+
+    // Rispondiamo comunque 200 a qualsiasi evento che non ci interessa:
+    // altrimenti Stripe continuerebbe a ritentare la consegna all'infinito
+    // pensando che la ricezione sia fallita.
+    if (event.type !== 'checkout.session.completed') {
+      return new Response(JSON.stringify({ received: true }), { status: 200 })
+    }
+
+    const session = event.data.object as Stripe.Checkout.Session
+
+    try {
+      await handleCheckoutCompleted(session, adminClient)
+    } catch (error) {
+      // Un 500 qui fa sì che Stripe ritenti automaticamente la consegna più
+      // tardi (con backoff): utile per errori temporanei (es. il database
+      // momentaneamente irraggiungibile), che vogliamo poter recuperare da
+      // soli invece di perdere silenziosamente l'ordine.
+      console.error('Errore nella gestione di checkout.session.completed:', error)
+      return new Response('Errore interno.', { status: 500 })
+    }
+
     return new Response(JSON.stringify({ received: true }), { status: 200 })
-  }
-
-  const session = event.data.object as Stripe.Checkout.Session
-
-  try {
-    await handleCheckoutCompleted(session)
   } catch (error) {
-    // Un 500 qui fa sì che Stripe ritenti automaticamente la consegna più
-    // tardi (con backoff): utile per errori temporanei (es. il database
-    // momentaneamente irraggiungibile), che vogliamo poter recuperare da
-    // soli invece di perdere silenziosamente l'ordine.
-    console.error('Errore nella gestione di checkout.session.completed:', error)
+    // Rete di sicurezza finale attorno a TUTTA la logica della richiesta:
+    // cattura qualunque eccezione non prevista dai blocchi sopra (bug,
+    // errore inatteso nel parsing, ecc.) e la logga in modo esplicito,
+    // invece di lasciar risultare un 500 "muto" senza alcuna traccia nei
+    // log — esattamente il sintomo da cui siamo partiti.
+    console.error('[stripe-webhook] ERRORE NON GESTITO nella richiesta:', error)
     return new Response('Errore interno.', { status: 500 })
   }
-
-  return new Response(JSON.stringify({ received: true }), { status: 200 })
 })
 
-async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+async function handleCheckoutCompleted(
+  session: Stripe.Checkout.Session,
+  adminClient: ReturnType<typeof createClient>
+) {
   // Il pagamento potrebbe non essere ancora confermato per alcuni metodi
   // "asincroni" (es. bonifici istantanei in alcuni paesi): per le carte —
   // il solo metodo abilitato in create-checkout-session — a questo punto

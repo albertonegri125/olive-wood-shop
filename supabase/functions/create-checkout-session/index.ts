@@ -216,7 +216,7 @@ Deno.serve(async (req: Request) => {
       }
     })
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: 'payment',
       // "card" soltanto: su Stripe Checkout, Apple Pay e Google Pay
       // compaiono AUTOMATICAMENTE dentro il metodo "card" sui browser/
@@ -246,7 +246,26 @@ Deno.serve(async (req: Request) => {
         discount_percentage: String(discountPercentage),
         items: JSON.stringify(itemsMetadata),
       },
-    })
+    }
+
+    // DIAGNOSTICA: logga la configurazione ESATTA inviata a Stripe appena
+    // prima della creazione della sessione, in particolare
+    // "shipping_address_collection" — utile per verificare nei log della
+    // function se la versione effettivamente deployata include davvero
+    // questo parametro (un redeploy mancante dopo una modifica al codice
+    // non produce nessun errore: la sessione viene creata comunque, solo
+    // senza il modulo per l'indirizzo di spedizione).
+    console.log(
+      '[create-checkout-session] Parametri sessione Stripe:',
+      JSON.stringify({
+        shipping_address_collection: sessionParams.shipping_address_collection,
+        payment_method_types: sessionParams.payment_method_types,
+        line_items_count: sessionParams.line_items?.length,
+        discounts: sessionParams.discounts,
+      })
+    )
+
+    const session = await stripe.checkout.sessions.create(sessionParams)
 
     return jsonResponse({ url: session.url })
   } catch (error) {
