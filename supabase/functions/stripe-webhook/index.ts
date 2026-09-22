@@ -131,14 +131,6 @@ Deno.serve(async (req: Request) => {
 
     const session = event.data.object as Stripe.Checkout.Session
 
-    // DEBUG TEMPORANEO — DA RIMUOVERE dopo aver individuato il percorso
-    // corretto per l'indirizzo di spedizione: stampa l'intero oggetto
-    // session così come arriva da Stripe, prima di qualunque logica di
-    // salvataggio, per vedere il nome/percorso esatto del campo indirizzo
-    // in questa apiVersion (potrebbe essere shipping_details.address,
-    // customer_details.address, o altro).
-    console.log('[DEBUG] session ricevuta da Stripe:', JSON.stringify(session, null, 2))
-
     try {
       await handleCheckoutCompleted(session, adminClient)
     } catch (error) {
@@ -224,12 +216,36 @@ async function handleCheckoutCompleted(
   // pagamento di Stripe, non nel nostro sito. Salviamo l'oggetto così com'è
   // (nome + indirizzo strutturato) in una colonna jsonb: è un dato di sola
   // lettura per noi (mostrato in Account.jsx), non serve normalizzarlo in
-  // colonne separate. Può essere null se, per qualche motivo, Stripe non
-  // l'ha raccolto (es. sessione creata prima di questa modifica).
-  const shippingDetails = session.shipping_details ?? null
-  const shippingAddress = shippingDetails
-    ? { name: shippingDetails.name, address: shippingDetails.address }
-    : null
+  // colonne separate.
+  //
+  // In questa apiVersion Stripe NON espone più l'indirizzo su
+  // "session.shipping_details" (percorso vecchio/obsoleto, sempre
+  // undefined qui — verificato via log di debug su una sessione reale):
+  // il percorso corretto è "session.collected_information.shipping_details".
+  // Il cast è necessario perché i tipi della SDK "stripe" installata non
+  // includono ancora questo campo per questa apiVersion.
+  const collectedInformation = (
+    session as unknown as {
+      collected_information?: {
+        shipping_details?: { name: string | null; address: Stripe.Address | null } | null
+      }
+    }
+  ).collected_information
+
+  const shippingDetails = collectedInformation?.shipping_details ?? null
+
+  let shippingAddress: { name: string | null; address: Stripe.Address | null } | null = null
+  if (shippingDetails) {
+    shippingAddress = { name: shippingDetails.name, address: shippingDetails.address }
+  } else {
+    // Rete di sicurezza: se in futuro una sessione arrivasse senza indirizzo
+    // raccolto (es. checkout cambiato, evento diverso), salviamo NULL in
+    // modo esplicito e lo segnaliamo nei log invece di lasciarlo passare
+    // silenziosamente.
+    console.warn(
+      `Sessione ${session.id}: nessun indirizzo di spedizione in collected_information.shipping_details, salvo shipping_address = NULL.`
+    )
+  }
 
   // --- Scalo atomico dello stock -----------------------------------------
   // Per ogni prodotto, un'unica UPDATE con condizione "stock >= quantity"
