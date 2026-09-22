@@ -21,8 +21,11 @@ import CheckoutSuccess from './pages/CheckoutSuccess'
 import CheckoutCancel from './pages/CheckoutCancel'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import Account from './pages/Account'
 import Admin from './pages/Admin'
+import AdminCategories from './pages/AdminCategories'
 import AdminUsers from './pages/AdminUsers'
 import About from './pages/About'
 import PrivacyPolicy from './pages/PrivacyPolicy'
@@ -89,6 +92,14 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
+            {/* Recupero password: /forgot-password chiede l'email e manda
+                il link; /reset-password è la pagina di arrivo di quel link
+                (vedi ResetPassword.jsx), dove si imposta la nuova password.
+                Entrambe pubbliche: chi le apre non è ancora (di nuovo)
+                loggato con una password valida. */}
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+
             {/* Account personale: dati profilo + storico ordini. Protetta:
                 se non loggati si viene rimandati a /login. */}
             <Route
@@ -108,6 +119,20 @@ function App() {
               element={
                 <RequireAdmin>
                   <Admin />
+                </RequireAdmin>
+              }
+            />
+
+            {/* Sezione "Categorie" del pannello: CRUD categorie prodotto
+                (vedi AdminCategories.jsx) — query dirette protette dalla
+                RLS già esistente su "categories", nessuna Edge Function
+                necessaria (a differenza di is_admin, non è un dato
+                critico di sicurezza). */}
+            <Route
+              path="/admin/categorie"
+              element={
+                <RequireAdmin>
+                  <AdminCategories />
                 </RequireAdmin>
               }
             />

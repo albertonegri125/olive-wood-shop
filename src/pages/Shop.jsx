@@ -14,10 +14,11 @@ import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabaseClient'
 import ProductCard from '../components/ProductCard'
+import { getCategoryFallbackName } from '../lib/categoryName'
 import './Shop.css'
 
 function Shop() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
 
   // "null" significa "Tutti" (nessun filtro): non c'è ?category nell'URL.
@@ -138,7 +139,9 @@ function Shop() {
                 }
                 onClick={() => handleSelectCategory(category.slug)}
               >
-                {t(`categories.${category.slug}`, { defaultValue: category.name })}
+                {t(`categories.${category.slug}`, {
+                  defaultValue: getCategoryFallbackName(category, i18n.language),
+                })}
               </button>
             ))}
           </div>

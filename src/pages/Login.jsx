@@ -88,6 +88,10 @@ function Login() {
           </button>
         </form>
 
+        <p className="auth-switch">
+          <Link to="/forgot-password">{t('auth.login.forgotPassword')}</Link>
+        </p>
+
         <SocialAuthButtons />
 
         <p className="auth-switch">

@@ -177,21 +177,49 @@
 }
 
 /* --- Tabella prodotti ---
+   CSS Grid invece di un <table> HTML: ogni riga (.admin-table-row) ha
+   "display: contents" — si "dissolve" come box, e le sue celle diventano
+   celle DIRETTE della griglia definita qui su .admin-table. Risultato:
+   TUTTE le celle di TUTTE le righe condividono esattamente le stesse
+   colonne, e "align-items: center" allinea verticalmente ogni cella nella
+   propria riga automaticamente — l'allineamento è garantito dalla griglia
+   stessa, non da margini/padding calcolati a mano riga per riga. L'altezza
+   di ogni riga si adatta al contenuto più alto (in pratica sempre la
+   miniatura 50x50px, presente su ogni riga), restando così coerente su
+   tutta la tabella.
    Su schermi stretti la tabella scorre orizzontalmente dentro il proprio
-   contenitore, invece di far scrollare l'intera pagina in orizzontale. */
+   contenitore (min-width sotto), invece di far scrollare l'intera pagina. */
 .admin-table-wrapper {
   overflow-x: auto;
 }
 
 .admin-table {
+  display: grid;
+  grid-template-columns: 82px minmax(160px, 1.4fr) 110px 220px 210px;
+  align-items: center;
   width: 100%;
-  border-collapse: collapse;
+  min-width: 800px;
   font-size: 14px;
 }
 
-.admin-table th {
-  text-align: left;
+.admin-table-row {
+  display: contents;
+}
+
+/* Cella "base": flex + align-items centra anche il CONTENUTO della cella
+   al suo interno (utile quando min-height la rende più alta del testo che
+   contiene, es. "Nome" o "Prezzo" accanto alla miniatura 50px). */
+.admin-table-cell {
+  display: flex;
+  align-items: center;
+  min-height: 50px;
   padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+  box-sizing: border-box;
+}
+
+.admin-table-head-cell {
+  min-height: 0;
   border-bottom: 2px solid var(--color-border);
   font-family: var(--font-sans);
   font-size: 12px;
@@ -202,23 +230,20 @@
   white-space: nowrap;
 }
 
-.admin-table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--color-border);
-  vertical-align: middle;
-}
-
-.admin-table-thumb-col {
-  width: 64px;
-}
-
+/* Dimensione FISSA (mai determinata dall'immagine originale) + object-fit:
+   cover: qualunque sia la risoluzione/proporzione reale del file caricato,
+   la miniatura resta sempre un quadrato di questa dimensione, ritagliata
+   per riempirlo senza deformarsi, senza mai poter "traboccare" dalla sua
+   cella. "flex-shrink: 0" impedisce inoltre che una tabella molto stretta
+   comprima la miniatura al posto del testo. */
 .admin-table-thumb {
   display: block;
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   object-fit: cover;
   border-radius: 6px;
   border: 1px solid var(--color-border);
+  flex-shrink: 0;
 }
 
 .admin-table-thumb-empty {
@@ -227,6 +252,15 @@
   justify-content: center;
   color: var(--color-text-muted);
   background: var(--color-bg);
+}
+
+/* Cella "Scorte": colonna invece di riga, per impilare l'editor
+   (input+bottone) sopra l'eventuale messaggio di errore, restando comunque
+   allineata a sinistra come le altre celle. */
+.admin-table-cell-stock {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
 }
 
 .admin-stock-editor {
@@ -247,14 +281,13 @@
 }
 
 .admin-stock-error {
-  margin: 6px 0 0;
+  margin: 0;
   font-size: 12px;
   color: var(--color-amber);
 }
 
-.admin-table-actions {
-  display: flex;
-  flex-wrap: wrap;
+.admin-table-cell-actions {
   gap: 8px;
+  flex-wrap: wrap;
   white-space: nowrap;
 }

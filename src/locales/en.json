@@ -158,7 +158,23 @@
       "submit": "Sign in",
       "submitting": "Signing in...",
       "noAccount": "Don't have an account?",
-      "registerLink": "Sign up"
+      "registerLink": "Sign up",
+      "forgotPassword": "Forgot your password?"
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "subtitle": "Enter your email: if it matches a registered account, we'll send you a link to set a new password.",
+      "submit": "Send recovery link",
+      "submitting": "Sending...",
+      "checkEmail": "If that address matches an account, you'll shortly receive an email with a link to set a new password.",
+      "backToLogin": "Back to sign in"
+    },
+    "resetPassword": {
+      "title": "Set a new password",
+      "subtitle": "Choose a new password for your account.",
+      "newPasswordLabel": "New password",
+      "submit": "Save new password",
+      "submitting": "Saving..."
     },
     "register": {
       "title": "Create an account",
@@ -201,6 +217,7 @@
     "nav": {
       "label": "Admin panel sections",
       "products": "Products",
+      "categories": "Categories",
       "users": "Administrators"
     },
     "title": "Admin panel",
@@ -245,6 +262,39 @@
       "saveError": "We couldn't save the product.",
       "slugInUse": "This slug is already used by another product: choose a different one.",
       "requiredFields": "Fill in all required fields with valid values."
+    }
+  },
+  "adminCategories": {
+    "title": "Categories",
+    "loading": "Loading categories...",
+    "error": "We couldn't load the categories.",
+    "empty": "No categories created yet.",
+    "confirmDelete": "Delete the category \"{{name}}\"? This cannot be undone.",
+    "confirmDeleteWithProducts": "The category \"{{name}}\" has {{count}} linked products: they won't be deleted, but will be left without a category. Continue anyway?",
+    "deleteError": "We couldn't delete the category.",
+    "table": {
+      "name": "Name (IT)",
+      "nameEn": "Name (EN)",
+      "slug": "Slug",
+      "products": "Products",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "add": "New category",
+      "newTitle": "New category",
+      "editTitle": "Edit category",
+      "nameLabel": "Name (Italian)",
+      "nameEnLabel": "Name (English)",
+      "nameEnHint": "If left empty, the Italian name will still be shown on the English site.",
+      "slugLabel": "Slug (URL)",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "requiredFields": "Fill in the (Italian) name and slug.",
+      "slugInUse": "This slug is already used by another category: choose a different one.",
+      "saveError": "We couldn't save the category."
     }
   },
   "adminUsers": {

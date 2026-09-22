@@ -18,10 +18,11 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '../context/CartContext'
 import { IconUnique } from './icons'
+import { getCategoryFallbackName } from '../lib/categoryName'
 import './ProductCard.css'
 
 function ProductCard({ product }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { addToCart } = useCart()
   // "categories" arriva dalla relazione (category_id -> categories.id) se
   // la query di chi usa questo componente la include (Home e Shop la
@@ -101,7 +102,9 @@ function ProductCard({ product }) {
             Assente per i prodotti senza categoria (retrocompatibilità). */}
         {category && (
           <span className="product-card-category-badge">
-            {t(`categories.${category.slug}`, { defaultValue: category.name })}
+            {t(`categories.${category.slug}`, {
+              defaultValue: getCategoryFallbackName(category, i18n.language),
+            })}
           </span>
         )}
       </MediaTag>

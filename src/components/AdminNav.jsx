@@ -1,10 +1,9 @@
 // src/components/AdminNav.jsx
 //
-// Navigazione tra le sezioni del pannello admin (oggi due: catalogo
-// prodotti su /admin, gestione amministratori su /admin/utenti). Estratta
-// in un componente a parte perché usata identica sia in Admin.jsx sia in
-// AdminUsers.jsx, invece di duplicare lo stesso markup in entrambe le
-// pagine.
+// Navigazione tra le sezioni del pannello admin (catalogo prodotti su
+// /admin, categorie su /admin/categorie, gestione amministratori su
+// /admin/utenti). Estratta in un componente a parte perché usata identica
+// in tutte le pagine admin, invece di duplicare lo stesso markup in ognuna.
 
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -21,6 +20,12 @@ function AdminNav() {
         className={({ isActive }) => `admin-nav-link${isActive ? ' admin-nav-link-active' : ''}`}
       >
         {t('admin.nav.products')}
+      </NavLink>
+      <NavLink
+        to="/admin/categorie"
+        className={({ isActive }) => `admin-nav-link${isActive ? ' admin-nav-link-active' : ''}`}
+      >
+        {t('admin.nav.categories')}
       </NavLink>
       <NavLink
         to="/admin/utenti"

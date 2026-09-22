@@ -24,26 +24,14 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabaseClient'
 import { resizeImageForUpload } from '../lib/imageResize'
+import { slugify } from '../lib/slugify'
+import { getCategoryFallbackName } from '../lib/categoryName'
 import AdminNav from '../components/AdminNav'
 // Riusiamo gli stili dei campi di Auth.css (.auth-field, .auth-label,
 // .auth-input, .auth-error): stesso aspetto dei form di Login/Registrazione,
 // invece di ridefinire da capo gli stessi input anche qui.
 import '../pages/Auth.css'
 import './Admin.css'
-
-// Trasforma il nome di un prodotto in uno slug "url-friendly"
-// (es. "Tagliere Grande" -> "tagliere-grande"), rimuovendo accenti e
-// caratteri non alfanumerici. Usata per pre-compilare lo slug quando si
-// digita il nome in un nuovo prodotto.
-function slugify(text) {
-  return text
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '') // rimuove i segni diacritici (es. à -> a)
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
 
 // Estrae il percorso del file all'interno del bucket da un URL pubblico di
 // Supabase Storage (es. ".../object/public/product-images/foto.jpg" ->
@@ -55,6 +43,21 @@ function getStoragePathFromPublicUrl(url) {
   const index = url.indexOf(marker)
   if (index === -1) return null
   return url.slice(index + marker.length)
+}
+
+// DIAGNOSTICA: logga un errore Supabase/Postgrest con tutti i suoi campi
+// (message/code/details/hint) invece del solo oggetto grezzo — in console
+// un oggetto Error stampato da solo a volte non si espande automaticamente,
+// rendendo poco chiaro se un'operazione è fallita per permessi RLS (in
+// genere code "42501", message che cita "row-level security policy") o per
+// un altro motivo (es. vincolo di validazione, colonna mancante).
+function logSupabaseError(context, error) {
+  console.error(`[Admin] ${context}:`, {
+    message: error?.message,
+    code: error?.code,
+    details: error?.details,
+    hint: error?.hint,
+  })
 }
 
 // Stato iniziale (vuoto) del form, riusato sia per "Nuovo prodotto" sia
@@ -69,7 +72,7 @@ const EMPTY_FORM = {
 }
 
 function Admin() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   // --- Lista prodotti -------------------------------------------------
   const [products, setProducts] = useState([])
@@ -101,19 +104,25 @@ function Admin() {
   }, [])
 
   // --- Categorie (per la select nel form prodotto) ---
+  // Estratta in una funzione richiamabile (non solo dentro l'effetto al
+  // primo caricamento): la richiamiamo di nuovo ogni volta che si apre il
+  // form (vedi openNewForm/openEditForm), così la select mostra sempre
+  // l'elenco aggiornato anche se una categoria è stata aggiunta/rinominata/
+  // eliminata dalla sezione "Categorie" (/admin/categorie) nel frattempo,
+  // senza bisogno di un refresh manuale della pagina.
   const [categories, setCategories] = useState([])
 
-  useEffect(() => {
-    async function fetchCategories() {
-      const { data, error } = await supabase.from('categories').select('*').order('created_at')
-      if (error) {
-        console.error(error)
-      } else {
-        setCategories(data ?? [])
-      }
+  async function fetchCategories() {
+    const { data, error } = await supabase.from('categories').select('*').order('created_at')
+    if (error) {
+      logSupabaseError('Errore nel caricare le categorie', error)
+    } else {
+      setCategories(data ?? [])
     }
+  }
 
-    fetchCategories()
+  useEffect(() => {
+    void fetchCategories()
   }, [])
 
   // --- Modifica rapida delle scorte dalla lista ------------------------
@@ -130,6 +139,9 @@ function Admin() {
   }
 
   async function handleSaveStock(product) {
+    // DIAGNOSTICA TEMPORANEA: vedi commento in openNewForm.
+    console.log('[Admin] Click su "Salva" scorte per il prodotto:', product.id, product.name)
+
     const draftValue = stockDrafts[product.id]
     const newStock = Number(draftValue)
 
@@ -144,7 +156,7 @@ function Admin() {
     const { error } = await supabase.from('products').update({ stock: newStock }).eq('id', product.id)
 
     if (error) {
-      console.error(error)
+      logSupabaseError(`Errore nell'aggiornare lo stock del prodotto ${product.id}`, error)
       setStockErrorId(product.id)
     } else {
       // Aggiorniamo il prodotto direttamente nell'elenco già in memoria,
@@ -198,6 +210,14 @@ function Admin() {
   }
 
   function openNewForm() {
+    // DIAGNOSTICA TEMPORANEA: questo bottone non fa nessuna chiamata di
+    // rete (solo stato locale) — se questo log non compare in console
+    // quando clicchi "Nuovo prodotto", il problema non è Supabase/RLS ma
+    // il click che non arriva affatto a questo handler (es. bundle non
+    // aggiornato nel browser: prova un refresh forzato/incognito, o un
+    // elemento che lo copre visivamente: controlla con l'ispettore che
+    // l'elemento cliccato sia davvero il <button>).
+    console.log('[Admin] Click su "Nuovo prodotto"')
     setEditingProduct(null)
     setForm(EMPTY_FORM)
     setSlugEditedManually(false)
@@ -206,9 +226,15 @@ function Admin() {
     setLoadingFormImages(false)
     setFormErrorKey(null)
     setShowForm(true)
+    // Ricarica le categorie ogni volta che si apre il form, così la select
+    // riflette eventuali aggiunte/modifiche fatte da /admin/categorie da
+    // quando la pagina è stata caricata.
+    void fetchCategories()
   }
 
   async function openEditForm(product) {
+    // DIAGNOSTICA TEMPORANEA: vedi commento in openNewForm.
+    console.log('[Admin] Click su "Modifica" per il prodotto:', product.id, product.name)
     setEditingProduct(product)
     setForm({
       name: product.name ?? '',
@@ -230,6 +256,8 @@ function Admin() {
     setOriginalImageUrls([])
     setShowForm(true)
     setLoadingFormImages(true)
+    // Vedi commento in openNewForm.
+    void fetchCategories()
 
     // Carichiamo le foto già presenti nella galleria di questo prodotto.
     const { data, error } = await supabase
@@ -239,7 +267,7 @@ function Admin() {
       .order('display_order')
 
     if (error) {
-      console.error(error)
+      logSupabaseError('Errore nel caricare le foto del prodotto', error)
     }
 
     const rows = data ?? []
@@ -336,6 +364,11 @@ function Admin() {
   async function handleSubmit(event) {
     event.preventDefault()
 
+    // DIAGNOSTICA TEMPORANEA: vedi commento in openNewForm. Se questo log
+    // non compare cliccando "Salva" nel form, il submit del form non sta
+    // nemmeno partendo (bottone fuori dal <form>? Bundle non aggiornato?).
+    console.log('[Admin] Submit del form prodotto', editingProduct ? `(modifica ${editingProduct.id})` : '(nuovo)')
+
     const priceNumber = Number(form.price)
     const stockNumber = Number(form.stock)
 
@@ -412,7 +445,7 @@ function Admin() {
       : await supabase.from('products').insert(payload).select().single()
 
     if (error) {
-      console.error(error)
+      logSupabaseError(editingProduct ? 'Errore nel modificare il prodotto' : 'Errore nel creare il prodotto', error)
       // Codice Postgres per violazione di un vincolo "unique" (qui, lo
       // slug, che nello schema è definito "unique"): messaggio dedicato
       // invece del generico "errore di salvataggio".
@@ -466,6 +499,11 @@ function Admin() {
 
   // --- Eliminazione prodotto ---------------------------------------------
   async function handleDelete(product) {
+    // DIAGNOSTICA TEMPORANEA: vedi commento in openNewForm. Compare anche
+    // se poi si annulla il window.confirm() qui sotto: distingue "il click
+    // non arriva al bottone" da "arriva, ma l'utente/il conferma annulla".
+    console.log('[Admin] Click su "Elimina" per il prodotto:', product.id, product.name)
+
     const confirmed = window.confirm(t('admin.confirmDelete', { name: product.name }))
     if (!confirmed) return
 
@@ -481,7 +519,7 @@ function Admin() {
     const { error } = await supabase.from('products').delete().eq('id', product.id)
 
     if (error) {
-      console.error(error)
+      logSupabaseError(`Errore nell'eliminare il prodotto ${product.id}`, error)
       window.alert(t('admin.deleteError'))
       return
     }
@@ -566,7 +604,9 @@ function Admin() {
                 </option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
-                    {t(`categories.${category.slug}`, { defaultValue: category.name })}
+                    {t(`categories.${category.slug}`, {
+                      defaultValue: getCategoryFallbackName(category, i18n.language),
+                    })}
                   </option>
                 ))}
               </select>
@@ -704,85 +744,92 @@ function Admin() {
 
       {!loadingProducts && !listErrorKey && products.length > 0 && (
         <div className="admin-table-wrapper">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th className="admin-table-thumb-col">{t('admin.table.image')}</th>
-                <th>{t('admin.table.name')}</th>
-                <th>{t('admin.table.price')}</th>
-                <th>{t('admin.table.stock')}</th>
-                <th>{t('admin.table.actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((product) => {
-                const formattedPrice = new Intl.NumberFormat('it-IT', {
-                  style: 'currency',
-                  currency: 'EUR',
-                }).format(product.price)
-                const stockDraft = stockDrafts[product.id]
+          {/* Tabella costruita con CSS Grid (vedi Admin.css) invece di un
+              <table> HTML: ogni "riga" qui sotto ha display:contents, così
+              le sue celle diventano celle dirette della stessa griglia
+              condivisa da tutte le righe — è la griglia (align-items:
+              center sulle colonne) a garantire l'allineamento verticale,
+              non margini/padding calcolati riga per riga. I ruoli ARIA
+              (table/row/columnheader/cell) mantengono la semantica di
+              tabella per chi usa uno screen reader. */}
+          <div className="admin-table" role="table">
+            <div className="admin-table-row" role="row">
+              <span className="admin-table-cell admin-table-head-cell" role="columnheader">
+                {t('admin.table.image')}
+              </span>
+              <span className="admin-table-cell admin-table-head-cell" role="columnheader">
+                {t('admin.table.name')}
+              </span>
+              <span className="admin-table-cell admin-table-head-cell" role="columnheader">
+                {t('admin.table.price')}
+              </span>
+              <span className="admin-table-cell admin-table-head-cell" role="columnheader">
+                {t('admin.table.stock')}
+              </span>
+              <span className="admin-table-cell admin-table-head-cell" role="columnheader">
+                {t('admin.table.actions')}
+              </span>
+            </div>
 
-                return (
-                  <tr key={product.id}>
-                    <td>
-                      {product.image_url ? (
-                        <img
-                          className="admin-table-thumb"
-                          src={product.image_url}
-                          alt={product.name}
-                        />
-                      ) : (
-                        <span className="admin-table-thumb admin-table-thumb-empty" aria-hidden="true">
-                          —
-                        </span>
-                      )}
-                    </td>
-                    <td>{product.name}</td>
-                    <td>{formattedPrice}</td>
-                    <td>
-                      <div className="admin-stock-editor">
-                        <input
-                          type="number"
-                          min="0"
-                          step="1"
-                          className="admin-stock-input"
-                          value={stockDraft ?? product.stock}
-                          onChange={(event) => handleStockDraftChange(product.id, event.target.value)}
-                        />
-                        <button
-                          type="button"
-                          className="btn-secondary btn-sm"
-                          disabled={savingStockId === product.id || stockDraft === undefined}
-                          onClick={() => handleSaveStock(product)}
-                        >
-                          {t('admin.table.saveStock')}
-                        </button>
-                      </div>
-                      {stockErrorId === product.id && (
-                        <p className="admin-stock-error">{t('admin.stockUpdateError')}</p>
-                      )}
-                    </td>
-                    <td className="admin-table-actions">
+            {products.map((product) => {
+              const formattedPrice = new Intl.NumberFormat('it-IT', {
+                style: 'currency',
+                currency: 'EUR',
+              }).format(product.price)
+              const stockDraft = stockDrafts[product.id]
+
+              return (
+                <div className="admin-table-row" role="row" key={product.id}>
+                  <div className="admin-table-cell" role="cell">
+                    {product.image_url ? (
+                      <img className="admin-table-thumb" src={product.image_url} alt={product.name} />
+                    ) : (
+                      <span className="admin-table-thumb admin-table-thumb-empty" aria-hidden="true">
+                        —
+                      </span>
+                    )}
+                  </div>
+                  <div className="admin-table-cell" role="cell">
+                    {product.name}
+                  </div>
+                  <div className="admin-table-cell" role="cell">
+                    {formattedPrice}
+                  </div>
+                  <div className="admin-table-cell admin-table-cell-stock" role="cell">
+                    <div className="admin-stock-editor">
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        className="admin-stock-input"
+                        value={stockDraft ?? product.stock}
+                        onChange={(event) => handleStockDraftChange(product.id, event.target.value)}
+                      />
                       <button
                         type="button"
                         className="btn-secondary btn-sm"
-                        onClick={() => openEditForm(product)}
+                        disabled={savingStockId === product.id || stockDraft === undefined}
+                        onClick={() => handleSaveStock(product)}
                       >
-                        {t('admin.table.edit')}
+                        {t('admin.table.saveStock')}
                       </button>
-                      <button
-                        type="button"
-                        className="btn-danger btn-sm"
-                        onClick={() => handleDelete(product)}
-                      >
-                        {t('admin.table.delete')}
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                    </div>
+                    {stockErrorId === product.id && (
+                      <p className="admin-stock-error">{t('admin.stockUpdateError')}</p>
+                    )}
+                  </div>
+                  <div className="admin-table-cell admin-table-cell-actions" role="cell">
+                    <button type="button" className="btn-secondary btn-sm" onClick={() => openEditForm(product)}>
+                      {t('admin.table.edit')}
+                    </button>
+                    <button type="button" className="btn-danger btn-sm" onClick={() => handleDelete(product)}>
+                      {t('admin.table.delete')}
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </div>
       )}
     </div>

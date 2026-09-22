@@ -14,6 +14,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabaseClient'
 import { useCart } from '../context/CartContext'
+import { getCategoryFallbackName } from '../lib/categoryName'
 import {
   IconUnique,
   IconShipping,
@@ -43,7 +44,7 @@ function ProductDetail() {
   // Leggiamo lo slug direttamente dall'URL grazie a react-router
   // (deve corrispondere al parametro ":slug" definito nella route in App.jsx)
   const { slug } = useParams()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { addToCart } = useCart()
 
   const [product, setProduct] = useState(null)
@@ -335,7 +336,9 @@ function ProductDetail() {
               to={`/shop?category=${product.categories.slug}`}
               className="product-detail-category-link"
             >
-              {t(`categories.${product.categories.slug}`, { defaultValue: product.categories.name })}
+              {t(`categories.${product.categories.slug}`, {
+                defaultValue: getCategoryFallbackName(product.categories, i18n.language),
+              })}
             </Link>
           )}
 

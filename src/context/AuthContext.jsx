@@ -177,6 +177,28 @@ export function AuthProvider({ children }) {
     await supabase.auth.signOut()
   }
 
+  // Avvia il recupero password: manda un'email con un link magico a
+  // "redirectTo". Per sicurezza Supabase risponde "successo" anche se
+  // l'email non corrisponde a nessun account registrato (così non si può
+  // usare questo form per scoprire quali email sono registrate sul sito):
+  // il chiamante mostra sempre lo stesso messaggio, a prescindere.
+  async function requestPasswordReset(email) {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+    return { error }
+  }
+
+  // Imposta una nuova password. Va chiamata da /reset-password: cliccando
+  // il link ricevuto via email, supabase-js stabilisce automaticamente una
+  // sessione di recupero (rilevata dal codice nell'URL, stesso meccanismo
+  // già usato per il redirect OAuth di signInWithGoogle/Apple) PRIMA che
+  // questa pagina venga mostrata — updateUser() agisce su quella sessione.
+  async function updatePassword(newPassword) {
+    const { error } = await supabase.auth.updateUser({ password: newPassword })
+    return { error }
+  }
+
   // "isAdmin" è solo una scorciatoia comoda su profile?.is_admin, per non
   // dover ripetere il controllo (e l'optional chaining) in ogni componente.
   const isAdmin = profile?.is_admin === true
@@ -191,6 +213,8 @@ export function AuthProvider({ children }) {
     signInWithGoogle,
     signInWithApple,
     signOut,
+    requestPasswordReset,
+    updatePassword,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

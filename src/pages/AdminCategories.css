@@ -1,0 +1,21 @@
+/* src/pages/AdminCategories.css
+   Stile della sezione "Categorie" (/admin/categorie). Riusa gli stili
+   generici già definiti in Admin.css (.admin-form-panel, .admin-table-row,
+   .admin-table-cell, .admin-table-head-cell, .admin-table-cell-actions,
+   i bottoni): qui resta solo la definizione delle colonne di QUESTA
+   tabella (diversa da quella prodotti) e il piccolo stile dello slug. */
+
+.admin-categories-table {
+  display: grid;
+  grid-template-columns: minmax(140px, 1.2fr) minmax(120px, 1fr) 150px 110px 200px;
+  align-items: center;
+  width: 100%;
+  min-width: 700px;
+  font-size: 14px;
+}
+
+.admin-categories-slug {
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}

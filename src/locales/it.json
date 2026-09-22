@@ -158,7 +158,23 @@
       "submit": "Accedi",
       "submitting": "Accesso in corso...",
       "noAccount": "Non hai un account?",
-      "registerLink": "Registrati"
+      "registerLink": "Registrati",
+      "forgotPassword": "Password dimenticata?"
+    },
+    "forgotPassword": {
+      "title": "Password dimenticata",
+      "subtitle": "Inserisci la tua email: se corrisponde a un account registrato, ti mandiamo un link per impostarne una nuova.",
+      "submit": "Invia link di recupero",
+      "submitting": "Invio in corso...",
+      "checkEmail": "Se l'indirizzo inserito corrisponde a un account, riceverai a breve un'email con il link per impostare una nuova password.",
+      "backToLogin": "Torna all'accesso"
+    },
+    "resetPassword": {
+      "title": "Imposta una nuova password",
+      "subtitle": "Scegli la nuova password per il tuo account.",
+      "newPasswordLabel": "Nuova password",
+      "submit": "Salva nuova password",
+      "submitting": "Salvataggio in corso..."
     },
     "register": {
       "title": "Crea un account",
@@ -201,6 +217,7 @@
     "nav": {
       "label": "Sezioni pannello admin",
       "products": "Prodotti",
+      "categories": "Categorie",
       "users": "Amministratori"
     },
     "title": "Pannello Admin",
@@ -245,6 +262,39 @@
       "saveError": "Non è stato possibile salvare il prodotto.",
       "slugInUse": "Questo slug è già usato da un altro prodotto: scegline uno diverso.",
       "requiredFields": "Compila tutti i campi obbligatori con valori validi."
+    }
+  },
+  "adminCategories": {
+    "title": "Categorie",
+    "loading": "Caricamento categorie...",
+    "error": "Non è stato possibile caricare le categorie.",
+    "empty": "Nessuna categoria creata finora.",
+    "confirmDelete": "Eliminare la categoria \"{{name}}\"? L'operazione non può essere annullata.",
+    "confirmDeleteWithProducts": "La categoria \"{{name}}\" ha {{count}} prodotti collegati: non verranno eliminati, ma resteranno senza categoria. Procedere comunque?",
+    "deleteError": "Non è stato possibile eliminare la categoria.",
+    "table": {
+      "name": "Nome (IT)",
+      "nameEn": "Nome (EN)",
+      "slug": "Slug",
+      "products": "Prodotti",
+      "actions": "Azioni",
+      "edit": "Modifica",
+      "delete": "Elimina"
+    },
+    "form": {
+      "add": "Nuova categoria",
+      "newTitle": "Nuova categoria",
+      "editTitle": "Modifica categoria",
+      "nameLabel": "Nome (italiano)",
+      "nameEnLabel": "Nome (inglese)",
+      "nameEnHint": "Se lasciato vuoto, sul sito in inglese verrà comunque mostrato il nome italiano.",
+      "slugLabel": "Slug (URL)",
+      "save": "Salva",
+      "saving": "Salvataggio in corso...",
+      "cancel": "Annulla",
+      "requiredFields": "Compila nome (italiano) e slug.",
+      "slugInUse": "Questo slug è già usato da un'altra categoria: scegline uno diverso.",
+      "saveError": "Non è stato possibile salvare la categoria."
     }
   },
   "adminUsers": {
