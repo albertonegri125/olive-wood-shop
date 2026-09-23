@@ -521,13 +521,23 @@ function Admin() {
     if (error) {
       logSupabaseError(`Errore nell'eliminare il prodotto ${product.id}`, error)
 
+      // DIAGNOSTICA TEMPORANEA: verifica il valore ESATTO e il tipo di
+      // error.code così come arriva davvero dal client, invece di fidarci
+      // di cosa dovrebbe essere in teoria. Toglibile una volta confermato
+      // che il confronto sotto scatta correttamente.
+      console.log('[Admin] Delete prodotto, error.code:', error.code, '- typeof:', typeof error.code)
+
       // Postgres code 23503 = violazione di foreign key: il prodotto è
       // collegato a righe in order_items (ha già ordini associati) e per
       // questo non può essere eliminato definitivamente senza perdere lo
       // storico ordini. In questo caso, invece del messaggio d'errore
       // grezzo, offriamo di "disattivarlo" (active = false): sparisce dal
       // negozio pubblico ma resta nel database, collegato ai suoi ordini.
-      if (error.code === '23503') {
+      // "String(...)" invece di un confronto diretto: se error.code arriva
+      // come numero, o con spazi attorno, il confronto rigido "===" contro
+      // la stringa '23503' fallirebbe silenziosamente, facendo cadere nel
+      // ramo dell'errore generico invece che in quello della disattivazione.
+      if (String(error.code).trim() === '23503') {
         const confirmedDeactivate = window.confirm(t('admin.confirmDeactivateInstead', { name: product.name }))
         if (!confirmedDeactivate) return
 
