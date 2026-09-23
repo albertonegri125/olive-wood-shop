@@ -38,18 +38,74 @@
 
 .hero-photo-image {
   display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
   object-fit: cover;
   border-radius: 10px;
   box-shadow: var(--shadow-md);
   /* Rotazione minima e volutamente imperfetta: la foto sembra appoggiata
      lì, non incollata a un allineamento perfetto alla griglia. */
   transform: rotate(-1.3deg);
+}
+
+/* --- Carosello foto hero ---
+   Il contenitore porta le dimensioni (aspect-ratio, come faceva prima
+   .hero-photo-image da sola): le foto vengono impilate una sopra l'altra
+   al suo interno, tutte già nel DOM (vedi Home.jsx, precaricate dal
+   browser appena arrivano dalla query), e il cambio foto è solo una
+   dissolvenza di opacità, mai un nuovo caricamento di rete — niente flash
+   bianchi durante la rotazione. */
+.hero-carousel {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
 
   @media (min-width: 860px) {
     aspect-ratio: 3 / 4;
   }
+}
+
+.hero-carousel-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.hero-carousel-image-active {
+  opacity: 1;
+}
+
+.hero-carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+
+  @media (min-width: 860px) {
+    justify-content: flex-start;
+  }
+}
+
+.hero-carousel-dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-border);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.hero-carousel-dot:hover {
+  background: var(--color-accent-soft);
+}
+
+.hero-carousel-dot-active {
+  background: var(--color-accent);
+  transform: scale(1.25);
 }
 
 .hero-copy {

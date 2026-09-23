@@ -22,7 +22,9 @@
     "title": "Olive wood, shaped by hand",
     "subtitle": "Each board starts as a single piece of olive wood, shaped with traditional woodworking tools and finished with food-safe oil. No machines, no two boards alike.",
     "cta": "Shop now",
-    "photoAlt": "Hand-carved olive wood board"
+    "photoAlt": "Hand-carved olive wood board",
+    "carouselLabel": "Featured product photos",
+    "carouselDotLabel": "Show photo {{number}}"
   },
   "process": {
     "title": "Our process",

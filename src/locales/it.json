@@ -22,7 +22,9 @@
     "title": "Legno d'ulivo, lavorato a mano",
     "subtitle": "Ogni tagliere nasce da un unico pezzo di legno d'ulivo, lavorato con attrezzi da falegname e rifinito a olio alimentare. Nessuna macchina, nessun pezzo identico all'altro.",
     "cta": "Vai al negozio",
-    "photoAlt": "Tagliere in legno d'ulivo lavorato a mano"
+    "photoAlt": "Tagliere in legno d'ulivo lavorato a mano",
+    "carouselLabel": "Foto prodotto in evidenza",
+    "carouselDotLabel": "Mostra foto {{number}}"
   },
   "process": {
     "title": "Il nostro processo",
