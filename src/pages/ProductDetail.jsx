@@ -83,6 +83,7 @@ function ProductDetail() {
         .from('products')
         .select('*, categories(id, name, slug)')
         .eq('slug', slug)
+        .eq('active', true)
         .single()
 
       if (supabaseError) {

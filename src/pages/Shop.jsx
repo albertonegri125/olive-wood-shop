@@ -63,6 +63,7 @@ function Shop() {
       let query = supabase
         .from('products')
         .select('*, categories(id, name, slug)')
+        .eq('active', true)
         .order('created_at')
 
       if (activeCategorySlug) {

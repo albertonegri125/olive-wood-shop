@@ -59,6 +59,7 @@ function Home() {
       const { data, error: supabaseError } = await supabase
         .from('products')
         .select('*, categories(id, name, slug)')
+        .eq('active', true)
         .order('created_at')
         .limit(4)
 

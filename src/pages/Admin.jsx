@@ -520,6 +520,34 @@ function Admin() {
 
     if (error) {
       logSupabaseError(`Errore nell'eliminare il prodotto ${product.id}`, error)
+
+      // Postgres code 23503 = violazione di foreign key: il prodotto è
+      // collegato a righe in order_items (ha già ordini associati) e per
+      // questo non può essere eliminato definitivamente senza perdere lo
+      // storico ordini. In questo caso, invece del messaggio d'errore
+      // grezzo, offriamo di "disattivarlo" (active = false): sparisce dal
+      // negozio pubblico ma resta nel database, collegato ai suoi ordini.
+      if (error.code === '23503') {
+        const confirmedDeactivate = window.confirm(t('admin.confirmDeactivateInstead', { name: product.name }))
+        if (!confirmedDeactivate) return
+
+        const { error: deactivateError } = await supabase
+          .from('products')
+          .update({ active: false })
+          .eq('id', product.id)
+
+        if (deactivateError) {
+          logSupabaseError(`Errore nel disattivare il prodotto ${product.id}`, deactivateError)
+          window.alert(t('admin.deactivateError'))
+          return
+        }
+
+        setProducts((current) =>
+          current.map((item) => (item.id === product.id ? { ...item, active: false } : item))
+        )
+        return
+      }
+
       window.alert(t('admin.deleteError'))
       return
     }
@@ -543,6 +571,22 @@ function Admin() {
     }
 
     setProducts((current) => current.filter((item) => item.id !== product.id))
+  }
+
+  // Riporta "active" a true un prodotto disattivato in precedenza (perché
+  // aveva ordini collegati): torna a comparire nel negozio pubblico.
+  async function handleReactivate(product) {
+    const { error } = await supabase.from('products').update({ active: true }).eq('id', product.id)
+
+    if (error) {
+      logSupabaseError(`Errore nel riattivare il prodotto ${product.id}`, error)
+      window.alert(t('admin.reactivateError'))
+      return
+    }
+
+    setProducts((current) =>
+      current.map((item) => (item.id === product.id ? { ...item, active: true } : item))
+    )
   }
 
   return (
@@ -777,9 +821,14 @@ function Admin() {
                 currency: 'EUR',
               }).format(product.price)
               const stockDraft = stockDrafts[product.id]
+              const isInactive = product.active === false
 
               return (
-                <div className="admin-table-row" role="row" key={product.id}>
+                <div
+                  className={isInactive ? 'admin-table-row admin-table-row-inactive' : 'admin-table-row'}
+                  role="row"
+                  key={product.id}
+                >
                   <div className="admin-table-cell" role="cell">
                     {product.image_url ? (
                       <img className="admin-table-thumb" src={product.image_url} alt={product.name} />
@@ -791,6 +840,7 @@ function Admin() {
                   </div>
                   <div className="admin-table-cell" role="cell">
                     {product.name}
+                    {isInactive && <span className="admin-badge-inactive">{t('admin.table.inactive')}</span>}
                   </div>
                   <div className="admin-table-cell" role="cell">
                     {formattedPrice}
@@ -822,9 +872,15 @@ function Admin() {
                     <button type="button" className="btn-secondary btn-sm" onClick={() => openEditForm(product)}>
                       {t('admin.table.edit')}
                     </button>
-                    <button type="button" className="btn-danger btn-sm" onClick={() => handleDelete(product)}>
-                      {t('admin.table.delete')}
-                    </button>
+                    {isInactive ? (
+                      <button type="button" className="btn-secondary btn-sm" onClick={() => handleReactivate(product)}>
+                        {t('admin.table.reactivate')}
+                      </button>
+                    ) : (
+                      <button type="button" className="btn-danger btn-sm" onClick={() => handleDelete(product)}>
+                        {t('admin.table.delete')}
+                      </button>
+                    )}
                   </div>
                 </div>
               )

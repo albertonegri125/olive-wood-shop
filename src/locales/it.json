@@ -227,6 +227,9 @@
     "empty": "Nessun prodotto creato finora.",
     "confirmDelete": "Eliminare \"{{name}}\"? L'operazione non può essere annullata.",
     "deleteError": "Non è stato possibile eliminare il prodotto.",
+    "confirmDeactivateInstead": "Questo prodotto ha ordini associati e non può essere eliminato definitivamente — vuoi disattivarlo? Sparirà dal negozio ma resterà nello storico ordini.",
+    "deactivateError": "Non è stato possibile disattivare il prodotto.",
+    "reactivateError": "Non è stato possibile riattivare il prodotto.",
     "stockUpdateError": "Non è stato possibile aggiornare le scorte.",
     "table": {
       "image": "Immagine",
@@ -236,7 +239,9 @@
       "actions": "Azioni",
       "edit": "Modifica",
       "delete": "Elimina",
-      "saveStock": "Salva"
+      "saveStock": "Salva",
+      "inactive": "Disattivato",
+      "reactivate": "Riattiva"
     },
     "form": {
       "newTitle": "Nuovo prodotto",

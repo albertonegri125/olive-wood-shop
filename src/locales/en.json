@@ -227,6 +227,9 @@
     "empty": "No products created yet.",
     "confirmDelete": "Delete \"{{name}}\"? This cannot be undone.",
     "deleteError": "We couldn't delete the product.",
+    "confirmDeactivateInstead": "This product has orders linked to it and can't be permanently deleted — do you want to deactivate it instead? It will disappear from the shop but stay in the order history.",
+    "deactivateError": "We couldn't deactivate the product.",
+    "reactivateError": "We couldn't reactivate the product.",
     "stockUpdateError": "We couldn't update the stock.",
     "table": {
       "image": "Image",
@@ -236,7 +239,9 @@
       "actions": "Actions",
       "edit": "Edit",
       "delete": "Delete",
-      "saveStock": "Save"
+      "saveStock": "Save",
+      "inactive": "Deactivated",
+      "reactivate": "Reactivate"
     },
     "form": {
       "newTitle": "New product",
