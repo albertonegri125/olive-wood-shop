@@ -218,7 +218,8 @@
       "label": "Admin panel sections",
       "products": "Products",
       "categories": "Categories",
-      "users": "Administrators"
+      "users": "Administrators",
+      "orders": "Orders"
     },
     "title": "Admin panel",
     "newProduct": "New product",
@@ -326,6 +327,63 @@
     "alreadyAdmin": "Already an administrator",
     "promote": "Promote to admin",
     "promoting": "Promoting..."
+  },
+  "adminOrders": {
+    "title": "Orders",
+    "loading": "Loading orders...",
+    "error": "We couldn't load the orders.",
+    "empty": "No orders found.",
+    "filterLabel": "Status",
+    "filterAll": "All",
+    "searchLabel": "Search by customer email",
+    "searchPlaceholder": "email@example.com",
+    "searchButton": "Search",
+    "searchClear": "Clear search",
+    "customerUnknown": "Unknown customer",
+    "table": {
+      "date": "Date",
+      "customer": "Customer",
+      "total": "Total",
+      "status": "Status",
+      "items": "Items",
+      "actions": "Actions",
+      "details": "Details"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "pageInfo": "Page {{page}} of {{totalPages}}"
+    },
+    "status": {
+      "paid": "Paid",
+      "paid_stock_issue": "Paid — stock to verify",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "delivered": "Delivered"
+    },
+    "stockIssueBadge": "Stock to verify",
+    "detail": {
+      "title": "Order details",
+      "close": "Close",
+      "customerLabel": "Customer",
+      "itemsTitle": "Products purchased",
+      "itemUnknown": "Product no longer available",
+      "subtotal": "Subtotal",
+      "discountLabel": "Discount applied",
+      "shippingTitle": "Shipping address",
+      "noShipping": "No shipping address available.",
+      "copyAddress": "Copy address",
+      "addressCopied": "Copied!",
+      "copyError": "We couldn't copy the address.",
+      "statusLabel": "Order status",
+      "statusUpdateError": "We couldn't update the status.",
+      "trackingLabel": "Tracking number",
+      "trackingPlaceholder": "E.g. IT1234567890",
+      "trackingSave": "Save",
+      "trackingSaving": "Saving...",
+      "trackingSaveError": "We couldn't save the tracking number.",
+      "totalLabel": "Order total"
+    }
   },
   "cookieBanner": {
     "message": "We only use technical cookies and browser-stored data (e.g. for the cart): no advertising tracking.",

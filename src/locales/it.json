@@ -218,7 +218,8 @@
       "label": "Sezioni pannello admin",
       "products": "Prodotti",
       "categories": "Categorie",
-      "users": "Amministratori"
+      "users": "Amministratori",
+      "orders": "Ordini"
     },
     "title": "Pannello Admin",
     "newProduct": "Nuovo prodotto",
@@ -326,6 +327,63 @@
     "alreadyAdmin": "Già amministratore",
     "promote": "Promuovi ad admin",
     "promoting": "Promozione in corso..."
+  },
+  "adminOrders": {
+    "title": "Ordini",
+    "loading": "Caricamento ordini...",
+    "error": "Non è stato possibile caricare gli ordini.",
+    "empty": "Nessun ordine trovato.",
+    "filterLabel": "Stato",
+    "filterAll": "Tutti",
+    "searchLabel": "Cerca per email cliente",
+    "searchPlaceholder": "email@esempio.it",
+    "searchButton": "Cerca",
+    "searchClear": "Cancella ricerca",
+    "customerUnknown": "Cliente sconosciuto",
+    "table": {
+      "date": "Data",
+      "customer": "Cliente",
+      "total": "Totale",
+      "status": "Stato",
+      "items": "Articoli",
+      "actions": "Azioni",
+      "details": "Dettagli"
+    },
+    "pagination": {
+      "previous": "Precedente",
+      "next": "Successiva",
+      "pageInfo": "Pagina {{page}} di {{totalPages}}"
+    },
+    "status": {
+      "paid": "Pagato",
+      "paid_stock_issue": "Pagato — scorte da verificare",
+      "processing": "In lavorazione",
+      "shipped": "Spedito",
+      "delivered": "Consegnato"
+    },
+    "stockIssueBadge": "Scorte da verificare",
+    "detail": {
+      "title": "Dettaglio ordine",
+      "close": "Chiudi",
+      "customerLabel": "Cliente",
+      "itemsTitle": "Prodotti acquistati",
+      "itemUnknown": "Prodotto non più disponibile",
+      "subtotal": "Subtotale",
+      "discountLabel": "Sconto applicato",
+      "shippingTitle": "Indirizzo di spedizione",
+      "noShipping": "Nessun indirizzo di spedizione disponibile.",
+      "copyAddress": "Copia indirizzo",
+      "addressCopied": "Copiato!",
+      "copyError": "Non è stato possibile copiare l'indirizzo.",
+      "statusLabel": "Stato ordine",
+      "statusUpdateError": "Non è stato possibile aggiornare lo stato.",
+      "trackingLabel": "Numero di tracciamento",
+      "trackingPlaceholder": "Es. IT1234567890",
+      "trackingSave": "Salva",
+      "trackingSaving": "Salvataggio...",
+      "trackingSaveError": "Non è stato possibile salvare il numero di tracciamento.",
+      "totalLabel": "Totale ordine"
+    }
   },
   "cookieBanner": {
     "message": "Usiamo solo cookie tecnici e dati salvati nel tuo browser (es. per il carrello): nessun tracciamento pubblicitario.",

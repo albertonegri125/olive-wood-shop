@@ -27,6 +27,7 @@ import Account from './pages/Account'
 import Admin from './pages/Admin'
 import AdminCategories from './pages/AdminCategories'
 import AdminUsers from './pages/AdminUsers'
+import AdminOrders from './pages/AdminOrders'
 import About from './pages/About'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import TerminiCondizioni from './pages/TerminiCondizioni'
@@ -146,6 +147,22 @@ function App() {
               element={
                 <RequireAdmin>
                   <AdminUsers />
+                </RequireAdmin>
+              }
+            />
+
+            {/* Sezione "Ordini" del pannello: tabella ordini con filtro per
+                stato, ricerca per email cliente e dettaglio (prodotti
+                acquistati, indirizzo di spedizione, stato, tracking). Query
+                dirette protette dalle nuove policy admin su
+                orders/order_items/profiles (vedi schema_admin_orders.sql),
+                stesso pattern di AdminCategories.jsx — nessuna Edge
+                Function necessaria: non è un dato critico come is_admin. */}
+            <Route
+              path="/admin/ordini"
+              element={
+                <RequireAdmin>
+                  <AdminOrders />
                 </RequireAdmin>
               }
             />
