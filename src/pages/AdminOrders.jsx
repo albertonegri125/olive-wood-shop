@@ -500,7 +500,7 @@ function AdminOrders() {
                 {(selectedOrder.order_items ?? []).map((item) => (
                   <li className="adminorders-detail-item" key={item.id}>
                     <span>
-                      {item.products?.name ?? t('adminOrders.detail.itemUnknown')}{' '}
+                      {item.products?.name ?? item.product_name_snapshot ?? t('adminOrders.detail.itemUnknown')}{' '}
                       <span className="adminorders-detail-item-qty">× {item.quantity}</span>
                     </span>
                     <span>{formatPrice(item.price_at_purchase * item.quantity)}</span>

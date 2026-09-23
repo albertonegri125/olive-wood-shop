@@ -152,7 +152,7 @@ function Account() {
                   {(order.order_items ?? []).map((item) => (
                     <li className="account-order-item" key={item.id}>
                       <span>
-                        {item.products?.name ?? t('account.orderItemUnknown')}{' '}
+                        {item.products?.name ?? item.product_name_snapshot ?? t('account.orderItemUnknown')}{' '}
                         <span className="account-order-item-qty">× {item.quantity}</span>
                       </span>
                       <span>{formatPrice(item.price_at_purchase * item.quantity)}</span>

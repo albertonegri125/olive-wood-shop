@@ -226,9 +226,9 @@
     "loading": "Loading products...",
     "error": "We couldn't load the products.",
     "empty": "No products created yet.",
-    "confirmDelete": "Delete \"{{name}}\"? This cannot be undone.",
+    "confirmDelete": "Delete \"{{name}}\"? This cannot be undone: orders that contain it will keep only its name and the price paid, everything else (description, images, category) will be lost for good. If you just want to hide it from the shop while keeping all its data, use \"Deactivate\" instead.",
     "deleteError": "We couldn't delete the product.",
-    "confirmDeactivateInstead": "This product has orders linked to it and can't be permanently deleted — do you want to deactivate it instead? It will disappear from the shop but stay in the order history.",
+    "confirmDeactivate": "Deactivate \"{{name}}\"? It will disappear from the public shop but stay in the database with all its data: you can reactivate it at any time.",
     "deactivateError": "We couldn't deactivate the product.",
     "reactivateError": "We couldn't reactivate the product.",
     "stockUpdateError": "We couldn't update the stock.",
@@ -242,7 +242,8 @@
       "delete": "Delete",
       "saveStock": "Save",
       "inactive": "Deactivated",
-      "reactivate": "Reactivate"
+      "reactivate": "Reactivate",
+      "deactivate": "Deactivate"
     },
     "form": {
       "newTitle": "New product",

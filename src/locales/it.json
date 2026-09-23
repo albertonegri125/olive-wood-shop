@@ -226,9 +226,9 @@
     "loading": "Caricamento prodotti...",
     "error": "Non è stato possibile caricare i prodotti.",
     "empty": "Nessun prodotto creato finora.",
-    "confirmDelete": "Eliminare \"{{name}}\"? L'operazione non può essere annullata.",
+    "confirmDelete": "Eliminare \"{{name}}\"? L'operazione non può essere annullata: gli ordini che lo contengono manterranno solo nome e prezzo pagato, il resto (descrizione, immagini, categoria) andrà perso per sempre. Se vuoi solo nasconderlo dal negozio mantenendo tutti i dati, usa \"Disattiva\" invece.",
     "deleteError": "Non è stato possibile eliminare il prodotto.",
-    "confirmDeactivateInstead": "Questo prodotto ha ordini associati e non può essere eliminato definitivamente — vuoi disattivarlo? Sparirà dal negozio ma resterà nello storico ordini.",
+    "confirmDeactivate": "Disattivare \"{{name}}\"? Sparirà dal negozio pubblico ma resterà nel database con tutti i suoi dati: potrai riattivarlo in qualsiasi momento.",
     "deactivateError": "Non è stato possibile disattivare il prodotto.",
     "reactivateError": "Non è stato possibile riattivare il prodotto.",
     "stockUpdateError": "Non è stato possibile aggiornare le scorte.",
@@ -242,7 +242,8 @@
       "delete": "Elimina",
       "saveStock": "Salva",
       "inactive": "Disattivato",
-      "reactivate": "Riattiva"
+      "reactivate": "Riattiva",
+      "deactivate": "Disattiva"
     },
     "form": {
       "newTitle": "Nuovo prodotto",

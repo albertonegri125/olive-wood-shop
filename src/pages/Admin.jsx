@@ -516,48 +516,17 @@ function Admin() {
       .select('image_url')
       .eq('product_id', product.id)
 
+    // La DELETE va sempre a buon fine anche se il prodotto ha ordini
+    // collegati: il trigger "snapshot_product_name_before_delete_trigger"
+    // (vedi schema_order_items_snapshot.sql) salva il nome del prodotto in
+    // ogni order_items collegato un istante prima che la riga sparisca, e
+    // la foreign key è "on delete set null" invece di bloccare l'operazione
+    // — lo storico ordini resta leggibile (nome + price_at_purchase, già
+    // salvato a sé), anche se il prodotto in sé non esiste più.
     const { error } = await supabase.from('products').delete().eq('id', product.id)
 
     if (error) {
       logSupabaseError(`Errore nell'eliminare il prodotto ${product.id}`, error)
-
-      // DIAGNOSTICA TEMPORANEA: verifica il valore ESATTO e il tipo di
-      // error.code così come arriva davvero dal client, invece di fidarci
-      // di cosa dovrebbe essere in teoria. Toglibile una volta confermato
-      // che il confronto sotto scatta correttamente.
-      console.log('[Admin] Delete prodotto, error.code:', error.code, '- typeof:', typeof error.code)
-
-      // Postgres code 23503 = violazione di foreign key: il prodotto è
-      // collegato a righe in order_items (ha già ordini associati) e per
-      // questo non può essere eliminato definitivamente senza perdere lo
-      // storico ordini. In questo caso, invece del messaggio d'errore
-      // grezzo, offriamo di "disattivarlo" (active = false): sparisce dal
-      // negozio pubblico ma resta nel database, collegato ai suoi ordini.
-      // "String(...)" invece di un confronto diretto: se error.code arriva
-      // come numero, o con spazi attorno, il confronto rigido "===" contro
-      // la stringa '23503' fallirebbe silenziosamente, facendo cadere nel
-      // ramo dell'errore generico invece che in quello della disattivazione.
-      if (String(error.code).trim() === '23503') {
-        const confirmedDeactivate = window.confirm(t('admin.confirmDeactivateInstead', { name: product.name }))
-        if (!confirmedDeactivate) return
-
-        const { error: deactivateError } = await supabase
-          .from('products')
-          .update({ active: false })
-          .eq('id', product.id)
-
-        if (deactivateError) {
-          logSupabaseError(`Errore nel disattivare il prodotto ${product.id}`, deactivateError)
-          window.alert(t('admin.deactivateError'))
-          return
-        }
-
-        setProducts((current) =>
-          current.map((item) => (item.id === product.id ? { ...item, active: false } : item))
-        )
-        return
-      }
-
       window.alert(t('admin.deleteError'))
       return
     }
@@ -583,8 +552,32 @@ function Admin() {
     setProducts((current) => current.filter((item) => item.id !== product.id))
   }
 
-  // Riporta "active" a true un prodotto disattivato in precedenza (perché
-  // aveva ordini collegati): torna a comparire nel negozio pubblico.
+  // Disattiva un prodotto SENZA eliminarlo: sparisce dal negozio pubblico
+  // (Shop.jsx/Home.jsx/ProductDetail.jsx filtrano active=true) ma resta nel
+  // database con tutti i suoi dati (descrizione, immagini, categoria),
+  // riattivabile in qualsiasi momento — a differenza di "Elimina", che ora
+  // cancella per sempre la riga del prodotto (vedi handleDelete): utile per
+  // un prodotto solo temporaneamente non in vendita (es. fuori produzione
+  // ma potrebbe tornare), invece che per liberarsene definitivamente.
+  async function handleDeactivate(product) {
+    const confirmed = window.confirm(t('admin.confirmDeactivate', { name: product.name }))
+    if (!confirmed) return
+
+    const { error } = await supabase.from('products').update({ active: false }).eq('id', product.id)
+
+    if (error) {
+      logSupabaseError(`Errore nel disattivare il prodotto ${product.id}`, error)
+      window.alert(t('admin.deactivateError'))
+      return
+    }
+
+    setProducts((current) =>
+      current.map((item) => (item.id === product.id ? { ...item, active: false } : item))
+    )
+  }
+
+  // Riporta "active" a true un prodotto disattivato in precedenza: torna a
+  // comparire nel negozio pubblico.
   async function handleReactivate(product) {
     const { error } = await supabase.from('products').update({ active: true }).eq('id', product.id)
 
@@ -887,10 +880,13 @@ function Admin() {
                         {t('admin.table.reactivate')}
                       </button>
                     ) : (
-                      <button type="button" className="btn-danger btn-sm" onClick={() => handleDelete(product)}>
-                        {t('admin.table.delete')}
+                      <button type="button" className="btn-secondary btn-sm" onClick={() => handleDeactivate(product)}>
+                        {t('admin.table.deactivate')}
                       </button>
                     )}
+                    <button type="button" className="btn-danger btn-sm" onClick={() => handleDelete(product)}>
+                      {t('admin.table.delete')}
+                    </button>
                   </div>
                 </div>
               )
