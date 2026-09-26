@@ -180,6 +180,15 @@
   color: var(--color-text-muted);
 }
 
+/* SKU su una riga a sé sotto nome e quantità, in piccolo: serve per
+   ritrovare il pezzo in magazzino, non per leggere l'ordine. */
+.adminorders-detail-item-sku {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
 .adminorders-discount {
   margin: 0;
   font-size: 13px;

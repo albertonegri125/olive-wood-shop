@@ -1,0 +1,54 @@
+/* src/components/PhotoMatchBadge.css
+   Badge "pezzo esatto/simile alla foto". Stessa forma a pillola e stessa
+   tipografia dei badge già esistenti (11px, maiuscolo, 700, letter-spacing
+   0.03em — vedi .product-card-badge e .admin-badge-inactive). Sfondo
+   bianco (--color-card-bg) + bordo nel colore del testo invece di uno
+   sfondo tenue colorato: il testo in --color-accent mantiene così il
+   contrasto verificato su bianco (~4.57:1, vedi ProductCard.css) anche
+   quando il badge sta sullo sfondo crema della pagina (ProductDetail). */
+
+.photo-match {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.photo-match-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px 3px 8px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: var(--color-card-bg);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.4;
+}
+
+.photo-match-badge-exact {
+  color: var(--color-accent);
+}
+
+.photo-match-badge-similar {
+  color: var(--color-text-muted);
+}
+
+.photo-match-icon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+/* Testo esplicativo (solo ProductDetail): stessa dimensione/colore della
+   riga di fiducia (.product-detail-trust), letto come didascalia. */
+.photo-match-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}

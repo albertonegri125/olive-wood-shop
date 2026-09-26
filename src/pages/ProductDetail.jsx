@@ -24,6 +24,7 @@ import {
   IconSketchOil,
 } from '../components/icons'
 import StarRating from '../components/StarRating'
+import PhotoMatchBadge from '../components/PhotoMatchBadge'
 import './ProductDetail.css'
 
 // Le tre fasi del processo artigianale, riproposte qui in versione compatta
@@ -344,6 +345,11 @@ function ProductDetail() {
           )}
 
           <h1 className="product-detail-name">{product.name}</h1>
+
+          {/* Pezzo esatto/simile alla foto, subito sotto il nome: il cliente
+              deve saperlo prima di arrivare al bottone "Aggiungi al
+              carrello", non scoprirlo in fondo alla pagina. */}
+          <PhotoMatchBadge type={product.photo_match_type} showDescription />
 
           {/* Descrizione specifica del pezzo (venatura, dimensioni),
               caricata da Supabase insieme al resto dei dati del prodotto */}

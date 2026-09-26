@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next'
 import { useCart } from '../context/CartContext'
 import { IconUnique } from './icons'
 import { getCategoryFallbackName } from '../lib/categoryName'
+import PhotoMatchBadge from './PhotoMatchBadge'
 import './ProductCard.css'
 
 function ProductCard({ product }) {
@@ -113,6 +114,9 @@ function ProductCard({ product }) {
         {/* Nome del prodotto in font serif */}
         <InfoTag className="product-card-info" {...linkProps}>
           <h3 className="product-card-name">{name}</h3>
+          {/* Pezzo esatto/simile alla foto: solo il badge, senza il testo
+              esplicativo lungo (che compare invece in ProductDetail). */}
+          <PhotoMatchBadge type={product.photo_match_type} />
           {/* Riga sottile che comunica l'unicità del pezzo: rinforza il
               valore artigianale ancora prima che l'occhio arrivi al prezzo. */}
           <p className="product-card-unique">

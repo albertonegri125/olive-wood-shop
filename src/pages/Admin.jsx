@@ -4,7 +4,9 @@
 // catalogo prodotti (creare, modificare, eliminare, aggiornare le scorte e
 // caricare le foto) senza dover passare dalla dashboard di Supabase.
 //
-// - Lista di tutti i prodotti, con miniatura, nome, prezzo, scorte e azioni.
+// - Lista di tutti i prodotti, con miniatura, SKU, nome, prezzo, scorte e azioni.
+// - "Stampa etichetta" apre una vista stampabile 60x40mm con SKU e nome
+//   (vedi lib/printLabel.js).
 // - Le scorte si possono aggiornare direttamente dalla lista (input + bottone
 //   "Salva" per riga), per le modifiche rapide più frequenti.
 // - "Modifica" ed "Elimina" agiscono sulla riga corrispondente.
@@ -26,6 +28,7 @@ import { supabase } from '../lib/supabaseClient'
 import { resizeImageForUpload } from '../lib/imageResize'
 import { slugify } from '../lib/slugify'
 import { getCategoryFallbackName } from '../lib/categoryName'
+import { printProductLabel } from '../lib/printLabel'
 import AdminNav from '../components/AdminNav'
 // Riusiamo gli stili dei campi di Auth.css (.auth-field, .auth-label,
 // .auth-input, .auth-error): stesso aspetto dei form di Login/Registrazione,
@@ -69,7 +72,13 @@ const EMPTY_FORM = {
   price: '',
   stock: '',
   categoryId: '',
+  sku: '',
+  photoMatchType: 'similar',
 }
+
+// Opzioni del selettore "corrispondenza con la foto" (vedi
+// schema_products_photo_match.sql), nell'ordine in cui compaiono nel form.
+const PHOTO_MATCH_OPTIONS = ['exact', 'similar']
 
 function Admin() {
   const { t, i18n } = useTranslation()
@@ -182,6 +191,14 @@ function Admin() {
   // rigeneriamo più automaticamente digitando il nome, per non sovrascrivere
   // una scelta fatta apposta dall'admin.
   const [slugEditedManually, setSlugEditedManually] = useState(false)
+  // Lo SKU è generato dal database (trigger set_product_sku_trigger, vedi
+  // schema_products_sku.sql) e di default è in sola lettura: diventa
+  // modificabile solo dopo il click su "Modifica manualmente", e solo in
+  // quel caso viene incluso nel payload di salvataggio.
+  const [skuEditing, setSkuEditing] = useState(false)
+  // Conferma mostrata sopra la lista dopo aver creato un prodotto nuovo,
+  // con lo SKU appena assegnato dal database: { name, sku }.
+  const [createdNotice, setCreatedNotice] = useState(null)
   // Elenco delle foto del prodotto, nell'ordine mostrato nell'editor (la
   // prima è la "principale"). Ogni voce è:
   //   { key, file, previewUrl }
@@ -221,6 +238,8 @@ function Admin() {
     setEditingProduct(null)
     setForm(EMPTY_FORM)
     setSlugEditedManually(false)
+    setSkuEditing(false)
+    setCreatedNotice(null)
     setImages([])
     setOriginalImageUrls([])
     setLoadingFormImages(false)
@@ -246,7 +265,11 @@ function Admin() {
       // esistente creato prima di questa funzionalità): la select del form
       // resta senza scelta finché l'admin non ne seleziona una.
       categoryId: product.category_id ?? '',
+      sku: product.sku ?? '',
+      photoMatchType: product.photo_match_type === 'exact' ? 'exact' : 'similar',
     })
+    setSkuEditing(false)
+    setCreatedNotice(null)
     // In modifica consideriamo lo slug già "manuale": ritoccare il nome per
     // correggere un refuso non deve cambiare di nascosto l'URL del prodotto
     // (che potrebbe già essere stato condiviso).
@@ -438,6 +461,15 @@ function Admin() {
       stock: stockNumber,
       image_url: mainImageUrl,
       category_id: form.categoryId,
+      photo_match_type: form.photoMatchType,
+    }
+
+    // Lo SKU viaggia nel payload SOLO se l'admin l'ha modificato a mano:
+    // altrimenti lo lasciamo interamente al trigger del database (che lo
+    // genera all'insert). Un campo svuotato diventa null, e il trigger ne
+    // rigenera uno automaticamente.
+    if (skuEditing) {
+      payload.sku = form.sku.trim() || null
     }
 
     const { data: savedProduct, error } = editingProduct
@@ -446,10 +478,16 @@ function Admin() {
 
     if (error) {
       logSupabaseError(editingProduct ? 'Errore nel modificare il prodotto' : 'Errore nel creare il prodotto', error)
-      // Codice Postgres per violazione di un vincolo "unique" (qui, lo
-      // slug, che nello schema è definito "unique"): messaggio dedicato
-      // invece del generico "errore di salvataggio".
-      setFormErrorKey(error.code === '23505' ? 'admin.form.slugInUse' : 'admin.form.saveError')
+      // Codice Postgres per violazione di un vincolo "unique": può essere
+      // lo slug o lo SKU (entrambi "unique" nello schema). Il nome del
+      // vincolo nel messaggio d'errore ("products_sku_key", vedi
+      // schema_products_sku.sql) distingue i due casi, ognuno con il suo
+      // messaggio dedicato invece del generico "errore di salvataggio".
+      if (error.code === '23505') {
+        setFormErrorKey(error.message?.includes('products_sku_key') ? 'admin.form.skuInUse' : 'admin.form.slugInUse')
+      } else {
+        setFormErrorKey('admin.form.saveError')
+      }
       setSaving(false)
       return
     }
@@ -493,8 +531,21 @@ function Admin() {
     }
 
     setSaving(false)
+    // Per un prodotto NUOVO lo SKU esiste solo da adesso (generato dal
+    // trigger all'insert): lo mostriamo nella conferma, letto dalla riga
+    // restituita da ".select()" dopo l'insert.
+    if (!editingProduct) {
+      setCreatedNotice({ name: savedProduct.name, sku: savedProduct.sku })
+    }
     closeForm()
     fetchProducts()
+  }
+
+  function handlePrintLabel(product) {
+    const opened = printProductLabel({ sku: product.sku, name: product.name })
+    if (!opened) {
+      window.alert(t('admin.labelPopupBlocked'))
+    }
   }
 
   // --- Eliminazione prodotto ---------------------------------------------
@@ -603,6 +654,27 @@ function Admin() {
         </button>
       </div>
 
+      {/* --- Conferma dopo la creazione di un prodotto nuovo, con lo SKU
+          appena generato dal database --- */}
+      {createdNotice && (
+        <div className="admin-created-notice" role="status">
+          <p className="admin-created-notice-text">
+            {t('admin.createdNotice', { name: createdNotice.name })}{' '}
+            <span className="admin-sku">{createdNotice.sku ?? '—'}</span>
+          </p>
+          <div className="admin-created-notice-actions">
+            {createdNotice.sku && (
+              <button type="button" className="btn-secondary btn-sm" onClick={() => handlePrintLabel(createdNotice)}>
+                {t('admin.table.printLabel')}
+              </button>
+            )}
+            <button type="button" className="btn-secondary btn-sm" onClick={() => setCreatedNotice(null)}>
+              {t('admin.createdNoticeDismiss')}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* --- Form di creazione/modifica, mostrato solo quando serve --- */}
       {showForm && (
         <div className="admin-form-panel">
@@ -636,6 +708,30 @@ function Admin() {
             </div>
 
             <div className="auth-field">
+              <label className="auth-label" htmlFor="admin-sku">
+                {t('admin.form.sku')}
+              </label>
+              <div className="admin-sku-editor">
+                <input
+                  id="admin-sku"
+                  className="auth-input admin-sku-input"
+                  value={form.sku}
+                  onChange={handleFieldChange('sku')}
+                  readOnly={!skuEditing}
+                  placeholder={editingProduct ? '' : t('admin.form.skuAutoPlaceholder')}
+                />
+                {!skuEditing && (
+                  <button type="button" className="btn-secondary btn-sm" onClick={() => setSkuEditing(true)}>
+                    {t('admin.form.skuEditManually')}
+                  </button>
+                )}
+              </div>
+              <p className="admin-form-hint">
+                {skuEditing ? t('admin.form.skuManualHint') : t('admin.form.skuHint')}
+              </p>
+            </div>
+
+            <div className="auth-field">
               <label className="auth-label" htmlFor="admin-category">
                 {t('admin.form.category')}
               </label>
@@ -658,6 +754,35 @@ function Admin() {
                 ))}
               </select>
             </div>
+
+            {/* Radio visibili (non una select): le due opzioni hanno
+                conseguenze diverse per il cliente, e il testo d'aiuto di
+                ognuna deve essere leggibile PRIMA di scegliere. */}
+            <fieldset className="admin-photo-match">
+              <legend className="auth-label">{t('admin.form.photoMatch')}</legend>
+              {PHOTO_MATCH_OPTIONS.map((option) => (
+                <label
+                  key={option}
+                  className={
+                    form.photoMatchType === option
+                      ? 'admin-photo-match-option admin-photo-match-option-selected'
+                      : 'admin-photo-match-option'
+                  }
+                >
+                  <input
+                    type="radio"
+                    name="admin-photo-match"
+                    value={option}
+                    checked={form.photoMatchType === option}
+                    onChange={handleFieldChange('photoMatchType')}
+                  />
+                  <span className="admin-photo-match-text">
+                    <span className="admin-photo-match-title">{t(`admin.form.photoMatchOptions.${option}.label`)}</span>
+                    <span className="admin-form-hint">{t(`admin.form.photoMatchOptions.${option}.help`)}</span>
+                  </span>
+                </label>
+              ))}
+            </fieldset>
 
             <div className="auth-field">
               <label className="auth-label" htmlFor="admin-description">
@@ -805,6 +930,9 @@ function Admin() {
                 {t('admin.table.image')}
               </span>
               <span className="admin-table-cell admin-table-head-cell" role="columnheader">
+                {t('admin.table.sku')}
+              </span>
+              <span className="admin-table-cell admin-table-head-cell" role="columnheader">
                 {t('admin.table.name')}
               </span>
               <span className="admin-table-cell admin-table-head-cell" role="columnheader">
@@ -842,6 +970,9 @@ function Admin() {
                     )}
                   </div>
                   <div className="admin-table-cell" role="cell">
+                    <span className="admin-sku">{product.sku ?? '—'}</span>
+                  </div>
+                  <div className="admin-table-cell" role="cell">
                     {product.name}
                     {isInactive && <span className="admin-badge-inactive">{t('admin.table.inactive')}</span>}
                   </div>
@@ -874,6 +1005,14 @@ function Admin() {
                   <div className="admin-table-cell admin-table-cell-actions" role="cell">
                     <button type="button" className="btn-secondary btn-sm" onClick={() => openEditForm(product)}>
                       {t('admin.table.edit')}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-secondary btn-sm"
+                      onClick={() => handlePrintLabel(product)}
+                      disabled={!product.sku}
+                    >
+                      {t('admin.table.printLabel')}
                     </button>
                     {isInactive ? (
                       <button type="button" className="btn-secondary btn-sm" onClick={() => handleReactivate(product)}>

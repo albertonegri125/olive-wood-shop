@@ -86,6 +86,16 @@
     "addToCart": "Add to cart",
     "added": "Added ✓"
   },
+  "photoMatch": {
+    "exact": {
+      "badge": "Exact piece shown",
+      "text": "You'll receive exactly the piece photographed, not a reproduction."
+    },
+    "similar": {
+      "badge": "Similar to photo",
+      "text": "You'll receive a piece with the same characteristics (shape, size, craftsmanship) as shown — being hand-worked natural wood, the grain will be unique to each piece."
+    }
+  },
   "cart": {
     "title": "Your cart",
     "empty": "Your cart is empty",
@@ -234,8 +244,13 @@
     "deactivateError": "We couldn't deactivate the product.",
     "reactivateError": "We couldn't reactivate the product.",
     "stockUpdateError": "We couldn't update the stock.",
+    "createdNotice": "Product \"{{name}}\" created. Assigned SKU:",
+    "createdNoticeDismiss": "Close",
+    "labelPopupBlocked": "The browser blocked the label window: allow pop-ups for this site and try again.",
     "table": {
       "image": "Image",
+      "sku": "SKU",
+      "printLabel": "Print label",
       "name": "Name",
       "price": "Price",
       "stock": "Stock",
@@ -252,6 +267,23 @@
       "editTitle": "Edit product",
       "name": "Name",
       "slug": "Slug (URL)",
+      "sku": "SKU (stock code)",
+      "skuAutoPlaceholder": "Generated automatically on save",
+      "skuEditManually": "Edit manually",
+      "skuHint": "Generated automatically in the format CATEGORY-YEAR-NUMBER (e.g. CUC-2026-0001).",
+      "skuManualHint": "You're customising the SKU. Leave the field empty to have it regenerated automatically.",
+      "skuInUse": "This SKU is already used by another product: choose a different one.",
+      "photoMatch": "Match with the photo",
+      "photoMatchOptions": {
+        "exact": {
+          "label": "Product identical to the photo",
+          "help": "The customer receives exactly the piece photographed"
+        },
+        "similar": {
+          "label": "Product similar to the photo",
+          "help": "The customer receives a piece with similar shape/size/characteristics, not identical"
+        }
+      },
       "category": "Category",
       "categoryPlaceholder": "Select a category",
       "description": "Description",
@@ -371,6 +403,7 @@
       "customerLabel": "Customer",
       "itemsTitle": "Products purchased",
       "itemUnknown": "Product no longer available",
+      "skuLabel": "SKU",
       "subtotal": "Subtotal",
       "discountLabel": "Discount applied",
       "shippingTitle": "Shipping address",

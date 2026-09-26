@@ -60,6 +60,27 @@ export function IconUnique(props) {
   )
 }
 
+// Cerchio con spunta: usata per il badge "Pezzo esatto in foto"
+export function IconCheck(props) {
+  return (
+    <IconBase {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M8.5 12.5l2.5 2.5 4.5-5" />
+    </IconBase>
+  )
+}
+
+// Cerchio con "i": usata per il badge "Pezzo simile alla foto"
+export function IconInfo(props) {
+  return (
+    <IconBase {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5.5" />
+      <path d="M12 7.6v.1" />
+    </IconBase>
+  )
+}
+
 // Freccia circolare: usata per "Reso gratuito entro 14 giorni"
 export function IconReturn(props) {
   return (

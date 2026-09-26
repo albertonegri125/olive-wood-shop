@@ -136,7 +136,7 @@ function AdminOrders() {
 
     let query = supabase
       .from('orders')
-      .select('*, order_items(*, products(name))', { count: 'exact' })
+      .select('*, order_items(*, products(name, sku))', { count: 'exact' })
       .order('created_at', { ascending: false })
 
     if (statusFilter !== 'all') {
@@ -497,15 +497,25 @@ function AdminOrders() {
             <section className="adminorders-detail-section">
               <h3>{t('adminOrders.detail.itemsTitle')}</h3>
               <ul className="adminorders-detail-items">
-                {(selectedOrder.order_items ?? []).map((item) => (
-                  <li className="adminorders-detail-item" key={item.id}>
-                    <span>
-                      {item.products?.name ?? item.product_name_snapshot ?? t('adminOrders.detail.itemUnknown')}{' '}
-                      <span className="adminorders-detail-item-qty">× {item.quantity}</span>
-                    </span>
-                    <span>{formatPrice(item.price_at_purchase * item.quantity)}</span>
-                  </li>
-                ))}
+                {(selectedOrder.order_items ?? []).map((item) => {
+                  // Come per il nome: SKU letto dal prodotto se esiste ancora,
+                  // altrimenti dallo snapshot salvato alla sua eliminazione
+                  // (vedi schema_products_sku.sql).
+                  const sku = item.products?.sku ?? item.product_sku_snapshot
+
+                  return (
+                    <li className="adminorders-detail-item" key={item.id}>
+                      <span>
+                        {item.products?.name ?? item.product_name_snapshot ?? t('adminOrders.detail.itemUnknown')}{' '}
+                        <span className="adminorders-detail-item-qty">× {item.quantity}</span>
+                        <span className="adminorders-detail-item-sku">
+                          {t('adminOrders.detail.skuLabel')}: <span className="admin-sku">{sku ?? '—'}</span>
+                        </span>
+                      </span>
+                      <span>{formatPrice(item.price_at_purchase * item.quantity)}</span>
+                    </li>
+                  )
+                })}
               </ul>
 
               {selectedOrder.discount_percentage > 0 && (

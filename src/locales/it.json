@@ -86,6 +86,16 @@
     "addToCart": "Aggiungi al carrello",
     "added": "Aggiunto ✓"
   },
+  "photoMatch": {
+    "exact": {
+      "badge": "Pezzo esatto in foto",
+      "text": "Riceverai esattamente il pezzo fotografato, non una riproduzione."
+    },
+    "similar": {
+      "badge": "Pezzo simile alla foto",
+      "text": "Riceverai un pezzo con le stesse caratteristiche (forma, dimensioni, lavorazione) di quello in foto — essendo legno naturale lavorato a mano, la venatura sarà unica per ogni esemplare."
+    }
+  },
   "cart": {
     "title": "Il tuo carrello",
     "empty": "Il tuo carrello è vuoto",
@@ -234,8 +244,13 @@
     "deactivateError": "Non è stato possibile disattivare il prodotto.",
     "reactivateError": "Non è stato possibile riattivare il prodotto.",
     "stockUpdateError": "Non è stato possibile aggiornare le scorte.",
+    "createdNotice": "Prodotto \"{{name}}\" creato. SKU assegnato:",
+    "createdNoticeDismiss": "Chiudi",
+    "labelPopupBlocked": "Il browser ha bloccato la finestra dell'etichetta: consenti i popup per questo sito e riprova.",
     "table": {
       "image": "Immagine",
+      "sku": "SKU",
+      "printLabel": "Stampa etichetta",
       "name": "Nome",
       "price": "Prezzo",
       "stock": "Scorte",
@@ -252,6 +267,23 @@
       "editTitle": "Modifica prodotto",
       "name": "Nome",
       "slug": "Slug (URL)",
+      "sku": "SKU (codice magazzino)",
+      "skuAutoPlaceholder": "Generato automaticamente al salvataggio",
+      "skuEditManually": "Modifica manualmente",
+      "skuHint": "Generato automaticamente dal formato CATEGORIA-ANNO-NUMERO (es. CUC-2026-0001).",
+      "skuManualHint": "Stai personalizzando lo SKU. Lascia il campo vuoto per farlo rigenerare automaticamente.",
+      "skuInUse": "Questo SKU è già usato da un altro prodotto: scegline uno diverso.",
+      "photoMatch": "Corrispondenza con la foto",
+      "photoMatchOptions": {
+        "exact": {
+          "label": "Prodotto identico alla foto",
+          "help": "Il cliente riceve esattamente il pezzo fotografato"
+        },
+        "similar": {
+          "label": "Prodotto simile alla foto",
+          "help": "Il cliente riceve un pezzo con forma/dimensioni/caratteristiche simili, non identico"
+        }
+      },
       "category": "Categoria",
       "categoryPlaceholder": "Seleziona una categoria",
       "description": "Descrizione",
@@ -371,6 +403,7 @@
       "customerLabel": "Cliente",
       "itemsTitle": "Prodotti acquistati",
       "itemUnknown": "Prodotto non più disponibile",
+      "skuLabel": "SKU",
       "subtotal": "Subtotale",
       "discountLabel": "Sconto applicato",
       "shippingTitle": "Indirizzo di spedizione",
