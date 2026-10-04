@@ -132,43 +132,16 @@
 }
 
 /* --- Pulsante hamburger (mobile) --- */
-.navbar-actions {
+.navbar-mobile-cart {
   display: flex;
   align-items: center;
   margin-left: auto;
 }
 
-.navbar-cart-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+.navbar-mobile-cart .nav-link {
   min-height: 44px;
   padding: 8px 12px;
-  border-radius: 999px;
-  color: var(--color-text);
-  text-decoration: none;
-}
-
-.navbar-cart-label {
   font-size: 14px;
-  font-weight: 600;
-}
-
-.navbar-cart-link .navbar-cart-count,
-.navbar-cart-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: 999px;
-  background: var(--color-accent);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1;
 }
 
 .navbar-toggle {
@@ -317,6 +290,10 @@
     transform: translateX(-50%);
     text-align: center;
   }
+
+  .navbar-cart-desktop {
+    display: none;
+  }
 }
 
 /* Numero di articoli nel carrello: un piccolo "badge" tondo accanto alla scritta "Carrello" */
@@ -346,7 +323,7 @@
 
 /* --- Da qui in su: adattamento per schermi più larghi (tablet/desktop) --- */
 @media (min-width: 768px) {
-  .navbar-actions {
+  .navbar-mobile-cart {
     display: none;
   }
 
