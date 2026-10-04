@@ -23,7 +23,8 @@
 //   allineato alla foto principale, per compatibilità con il codice che
 //   mostra una sola immagine (es. ProductCard.jsx e la miniatura qui sotto).
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabaseClient'
 import { resizeImageForUpload } from '../lib/imageResize'
@@ -154,36 +155,75 @@ function Admin() {
   const [openProductActionsId, setOpenProductActionsId] = useState(null)
   const productActionsTriggerRef = useRef(null)
   const productActionsMenuRef = useRef(null)
+  const [productActionsPosition, setProductActionsPosition] = useState({ top: 0, left: 0 })
+
+  function closeProductActions() {
+    setOpenProductActionsId(null)
+    productActionsTriggerRef.current?.focus()
+  }
 
   useEffect(() => {
     if (!openProductActionsId) return undefined
 
     function handleOutsidePointerDown(event) {
-      if (!event.target.closest('[data-product-actions-menu]')) {
-        setOpenProductActionsId(null)
+      if (
+        !productActionsMenuRef.current?.contains(event.target) &&
+        !productActionsTriggerRef.current?.contains(event.target)
+      ) {
+        closeProductActions()
       }
     }
 
     function handleProductActionsKeyDown(event) {
       if (event.key === 'Escape') {
-        setOpenProductActionsId(null)
-        productActionsTriggerRef.current?.focus()
+        event.preventDefault()
+        closeProductActions()
       }
     }
 
     document.addEventListener('pointerdown', handleOutsidePointerDown)
     document.addEventListener('keydown', handleProductActionsKeyDown)
+    window.addEventListener('scroll', closeProductActions, true)
+    window.addEventListener('resize', closeProductActions)
 
     return () => {
       document.removeEventListener('pointerdown', handleOutsidePointerDown)
       document.removeEventListener('keydown', handleProductActionsKeyDown)
+      window.removeEventListener('scroll', closeProductActions, true)
+      window.removeEventListener('resize', closeProductActions)
     }
   }, [openProductActionsId])
 
-  useEffect(() => {
-    if (openProductActionsId) {
-      productActionsMenuRef.current?.querySelector('[role="menuitem"]')?.focus()
+  useLayoutEffect(() => {
+    if (!openProductActionsId) return
+
+    const trigger = productActionsTriggerRef.current
+    const menu = productActionsMenuRef.current
+    if (!trigger || !menu) return
+
+    const triggerRect = trigger.getBoundingClientRect()
+    const isMobile = window.matchMedia('(max-width: 767px)').matches
+
+    if (isMobile) {
+      setProductActionsPosition({ top: 0, left: 0 })
+    } else {
+      const menuRect = menu.getBoundingClientRect()
+      const viewportPadding = 8
+      const left = Math.max(
+        viewportPadding,
+        Math.min(triggerRect.right - menuRect.width, window.innerWidth - menuRect.width - viewportPadding)
+      )
+      const roomBelow = window.innerHeight - triggerRect.bottom
+      const roomAbove = triggerRect.top
+      const openAbove = roomBelow < menuRect.height + 12 && roomAbove > menuRect.height + 12
+      const top = openAbove
+        ? triggerRect.top - menuRect.height - 4
+        : Math.min(triggerRect.bottom + 4, window.innerHeight - menuRect.height - viewportPadding)
+
+      setProductActionsPosition({ top: Math.max(viewportPadding, top), left })
     }
+
+    menu.querySelector('[role="menuitem"]')?.focus()
   }, [openProductActionsId])
 
   function handleStockDraftChange(productId, value) {
@@ -702,6 +742,10 @@ function Admin() {
     )
   }
 
+  const openProductActionsProduct = products.find((product) => product.id === openProductActionsId)
+  const productActionsIsMobile =
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
+
   return (
     <div className="admin-page">
       <AdminNav />
@@ -1037,7 +1081,7 @@ function Admin() {
         <div className="admin-table-wrapper admin-products-table-wrapper">
           <div className="admin-table admin-products-table" role="table">
             <div className="admin-table-row admin-products-row admin-products-header" role="row">
-              <span className="admin-table-cell admin-table-head-cell" role="columnheader">
+              <span className="admin-table-cell admin-table-head-cell admin-products-cell-image" role="columnheader">
                 {t('admin.table.image')}
               </span>
               <span className="admin-table-cell admin-table-head-cell admin-products-cell-sku" role="columnheader">
@@ -1052,7 +1096,7 @@ function Admin() {
               <span className="admin-table-cell admin-table-head-cell" role="columnheader">
                 {t('admin.table.stock')}
               </span>
-              <span className="admin-table-cell admin-table-head-cell" role="columnheader">
+              <span className="admin-table-cell admin-table-head-cell admin-products-cell-actions" role="columnheader">
                 {t('admin.table.actions')}
               </span>
             </div>
@@ -1148,56 +1192,17 @@ function Admin() {
                         aria-haspopup="menu"
                         aria-expanded={isActionsOpen}
                         aria-controls={`product-actions-${product.id}`}
-                        ref={isActionsOpen ? productActionsTriggerRef : null}
-                        onClick={() => setOpenProductActionsId(isActionsOpen ? null : product.id)}
+                        onClick={(event) => {
+                          if (isActionsOpen) {
+                            closeProductActions()
+                          } else {
+                            productActionsTriggerRef.current = event.currentTarget
+                            setOpenProductActionsId(product.id)
+                          }
+                        }}
                       >
                         <span aria-hidden="true">⋯</span>
                       </button>
-                      {isActionsOpen && (
-                        <div
-                          id={`product-actions-${product.id}`}
-                          className="admin-product-actions-dropdown"
-                          role="menu"
-                          ref={productActionsMenuRef}
-                        >
-                          {isInactive ? (
-                            <button
-                              type="button"
-                              role="menuitem"
-                              className="admin-product-actions-item"
-                              onClick={() => {
-                                setOpenProductActionsId(null)
-                                handleReactivate(product)
-                              }}
-                            >
-                              {t('admin.table.reactivate')}
-                            </button>
-                          ) : (
-                            <button
-                              type="button"
-                              role="menuitem"
-                              className="admin-product-actions-item"
-                              onClick={() => {
-                                setOpenProductActionsId(null)
-                                handleDeactivate(product)
-                              }}
-                            >
-                              {t('admin.table.deactivate')}
-                            </button>
-                          )}
-                          <button
-                            type="button"
-                            role="menuitem"
-                            className="admin-product-actions-item admin-product-actions-delete"
-                            onClick={() => {
-                              setOpenProductActionsId(null)
-                              handleDelete(product)
-                            }}
-                          >
-                            {t('admin.table.delete')}
-                          </button>
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -1205,6 +1210,81 @@ function Admin() {
             })}
           </div>
         </div>
+      )}
+
+      {openProductActionsProduct && createPortal(
+        <>
+          {productActionsIsMobile && (
+            <div
+              className="admin-product-actions-backdrop"
+              aria-hidden="true"
+              onPointerDown={closeProductActions}
+            />
+          )}
+          <div
+            id={`product-actions-${openProductActionsProduct.id}`}
+            className={
+              productActionsIsMobile
+                ? 'admin-product-actions-dropdown admin-product-actions-sheet'
+                : 'admin-product-actions-dropdown'
+            }
+            style={productActionsIsMobile ? undefined : productActionsPosition}
+            role="menu"
+            ref={productActionsMenuRef}
+            onKeyDown={(event) => {
+              const items = [...event.currentTarget.querySelectorAll('[role="menuitem"]')]
+              const currentIndex = items.indexOf(document.activeElement)
+              let nextIndex = currentIndex
+
+              if (event.key === 'ArrowDown') nextIndex = (currentIndex + 1) % items.length
+              else if (event.key === 'ArrowUp') nextIndex = (currentIndex - 1 + items.length) % items.length
+              else if (event.key === 'Home') nextIndex = 0
+              else if (event.key === 'End') nextIndex = items.length - 1
+              else return
+
+              event.preventDefault()
+              items[nextIndex]?.focus()
+            }}
+          >
+            {openProductActionsProduct.active === false ? (
+              <button
+                type="button"
+                role="menuitem"
+                className="admin-product-actions-item"
+                onClick={() => {
+                  closeProductActions()
+                  handleReactivate(openProductActionsProduct)
+                }}
+              >
+                {t('admin.table.reactivate')}
+              </button>
+            ) : (
+              <button
+                type="button"
+                role="menuitem"
+                className="admin-product-actions-item"
+                onClick={() => {
+                  closeProductActions()
+                  handleDeactivate(openProductActionsProduct)
+                }}
+              >
+                {t('admin.table.deactivate')}
+              </button>
+            )}
+            <button
+              type="button"
+              role="menuitem"
+              className="admin-product-actions-item admin-product-actions-delete"
+              onClick={() => {
+                closeProductActions()
+                handleDelete(openProductActionsProduct)
+              }}
+            >
+              {t('admin.table.delete')}
+            </button>
+          </div>
+        </>,
+        document.body
       )}
     </div>
   )
