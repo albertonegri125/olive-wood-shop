@@ -1,6 +1,7 @@
 // src/pages/Admin.jsx
 //
-// Pannello admin (/admin, protetto da RequireAdmin): permette di gestire il
+// Sezione "Prodotti" del pannello admin (/admin/prodotti, protetta da
+// RequireAdmin): permette di gestire il
 // catalogo prodotti (creare, modificare, eliminare, aggiornare le scorte e
 // caricare le foto) senza dover passare dalla dashboard di Supabase.
 //

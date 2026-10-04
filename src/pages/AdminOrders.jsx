@@ -20,8 +20,11 @@
 
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
+import { formatDate, formatPrice } from '../lib/adminFormat'
 import AdminNav from '../components/AdminNav'
+import AdminOrderDetail, { ORDER_STATUSES, ORDER_WITH_ITEMS_SELECT } from '../components/AdminOrderDetail'
 import '../pages/Auth.css'
 import './Admin.css'
 import './AdminOrders.css'
@@ -37,51 +40,21 @@ function logSupabaseError(context, error) {
 
 const PAGE_SIZE = 20
 
-// Stati selezionabili nel filtro e nel select di cambio stato del
-// dettaglio: gli stessi elencati nella richiesta, nell'ordine in cui un
-// ordine li attraversa normalmente (a parte "paid_stock_issue", un ramo a
-// parte per un problema di scorte da risolvere manualmente).
-const ORDER_STATUSES = ['paid', 'paid_stock_issue', 'processing', 'shipped', 'delivered']
-
-function formatPrice(value) {
-  return new Intl.NumberFormat('it-IT', {
-    style: 'currency',
-    currency: 'EUR',
-  }).format(value ?? 0)
-}
-
-function formatDate(value) {
-  return new Intl.DateTimeFormat('it-IT', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
-}
-
 function countItems(order) {
   return (order.order_items ?? []).reduce((total, item) => total + item.quantity, 0)
-}
-
-// Trasforma il JSONB "shipping_address" (stessa forma salvata dal webhook
-// Stripe: { name, address: { line1, line2, city, state, postal_code,
-// country } }, vedi schema_add_shipping_address.sql e Account.jsx) in un
-// testo semplice multilinea, sia per il rendering leggibile sia per il
-// bottone "Copia indirizzo".
-function formatShippingAddressLines(shippingAddress) {
-  if (!shippingAddress?.address) return []
-
-  const { name, address } = shippingAddress
-  const lines = []
-
-  if (name) lines.push(name)
-  lines.push(address.line1 + (address.line2 ? `, ${address.line2}` : ''))
-  lines.push([address.postal_code, address.city, address.state].filter(Boolean).join(' '))
-  if (address.country) lines.push(address.country)
-
-  return lines.filter(Boolean)
 }
 
 function AdminOrders() {
   const { t } = useTranslation()
 
   // --- Filtri ---------------------------------------------------------
-  const [statusFilter, setStatusFilter] = useState('all')
+  // "?stato=" nell'URL preimposta il filtro (es. il link "Vedi ordini"
+  // dell'avviso scorte nella Panoramica, ?stato=paid_stock_issue).
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [statusFilter, setStatusFilter] = useState(() => {
+    const initialStatus = searchParams.get('stato')
+    return ORDER_STATUSES.includes(initialStatus) ? initialStatus : 'all'
+  })
   const [searchInput, setSearchInput] = useState('')
   const [emailSearch, setEmailSearch] = useState('')
 
@@ -136,7 +109,7 @@ function AdminOrders() {
 
     let query = supabase
       .from('orders')
-      .select('*, order_items(*, products(name, sku))', { count: 'exact' })
+      .select(ORDER_WITH_ITEMS_SELECT, { count: 'exact' })
       .order('created_at', { ascending: false })
 
     if (statusFilter !== 'all') {
@@ -220,27 +193,55 @@ function AdminOrders() {
     setPage(1)
   }
 
-  // --- Dettaglio ordine (pannello laterale) ------------------------------
+  // --- Dettaglio ordine (pannello laterale, vedi AdminOrderDetail) -------
   // Copia autonoma dell'ordine selezionato (non derivata da "orders"):
   // così il pannello resta aperto e coerente anche se, cambiando pagina o
   // filtro, quell'ordine non fa più parte dell'elenco corrente.
   const [selectedOrder, setSelectedOrder] = useState(null)
-  const [trackingDraft, setTrackingDraft] = useState('')
-  const [savingTracking, setSavingTracking] = useState(false)
-  const [trackingError, setTrackingError] = useState(false)
-  const [statusUpdateError, setStatusUpdateError] = useState(false)
-  const [copyState, setCopyState] = useState('idle') // 'idle' | 'copied' | 'error'
 
-  function openDetail(order) {
-    setSelectedOrder(order)
-    setTrackingDraft(order.tracking_number ?? '')
-    setTrackingError(false)
-    setStatusUpdateError(false)
-    setCopyState('idle')
-  }
+  // Link diretto a un ordine (/admin/ordini?ordine=<id>, usato dalla
+  // Panoramica): l'ordine può non essere nella prima pagina dell'elenco,
+  // quindi lo leggiamo a parte e apriamo subito il suo dettaglio.
+  const linkedOrderId = searchParams.get('ordine')
+
+  useEffect(() => {
+    if (!linkedOrderId) return
+
+    async function openLinkedOrder() {
+      const { data, error } = await supabase
+        .from('orders')
+        .select(ORDER_WITH_ITEMS_SELECT)
+        .eq('id', linkedOrderId)
+        .maybeSingle()
+
+      if (error) {
+        logSupabaseError(`Errore nel caricare l'ordine ${linkedOrderId}`, error)
+        return
+      }
+      if (!data) return
+
+      await fetchCustomerProfiles([data])
+      setSelectedOrder(data)
+    }
+
+    void openLinkedOrder()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [linkedOrderId])
 
   function closeDetail() {
     setSelectedOrder(null)
+    // Rimuove "?ordine=" dall'URL: altrimenti ricaricando la pagina il
+    // pannello si riaprirebbe da solo.
+    if (linkedOrderId) {
+      setSearchParams(
+        (current) => {
+          const next = new URLSearchParams(current)
+          next.delete('ordine')
+          return next
+        },
+        { replace: true }
+      )
+    }
   }
 
   // Applica una modifica sia alla copia nel pannello sia (se presente)
@@ -249,66 +250,6 @@ function AdminOrders() {
   function patchOrderEverywhere(orderId, patch) {
     setOrders((current) => current.map((order) => (order.id === orderId ? { ...order, ...patch } : order)))
     setSelectedOrder((current) => (current && current.id === orderId ? { ...current, ...patch } : current))
-  }
-
-  async function handleStatusChange(event) {
-    const newStatus = event.target.value
-    if (!selectedOrder) return
-
-    setStatusUpdateError(false)
-
-    const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', selectedOrder.id)
-
-    if (error) {
-      logSupabaseError(`Errore nell'aggiornare lo stato dell'ordine ${selectedOrder.id}`, error)
-      setStatusUpdateError(true)
-      return
-    }
-
-    patchOrderEverywhere(selectedOrder.id, { status: newStatus })
-  }
-
-  async function handleSaveTracking() {
-    if (!selectedOrder) return
-
-    setSavingTracking(true)
-    setTrackingError(false)
-
-    const trimmed = trackingDraft.trim()
-    const { error } = await supabase
-      .from('orders')
-      .update({ tracking_number: trimmed || null })
-      .eq('id', selectedOrder.id)
-
-    if (error) {
-      logSupabaseError(`Errore nel salvare il tracking dell'ordine ${selectedOrder.id}`, error)
-      setTrackingError(true)
-      setSavingTracking(false)
-      return
-    }
-
-    patchOrderEverywhere(selectedOrder.id, { tracking_number: trimmed || null })
-    setSavingTracking(false)
-  }
-
-  async function handleCopyAddress() {
-    if (!selectedOrder) return
-
-    const lines = formatShippingAddressLines(selectedOrder.shipping_address)
-    if (lines.length === 0) return
-
-    try {
-      await navigator.clipboard.writeText(lines.join('\n'))
-      setCopyState('copied')
-    } catch (error) {
-      console.error('[AdminOrders] Errore nel copiare l\'indirizzo negli appunti:', error)
-      setCopyState('error')
-    }
-
-    // Il feedback torna allo stato normale da solo dopo un paio di
-    // secondi, così il bottone non resta bloccato su "Copiato!" per
-    // sempre se l'admin non ci fa più caso.
-    setTimeout(() => setCopyState('idle'), 2000)
   }
 
   function customerLabel(order) {
@@ -428,7 +369,7 @@ function AdminOrders() {
                     {countItems(order)}
                   </div>
                   <div className="admin-table-cell admin-table-cell-actions" role="cell">
-                    <button type="button" className="btn-secondary btn-sm" onClick={() => openDetail(order)}>
+                    <button type="button" className="btn-secondary btn-sm" onClick={() => setSelectedOrder(order)}>
                       {t('adminOrders.table.details')}
                     </button>
                   </div>
@@ -466,146 +407,13 @@ function AdminOrders() {
 
       {/* --- Pannello laterale di dettaglio --- */}
       {selectedOrder && (
-        <>
-          <div className="adminorders-detail-backdrop" onClick={closeDetail} />
-          <aside className="adminorders-detail-panel" aria-label={t('adminOrders.detail.title')}>
-            <div className="adminorders-detail-header">
-              <h2>{t('adminOrders.detail.title')}</h2>
-              <button type="button" className="btn-secondary btn-sm" onClick={closeDetail}>
-                {t('adminOrders.detail.close')}
-              </button>
-            </div>
-
-            {selectedOrder.status === 'paid_stock_issue' && (
-              <span className="adminorders-status-badge adminorders-status-badge-warning">
-                {t('adminOrders.stockIssueBadge')}
-              </span>
-            )}
-
-            <dl className="adminorders-detail-meta">
-              <div className="adminorders-detail-meta-row">
-                <dt>{t('adminOrders.detail.customerLabel')}</dt>
-                <dd>{customerLabel(selectedOrder)}</dd>
-              </div>
-              <div className="adminorders-detail-meta-row">
-                <dt>{t('adminOrders.table.date')}</dt>
-                <dd>{formatDate(selectedOrder.created_at)}</dd>
-              </div>
-            </dl>
-
-            {/* --- Prodotti acquistati --- */}
-            <section className="adminorders-detail-section">
-              <h3>{t('adminOrders.detail.itemsTitle')}</h3>
-              <ul className="adminorders-detail-items">
-                {(selectedOrder.order_items ?? []).map((item) => {
-                  // Come per il nome: SKU letto dal prodotto se esiste ancora,
-                  // altrimenti dallo snapshot salvato alla sua eliminazione
-                  // (vedi schema_products_sku.sql).
-                  const sku = item.products?.sku ?? item.product_sku_snapshot
-
-                  return (
-                    <li className="adminorders-detail-item" key={item.id}>
-                      <span>
-                        {item.products?.name ?? item.product_name_snapshot ?? t('adminOrders.detail.itemUnknown')}{' '}
-                        <span className="adminorders-detail-item-qty">× {item.quantity}</span>
-                        <span className="adminorders-detail-item-sku">
-                          {t('adminOrders.detail.skuLabel')}: <span className="admin-sku">{sku ?? '—'}</span>
-                        </span>
-                      </span>
-                      <span>{formatPrice(item.price_at_purchase * item.quantity)}</span>
-                    </li>
-                  )
-                })}
-              </ul>
-
-              {selectedOrder.discount_percentage > 0 && (
-                <p className="adminorders-discount">
-                  {t('adminOrders.detail.discountLabel')} ({selectedOrder.discount_percentage}%): −
-                  {formatPrice(selectedOrder.discount_amount)}
-                </p>
-              )}
-
-              <div className="adminorders-detail-total">
-                <span>{t('adminOrders.detail.totalLabel')}</span>
-                <span>{formatPrice(selectedOrder.total)}</span>
-              </div>
-            </section>
-
-            {/* --- Indirizzo di spedizione --- */}
-            <section className="adminorders-detail-section">
-              <h3>{t('adminOrders.detail.shippingTitle')}</h3>
-
-              {formatShippingAddressLines(selectedOrder.shipping_address).length === 0 ? (
-                <p className="admin-message">{t('adminOrders.detail.noShipping')}</p>
-              ) : (
-                <>
-                  <address className="adminorders-address">
-                    {formatShippingAddressLines(selectedOrder.shipping_address).map((line, index) => (
-                      <div key={index}>{line}</div>
-                    ))}
-                  </address>
-                  <button type="button" className="btn-secondary btn-sm" onClick={handleCopyAddress}>
-                    {copyState === 'copied'
-                      ? t('adminOrders.detail.addressCopied')
-                      : t('adminOrders.detail.copyAddress')}
-                  </button>
-                  {copyState === 'error' && (
-                    <p className="admin-stock-error">{t('adminOrders.detail.copyError')}</p>
-                  )}
-                </>
-              )}
-            </section>
-
-            {/* --- Stato ordine --- */}
-            <section className="adminorders-detail-section">
-              <div className="auth-field">
-                <label className="auth-label" htmlFor="adminorders-detail-status">
-                  {t('adminOrders.detail.statusLabel')}
-                </label>
-                <select
-                  id="adminorders-detail-status"
-                  className="auth-input"
-                  value={selectedOrder.status}
-                  onChange={handleStatusChange}
-                >
-                  {ORDER_STATUSES.map((status) => (
-                    <option key={status} value={status}>
-                      {t(`adminOrders.status.${status}`)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {statusUpdateError && <p className="admin-stock-error">{t('adminOrders.detail.statusUpdateError')}</p>}
-            </section>
-
-            {/* --- Tracking --- */}
-            <section className="adminorders-detail-section">
-              <div className="auth-field">
-                <label className="auth-label" htmlFor="adminorders-detail-tracking">
-                  {t('adminOrders.detail.trackingLabel')}
-                </label>
-                <div className="adminorders-tracking-editor">
-                  <input
-                    id="adminorders-detail-tracking"
-                    className="auth-input"
-                    value={trackingDraft}
-                    onChange={(event) => setTrackingDraft(event.target.value)}
-                    placeholder={t('adminOrders.detail.trackingPlaceholder')}
-                  />
-                  <button
-                    type="button"
-                    className="btn-secondary btn-sm"
-                    disabled={savingTracking}
-                    onClick={handleSaveTracking}
-                  >
-                    {savingTracking ? t('adminOrders.detail.trackingSaving') : t('adminOrders.detail.trackingSave')}
-                  </button>
-                </div>
-                {trackingError && <p className="admin-stock-error">{t('adminOrders.detail.trackingSaveError')}</p>}
-              </div>
-            </section>
-          </aside>
-        </>
+        <AdminOrderDetail
+          key={selectedOrder.id}
+          order={selectedOrder}
+          customerLabel={customerLabel(selectedOrder)}
+          onClose={closeDetail}
+          onOrderUpdated={patchOrderEverywhere}
+        />
       )}
     </div>
   )

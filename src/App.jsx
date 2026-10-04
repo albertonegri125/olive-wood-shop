@@ -25,6 +25,9 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import Account from './pages/Account'
 import Admin from './pages/Admin'
+import AdminOverview from './pages/AdminOverview'
+import AdminCustomers from './pages/AdminCustomers'
+import AdminReviews from './pages/AdminReviews'
 import AdminCategories from './pages/AdminCategories'
 import AdminUsers from './pages/AdminUsers'
 import AdminOrders from './pages/AdminOrders'
@@ -112,11 +115,23 @@ function App() {
               }
             />
 
-            {/* Pannello admin: gestione prodotti (catalogo, scorte, foto).
-                Protetta: se non loggati o senza is_admin=true nel profilo,
-                si viene rimandati direttamente alla Home. */}
+            {/* Pannello admin, pagina di default: "Panoramica" con i numeri
+                principali (ordini, fatturato, scorte), gli ultimi ordini, i
+                prodotti più venduti e gli avvisi da gestire (vedi
+                AdminOverview.jsx). Protetta: se non loggati o senza
+                is_admin=true nel profilo, si viene rimandati alla Home. */}
             <Route
               path="/admin"
+              element={
+                <RequireAdmin>
+                  <AdminOverview />
+                </RequireAdmin>
+              }
+            />
+
+            {/* Sezione "Prodotti" del pannello: catalogo, scorte, foto. */}
+            <Route
+              path="/admin/prodotti"
               element={
                 <RequireAdmin>
                   <Admin />
@@ -163,6 +178,31 @@ function App() {
               element={
                 <RequireAdmin>
                   <AdminOrders />
+                </RequireAdmin>
+              }
+            />
+
+            {/* Sezione "Clienti" del pannello: elenco utenti con numero
+                ordini e totale speso (funzione admin_customers, vedi
+                schema_admin_dashboard.sql) e storico ordini di ognuno. */}
+            <Route
+              path="/admin/clienti"
+              element={
+                <RequireAdmin>
+                  <AdminCustomers />
+                </RequireAdmin>
+              }
+            />
+
+            {/* Sezione "Recensioni" del pannello: moderazione (approva/
+                rifiuta), eliminazione e inserimento manuale. Query dirette
+                protette dalla policy admin già esistente su "reviews" (vedi
+                schema_reviews.sql). */}
+            <Route
+              path="/admin/recensioni"
+              element={
+                <RequireAdmin>
+                  <AdminReviews />
                 </RequireAdmin>
               }
             />

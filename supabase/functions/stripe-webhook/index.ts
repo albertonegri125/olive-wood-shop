@@ -27,6 +27,7 @@
 // quelli delle singole richieste.
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 import Stripe from 'npm:stripe@^17.0.0'
+import { sendOrderConfirmationEmail, type EmailLocale } from './orderEmail.ts'
 
 console.log('[stripe-webhook] Modulo in fase di inizializzazione...')
 
@@ -39,6 +40,13 @@ const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET')
 // utente) — serve quindi un accesso che bypassi la Row Level Security.
 const supabaseUrl = Deno.env.get('SUPABASE_URL')
 const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+
+// Email di conferma ordine (vedi orderEmail.ts). Facoltativi: se
+// RESEND_API_KEY manca, l'ordine viene creato comunque e l'email viene
+// solo saltata, con un avviso nei log.
+const resendApiKey = Deno.env.get('RESEND_API_KEY')
+const resendFrom = Deno.env.get('RESEND_FROM')
+const siteUrl = Deno.env.get('SITE_URL')
 
 // DIAGNOSTICA: la creazione dei client Stripe/Supabase qui sotto girava
 // prima d'ora a livello di modulo, FUORI da Deno.serve e senza try/catch.
@@ -330,4 +338,102 @@ async function handleCheckoutCompleted(
   }
 
   console.log(`Ordine ${order.id} creato per la sessione ${session.id}${hasStockIssue ? ' (con problemi di stock)' : ''}.`)
+
+  // --- Email di conferma al cliente ----------------------------------------
+  // DOPO che ordine e righe sono già salvati, e in un try/catch a parte: se
+  // Resend non risponde, la chiave manca o è sbagliata, l'errore viene
+  // solo loggato. L'ordine resta registrato e la funzione risponde
+  // comunque 200 a Stripe (che altrimenti ritenterebbe l'evento, ma
+  // l'idempotenza sopra lo salterebbe e l'email non partirebbe comunque).
+  try {
+    await sendConfirmationEmail({
+      session,
+      orderId: order.id,
+      items,
+      total,
+      amountSubtotal,
+      discountPercentage,
+      discountAmount,
+      shippingAddress,
+      adminClient,
+    })
+  } catch (error) {
+    console.error(`[stripe-webhook] Invio email di conferma fallito per l'ordine ${order.id}:`, error)
+  }
+}
+
+async function sendConfirmationEmail({
+  session,
+  orderId,
+  items,
+  total,
+  amountSubtotal,
+  discountPercentage,
+  discountAmount,
+  shippingAddress,
+  adminClient,
+}: {
+  session: Stripe.Checkout.Session
+  orderId: string
+  items: { product_id: string; quantity: number; unit_price: number }[]
+  total: number
+  amountSubtotal: number
+  discountPercentage: number
+  discountAmount: number
+  shippingAddress: { name: string | null; address: Stripe.Address | null } | null
+  adminClient: ReturnType<typeof createClient>
+}) {
+  if (!resendApiKey) {
+    console.warn(`[stripe-webhook] RESEND_API_KEY non impostata: email di conferma per l'ordine ${orderId} non inviata.`)
+    return
+  }
+
+  // customer_details.email è l'email effettivamente confermata dal
+  // cliente nella pagina di Stripe; customer_email quella passata da
+  // create-checkout-session (l'email dell'account).
+  const to = session.customer_details?.email ?? session.customer_email
+  if (!to) {
+    console.warn(`[stripe-webhook] Nessuna email cliente nella sessione ${session.id}: conferma non inviata.`)
+    return
+  }
+
+  // I metadata contengono solo gli id: i nomi li leggiamo dal database.
+  const { data: products, error: productsError } = await adminClient
+    .from('products')
+    .select('id, name')
+    .in('id', items.map((item) => item.product_id))
+
+  if (productsError) {
+    // Non blocca l'email: al posto del nome comparirà un'etichetta generica.
+    console.error(`[stripe-webhook] Errore nel leggere i nomi prodotto per l'email dell'ordine ${orderId}:`, productsError)
+  }
+
+  const namesById = new Map((products ?? []).map((product) => [product.id as string, product.name as string]))
+  const locale: EmailLocale = session.metadata?.locale === 'en' ? 'en' : 'it'
+  const fallbackName = locale === 'en' ? 'Product' : 'Prodotto'
+
+  const result = await sendOrderConfirmationEmail(
+    {
+      locale,
+      to,
+      // Prime 8 cifre dell'id, in maiuscolo: lo stesso "numero ordine"
+      // mostrato nel dettaglio ordine del pannello admin.
+      orderNumber: orderId.slice(0, 8).toUpperCase(),
+      items: items.map((item) => ({
+        name: namesById.get(item.product_id) ?? fallbackName,
+        quantity: item.quantity,
+        unitPrice: item.unit_price,
+      })),
+      subtotal: amountSubtotal,
+      discountPercentage,
+      discountAmount,
+      total,
+      shippingAddress,
+      siteUrl: siteUrl ?? null,
+    },
+    resendApiKey,
+    resendFrom
+  )
+
+  console.log(`[stripe-webhook] Email di conferma inviata a ${to} per l'ordine ${orderId} (Resend id ${result.id}).`)
 }

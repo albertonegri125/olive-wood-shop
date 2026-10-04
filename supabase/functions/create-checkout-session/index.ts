@@ -94,6 +94,9 @@ Deno.serve(async (req: Request) => {
     // --- 2. Validazione minima del corpo della richiesta -------------------
     const body = await req.json().catch(() => null)
     const items = body?.items
+    // Lingua dell'email di conferma ordine: solo 'it' o 'en', qualunque
+    // altro valore (o nessuno) ricade sull'italiano.
+    const locale = body?.locale === 'en' ? 'en' : 'it'
 
     if (!Array.isArray(items) || items.length === 0) {
       return jsonResponse({ error: 'Il carrello è vuoto.' }, 400)
@@ -245,6 +248,7 @@ Deno.serve(async (req: Request) => {
         user_id: user.id,
         discount_percentage: String(discountPercentage),
         items: JSON.stringify(itemsMetadata),
+        locale,
       },
     }
 

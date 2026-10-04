@@ -157,6 +157,8 @@
   },
   "auth": {
     "checkingSession": "Verifica della sessione in corso...",
+    "sessionExpired": "Sessione scaduta, accedi di nuovo.",
+    "sessionExpiredCheckout": "Sessione scaduta: accedi di nuovo e tornerai al carrello.",
     "emailLabel": "Email",
     "passwordLabel": "Password",
     "confirmPasswordLabel": "Conferma password",
@@ -231,7 +233,10 @@
       "products": "Prodotti",
       "categories": "Categorie",
       "users": "Amministratori",
-      "orders": "Ordini"
+      "orders": "Ordini",
+      "overview": "Panoramica",
+      "customers": "Clienti",
+      "reviews": "Recensioni"
     },
     "title": "Pannello Admin",
     "newProduct": "Nuovo prodotto",
@@ -418,7 +423,104 @@
       "trackingSave": "Salva",
       "trackingSaving": "Salvataggio...",
       "trackingSaveError": "Non è stato possibile salvare il numero di tracciamento.",
-      "totalLabel": "Totale ordine"
+      "totalLabel": "Totale ordine",
+      "orderNumber": "Numero ordine"
+    }
+  },
+  "adminOverview": {
+    "title": "Panoramica",
+    "loading": "Caricamento panoramica...",
+    "statsError": "Non è stato possibile caricare le statistiche. Se non l'hai ancora fatto, esegui schema_admin_dashboard.sql nel SQL Editor di Supabase.",
+    "cards": {
+      "totalOrders": "Ordini totali",
+      "totalRevenue": "Fatturato totale",
+      "monthRevenue": "Fatturato del mese",
+      "productsCount": "Prodotti in catalogo",
+      "lowStock": "In esaurimento (≤ {{threshold}})"
+    },
+    "alerts": {
+      "stockIssueTitle_one": "{{count}} ordine pagato con scorte insufficienti.",
+      "stockIssueTitle_other": "{{count}} ordini pagati con scorte insufficienti.",
+      "stockIssueText": "Il cliente ha già pagato: contattalo per un rimborso parziale o per concordare i tempi di consegna.",
+      "stockIssueLink": "Vedi ordini",
+      "pendingReviewsTitle_one": "{{count}} recensione in attesa di approvazione.",
+      "pendingReviewsTitle_other": "{{count}} recensioni in attesa di approvazione.",
+      "pendingReviewsText": "Non sono visibili sul sito finché non le approvi.",
+      "pendingReviewsLink": "Modera recensioni"
+    },
+    "recentOrders": {
+      "title": "Ultimi ordini",
+      "viewAll": "Tutti gli ordini",
+      "empty": "Nessun ordine ricevuto finora.",
+      "error": "Non è stato possibile caricare gli ultimi ordini."
+    },
+    "topProducts": {
+      "title": "Prodotti più venduti",
+      "empty": "Nessuna vendita registrata finora.",
+      "error": "Non è stato possibile caricare i prodotti più venduti. Se non l'hai ancora fatto, esegui schema_admin_dashboard.sql nel SQL Editor di Supabase.",
+      "sold_one": "{{count}} venduto",
+      "sold_other": "{{count}} venduti"
+    }
+  },
+  "adminCustomers": {
+    "title": "Clienti",
+    "loading": "Caricamento clienti...",
+    "error": "Non è stato possibile caricare i clienti. Se non l'hai ancora fatto, esegui schema_admin_dashboard.sql nel SQL Editor di Supabase.",
+    "empty": "Nessun cliente registrato finora.",
+    "emptySearch": "Nessun cliente corrisponde alla ricerca.",
+    "searchLabel": "Cerca per email",
+    "searchPlaceholder": "es. mario@email.it",
+    "searchButton": "Cerca",
+    "searchClear": "Azzera",
+    "table": {
+      "email": "Email",
+      "name": "Nome",
+      "registeredAt": "Registrato il",
+      "orders": "Ordini",
+      "totalSpent": "Totale speso",
+      "actions": "Azioni"
+    },
+    "viewOrders": "Storico ordini",
+    "backToList": "Torna ai clienti",
+    "historyTitle": "Storico ordini",
+    "historyLoading": "Caricamento ordini...",
+    "historyError": "Non è stato possibile caricare gli ordini del cliente.",
+    "historyEmpty": "Questo cliente non ha ancora effettuato ordini.",
+    "itemsCount_one": "{{count}} articolo",
+    "itemsCount_other": "{{count}} articoli"
+  },
+  "adminReviews": {
+    "title": "Recensioni",
+    "loading": "Caricamento recensioni...",
+    "error": "Non è stato possibile caricare le recensioni.",
+    "actionError": "Operazione non riuscita. Riprova.",
+    "addButton": "Aggiungi recensione",
+    "pendingTitle": "In attesa di approvazione",
+    "pendingEmpty": "Nessuna recensione da moderare.",
+    "approvedTitle": "Pubblicate",
+    "approvedEmpty": "Nessuna recensione pubblicata.",
+    "productLabel": "Prodotto",
+    "noComment": "Nessun testo, solo valutazione.",
+    "approve": "Approva",
+    "reject": "Rifiuta",
+    "delete": "Elimina",
+    "rejectConfirm": "Rifiutare la recensione di {{name}}? Verrà eliminata definitivamente.",
+    "deleteConfirm": "Eliminare la recensione di {{name}}? Sparirà dal sito e non potrà essere recuperata.",
+    "form": {
+      "title": "Nuova recensione",
+      "intro": "Per inserire a mano una recensione ricevuta di persona, via email o sui social.",
+      "customerName": "Nome cliente (visibile sul sito)",
+      "product": "Prodotto",
+      "productPlaceholder": "Seleziona un prodotto",
+      "rating": "Valutazione",
+      "comment": "Testo della recensione",
+      "publishNow": "Pubblica subito sul sito",
+      "save": "Salva recensione",
+      "saving": "Salvataggio...",
+      "cancel": "Annulla",
+      "requiredError": "Inserisci il nome del cliente e scegli un prodotto.",
+      "saveError": "Non è stato possibile salvare la recensione.",
+      "saved": "Recensione salvata."
     }
   },
   "cookieBanner": {

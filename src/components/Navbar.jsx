@@ -111,7 +111,7 @@ function Navbar() {
               loggato, oppure il suo nome con un menu a tendina (Account/Esci)
               se lo è: vedi AccountMenu per la logica completa. */}
           <AccountMenu />
-          {/* Solo per gli admin: link diretto al pannello di gestione prodotti */}
+          {/* Solo per gli admin: link diretto al pannello admin (si apre sulla Panoramica) */}
           {isAdmin && (
             <NavLink to="/admin" className={linkClassName}>
               {t('navbar.admin')}

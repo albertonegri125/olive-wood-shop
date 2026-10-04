@@ -37,7 +37,7 @@ function formatPrice(value) {
 }
 
 function Checkout() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   // "getDiscountPercentage"/"getDiscountedTotal" servono SOLO per mostrare
   // un'anteprima all'utente in questa pagina: il valore che conta davvero
   // (quello effettivamente addebitato) viene ricalcolato da zero lato
@@ -62,6 +62,9 @@ function Checkout() {
     const { data, error } = await supabase.functions.invoke('create-checkout-session', {
       body: {
         items: cart.map((item) => ({ product_id: item.product_id, quantity: item.quantity })),
+        // Lingua in cui mandare l'email di conferma ordine (vedi
+        // stripe-webhook): quella in cui il cliente sta usando il sito.
+        locale: i18n.language?.startsWith('en') ? 'en' : 'it',
       },
     })
 

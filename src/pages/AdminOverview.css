@@ -1,0 +1,256 @@
+/* src/pages/AdminOverview.css
+   Stile della "Panoramica" (/admin). Riusa bottoni e messaggi di Admin.css
+   e il badge di stato ordine di AdminOrders.css: qui restano avvisi, card
+   riepilogo e i due pannelli (ultimi ordini, più venduti). */
+
+/* --- Avvisi --- */
+.adminoverview-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+/* Stesso riquadro con bordo sinistro marcato della conferma di creazione
+   prodotto (.admin-created-notice): verde oliva per un avviso informativo
+   (recensioni da moderare), ambra piena per un problema da risolvere
+   (ordini pagati senza scorte), coerente con il badge "paid_stock_issue". */
+.adminoverview-alert {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-secondary);
+  border-radius: 6px;
+  background: var(--color-secondary-soft);
+}
+
+.adminoverview-alert-warning {
+  border-color: var(--color-amber);
+  border-left-color: var(--color-amber);
+  background: var(--color-amber-soft);
+}
+
+.adminoverview-alert-text {
+  margin: 0;
+  font-size: 14px;
+  flex: 1 1 240px;
+}
+
+.adminoverview-alert .btn-sm {
+  text-decoration: none;
+}
+
+/* --- Card riepilogo: 2 colonne su mobile, 3 su tablet, 5 su desktop --- */
+.adminoverview-cards {
+  list-style: none;
+  margin: 0 0 32px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+.adminoverview-cards > li {
+  display: flex;
+}
+
+.adminoverview-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  box-sizing: border-box;
+}
+
+.adminoverview-card-link {
+  text-decoration: none;
+  transition: border-color 0.2s ease;
+}
+
+.adminoverview-card-link:hover {
+  border-color: var(--color-accent);
+}
+
+.adminoverview-card-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+
+.adminoverview-card-value {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+
+  @media (min-width: 1024px) {
+    font-size: 28px;
+  }
+}
+
+.adminoverview-card-warning {
+  border-color: var(--color-amber);
+  background: var(--color-amber-soft);
+}
+
+.adminoverview-card-warning .adminoverview-card-value {
+  color: var(--color-amber);
+}
+
+/* --- Pannelli: uno sotto l'altro su mobile, affiancati da desktop --- */
+.adminoverview-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+
+  @media (min-width: 900px) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.adminoverview-panel {
+  padding: 20px;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  min-width: 0;
+}
+
+.adminoverview-panel-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.adminoverview-panel-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.adminoverview-panel-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+.adminoverview-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.adminoverview-list > li + li {
+  border-top: 1px solid var(--color-border);
+}
+
+/* Ogni ordine è interamente cliccabile (link al dettaglio). */
+.adminoverview-order {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 12px 0;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.adminoverview-order:hover .adminoverview-order-email {
+  color: var(--color-accent);
+}
+
+.adminoverview-order-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.adminoverview-order-email {
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.adminoverview-order-date {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.adminoverview-order-side {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.adminoverview-order-total {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* --- Classifica più venduti --- */
+.adminoverview-top-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.adminoverview-top-rank {
+  flex-shrink: 0;
+  width: 28px;
+  font-family: var(--font-hand);
+  font-size: 24px;
+  line-height: 1;
+  color: var(--color-accent);
+  text-align: center;
+}
+
+.adminoverview-top-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.adminoverview-top-name {
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.adminoverview-top-sku {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.adminoverview-top-qty {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}

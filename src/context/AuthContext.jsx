@@ -12,6 +12,63 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 
 const AuthContext = createContext(null)
+const LOGIN_AT_STORAGE_KEY = 'login_at'
+const AUTH_NOTICE_STORAGE_KEY = 'auth_notice'
+const AUTH_REDIRECT_STORAGE_KEY = 'auth_redirect_after_login'
+const MAX_SESSION_DURATION_MS = 60 * 60 * 1000
+
+function getStoredLoginAt() {
+  const storedValue = Number(localStorage.getItem(LOGIN_AT_STORAGE_KEY))
+  return Number.isFinite(storedValue) ? storedValue : null
+}
+
+function setLoginAt(timestamp = Date.now()) {
+  localStorage.setItem(LOGIN_AT_STORAGE_KEY, String(timestamp))
+}
+
+function clearLoginAt() {
+  localStorage.removeItem(LOGIN_AT_STORAGE_KEY)
+}
+
+function getExpiredSessionRedirectPath() {
+  if (typeof window === 'undefined') {
+    return '/'
+  }
+
+  const currentPath = window.location.pathname
+  return currentPath === '/checkout' || currentPath.startsWith('/checkout/') ? '/cart' : '/'
+}
+
+async function expireSessionAndRedirect() {
+  // Il carrello vive sotto un'altra chiave in localStorage (CartContext)
+  // e non va toccato qui: la sessione scade in auth, non nel carrello.
+  const redirectPath = getExpiredSessionRedirectPath()
+  const noticeKey = redirectPath === '/cart' ? 'auth.sessionExpiredCheckout' : 'auth.sessionExpired'
+
+  sessionStorage.setItem(AUTH_REDIRECT_STORAGE_KEY, redirectPath)
+  sessionStorage.setItem(AUTH_NOTICE_STORAGE_KEY, noticeKey)
+  clearLoginAt()
+
+  try {
+    await supabase.auth.signOut()
+  } catch (error) {
+    console.warn('Logout automatico dopo sessione scaduta fallito:', error)
+  }
+
+  window.location.assign('/login')
+}
+
+function checkSessionTimeout() {
+  const loginAt = getStoredLoginAt()
+
+  if (!loginAt) {
+    return
+  }
+
+  if (Date.now() - loginAt > MAX_SESSION_DURATION_MS) {
+    void expireSessionAndRedirect()
+  }
+}
 
 // Carica la riga di "profiles" collegata a un utente. Isolata in una
 // funzione a parte perché va richiamata sia al primo caricamento sia ad
@@ -47,18 +104,21 @@ export function AuthProvider({ children }) {
     // una richiesta a Supabase è ancora in corso.
     let isMounted = true
 
-    // Al primo caricamento, chiediamo a Supabase se esiste già una sessione
-    // valida (salvata automaticamente dalla libreria, tipicamente in
-    // localStorage), così l'utente resta loggato anche dopo un refresh.
-    // Se c'è un utente, carichiamo subito anche il suo profilo, prima di
-    // segnalare che il controllo iniziale è concluso (altrimenti una route
-    // protetta come RequireAdmin vedrebbe per un istante "loading: false"
-    // ma "profile: null" e rimanderebbe alla Home per errore).
     async function init() {
       const { data } = await supabase.auth.getSession()
       const sessionUser = data.session?.user ?? null
-      if (!isMounted) return
 
+      if (!isMounted) {
+        return
+      }
+
+      if (sessionUser && !localStorage.getItem(LOGIN_AT_STORAGE_KEY)) {
+        // Manteniamo il timestamp di login solo una volta: il refresh
+        // automatico del token di Supabase NON lo deve resettare.
+        setLoginAt()
+      }
+
+      checkSessionTimeout()
       setUser(sessionUser)
 
       if (sessionUser) {
@@ -71,15 +131,21 @@ export function AuthProvider({ children }) {
 
     init()
 
-    // Ci mettiamo in ascolto di ogni cambiamento di stato dell'autenticazione
-    // (login, logout, refresh del token, ecc.): ogni volta aggiorniamo
-    // "user" (e il profilo collegato) di conseguenza, così tutta l'app
-    // resta sincronizzata.
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       const sessionUser = session?.user ?? null
       setUser(sessionUser)
+
+      if (event === 'SIGNED_IN' && sessionUser && !localStorage.getItem(LOGIN_AT_STORAGE_KEY)) {
+        setLoginAt()
+      }
+
+      if (event === 'SIGNED_OUT') {
+        clearLoginAt()
+        sessionStorage.removeItem(AUTH_NOTICE_STORAGE_KEY)
+        sessionStorage.removeItem(AUTH_REDIRECT_STORAGE_KEY)
+      }
 
       if (sessionUser) {
         loadProfile(sessionUser.id).then((profileData) => {
@@ -90,11 +156,23 @@ export function AuthProvider({ children }) {
       }
     })
 
-    // Alla distruzione del provider, ci disiscriviamo per non lasciare
-    // listener "orfani" in giro.
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        checkSessionTimeout()
+      }
+    }
+
+    const intervalId = window.setInterval(() => {
+      checkSessionTimeout()
+    }, 60000)
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
     return () => {
       isMounted = false
       subscription.unsubscribe()
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.clearInterval(intervalId)
     }
   }, [])
 
@@ -174,6 +252,12 @@ export function AuthProvider({ children }) {
 
   // Esce dall'account attualmente loggato.
   async function signOut() {
+    // Non puliamo il carrello qui: CartContext salva i prodotti in una chiave
+    // separata di localStorage, quindi il carrello deve rimanere intatto
+    // anche dopo un logout ordinario o uno scaduto.
+    clearLoginAt()
+    sessionStorage.removeItem(AUTH_NOTICE_STORAGE_KEY)
+    sessionStorage.removeItem(AUTH_REDIRECT_STORAGE_KEY)
     await supabase.auth.signOut()
   }
 

@@ -72,6 +72,37 @@ Il terzo secret, `STRIPE_WEBHOOK_SECRET`, lo otterrai allo step 5 (serve
 prima creare il webhook su Stripe, che a sua volta richiede l'URL della
 funzione — quindi va fatto dopo il deploy).
 
+### Email di conferma ordine (Resend)
+
+Dopo aver creato l'ordine, `stripe-webhook` manda al cliente un'email di
+conferma (riepilogo prodotti, sconto, totale, indirizzo di spedizione,
+numero ordine) tramite [Resend](https://resend.com). Il template è in
+`supabase/functions/stripe-webhook/orderEmail.ts`.
+
+```bash
+supabase secrets set RESEND_API_KEY=re_xxxxxxxxxxxx
+supabase secrets set RESEND_FROM="OliveWood Creations <ordini@tuodominio.it>"
+```
+
+- `RESEND_API_KEY`: la trovi su Resend in **API Keys → Create API Key**
+  (permesso "Sending access" è sufficiente).
+- `RESEND_FROM` (facoltativo): il mittente. Il dominio va prima verificato
+  su Resend (**Domains → Add Domain**, poi i record DNS indicati). Se non lo
+  imposti viene usato `onboarding@resend.dev`, che però consegna **solo**
+  all'email con cui hai creato l'account Resend: va bene per le prove, non
+  per i clienti veri.
+- Il logo nell'email è `SITE_URL/favicon.png`: con `SITE_URL` ancora su
+  `localhost` l'immagine non si vede (compare il nome del brand come testo
+  alternativo), si sistema da sola quando `SITE_URL` punta al sito pubblicato.
+
+Se l'invio fallisce (chiave mancante o sbagliata, Resend irraggiungibile,
+dominio non verificato) l'errore viene solo scritto nei log della funzione:
+**l'ordine viene registrato comunque**.
+
+Dopo aver impostato i secret, rideploya **entrambe** le funzioni:
+`create-checkout-session` passa ora la lingua del sito (IT/EN) con cui
+scrivere l'email.
+
 ## 4. Deploya le Edge Function
 
 ```bash

@@ -157,6 +157,8 @@
   },
   "auth": {
     "checkingSession": "Checking your session...",
+    "sessionExpired": "Session expired, please sign in again.",
+    "sessionExpiredCheckout": "Session expired: sign in again and you'll return to your cart.",
     "emailLabel": "Email",
     "passwordLabel": "Password",
     "confirmPasswordLabel": "Confirm password",
@@ -231,7 +233,10 @@
       "products": "Products",
       "categories": "Categories",
       "users": "Administrators",
-      "orders": "Orders"
+      "orders": "Orders",
+      "overview": "Overview",
+      "customers": "Customers",
+      "reviews": "Reviews"
     },
     "title": "Admin panel",
     "newProduct": "New product",
@@ -418,7 +423,104 @@
       "trackingSave": "Save",
       "trackingSaving": "Saving...",
       "trackingSaveError": "We couldn't save the tracking number.",
-      "totalLabel": "Order total"
+      "totalLabel": "Order total",
+      "orderNumber": "Order number"
+    }
+  },
+  "adminOverview": {
+    "title": "Overview",
+    "loading": "Loading overview...",
+    "statsError": "We couldn't load the statistics. If you haven't already, run schema_admin_dashboard.sql in the Supabase SQL Editor.",
+    "cards": {
+      "totalOrders": "Total orders",
+      "totalRevenue": "Total revenue",
+      "monthRevenue": "Revenue this month",
+      "productsCount": "Products in catalogue",
+      "lowStock": "Running low (≤ {{threshold}})"
+    },
+    "alerts": {
+      "stockIssueTitle_one": "{{count}} paid order with insufficient stock.",
+      "stockIssueTitle_other": "{{count}} paid orders with insufficient stock.",
+      "stockIssueText": "The customer has already paid: contact them about a partial refund or an agreed delivery date.",
+      "stockIssueLink": "View orders",
+      "pendingReviewsTitle_one": "{{count}} review awaiting approval.",
+      "pendingReviewsTitle_other": "{{count}} reviews awaiting approval.",
+      "pendingReviewsText": "They won't appear on the site until you approve them.",
+      "pendingReviewsLink": "Moderate reviews"
+    },
+    "recentOrders": {
+      "title": "Latest orders",
+      "viewAll": "All orders",
+      "empty": "No orders received yet.",
+      "error": "We couldn't load the latest orders."
+    },
+    "topProducts": {
+      "title": "Best sellers",
+      "empty": "No sales recorded yet.",
+      "error": "We couldn't load the best sellers. If you haven't already, run schema_admin_dashboard.sql in the Supabase SQL Editor.",
+      "sold_one": "{{count}} sold",
+      "sold_other": "{{count}} sold"
+    }
+  },
+  "adminCustomers": {
+    "title": "Customers",
+    "loading": "Loading customers...",
+    "error": "We couldn't load the customers. If you haven't already, run schema_admin_dashboard.sql in the Supabase SQL Editor.",
+    "empty": "No registered customers yet.",
+    "emptySearch": "No customers match your search.",
+    "searchLabel": "Search by email",
+    "searchPlaceholder": "e.g. john@email.com",
+    "searchButton": "Search",
+    "searchClear": "Clear",
+    "table": {
+      "email": "Email",
+      "name": "Name",
+      "registeredAt": "Registered on",
+      "orders": "Orders",
+      "totalSpent": "Total spent",
+      "actions": "Actions"
+    },
+    "viewOrders": "Order history",
+    "backToList": "Back to customers",
+    "historyTitle": "Order history",
+    "historyLoading": "Loading orders...",
+    "historyError": "We couldn't load this customer's orders.",
+    "historyEmpty": "This customer hasn't placed any orders yet.",
+    "itemsCount_one": "{{count}} item",
+    "itemsCount_other": "{{count}} items"
+  },
+  "adminReviews": {
+    "title": "Reviews",
+    "loading": "Loading reviews...",
+    "error": "We couldn't load the reviews.",
+    "actionError": "The operation failed. Please try again.",
+    "addButton": "Add review",
+    "pendingTitle": "Awaiting approval",
+    "pendingEmpty": "No reviews to moderate.",
+    "approvedTitle": "Published",
+    "approvedEmpty": "No published reviews.",
+    "productLabel": "Product",
+    "noComment": "No text, rating only.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "delete": "Delete",
+    "rejectConfirm": "Reject the review by {{name}}? It will be permanently deleted.",
+    "deleteConfirm": "Delete the review by {{name}}? It will disappear from the site and cannot be recovered.",
+    "form": {
+      "title": "New review",
+      "intro": "To add a review received in person, by email or on social media.",
+      "customerName": "Customer name (shown on the site)",
+      "product": "Product",
+      "productPlaceholder": "Select a product",
+      "rating": "Rating",
+      "comment": "Review text",
+      "publishNow": "Publish on the site immediately",
+      "save": "Save review",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "requiredError": "Enter the customer name and choose a product.",
+      "saveError": "We couldn't save the review.",
+      "saved": "Review saved."
     }
   },
   "cookieBanner": {
