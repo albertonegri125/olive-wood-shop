@@ -22,6 +22,7 @@ import './Home.css'
 
 // Quante testimonianze mostrare al massimo nella sezione "Cosa dicono di noi".
 const TESTIMONIALS_LIMIT = 3
+const HOME_TRUST_ITEMS = ['handmade', 'unique', 'payment', 'shipping']
 
 // --- Carosello foto hero -----------------------------------------------
 // Placeholder mostrato SOLO se il catalogo non ha ancora nessun prodotto
@@ -118,7 +119,7 @@ function Home() {
     return () => clearInterval(intervalId)
   }, [heroImages])
 
-  // Elenco dei prodotti in evidenza da mostrare dopo la sezione "processo"
+  // Elenco dei prodotti in evidenza mostrati subito dopo la barra di fiducia.
   const [featuredProducts, setFeaturedProducts] = useState([])
   // true finché la richiesta a Supabase è in corso
   const [loading, setLoading] = useState(true)
@@ -256,57 +257,13 @@ function Home() {
         </div>
       </section>
 
-      {/* --- Sezione "Il nostro processo" ---
-          Racconta materiale, lavorazione e finitura PRIMA dei prodotti:
-          quando l'utente arriva alla vetrina, ha già capito perché ogni
-          pezzo vale il suo prezzo. Nessun contenitore bianco: la sezione
-          si fonde con lo sfondo texturizzato del resto della pagina. */}
-      <section className="process-section">
-        <h2 className="process-title">{t('process.title')}</h2>
-        <ol className="process-steps">
-          {PROCESS_STEPS.map(({ key, Icon, rotation }, index) => (
-            <li className="process-step" key={key}>
-              <div className="process-step-visual">
-                {/* Numero scritto a mano (font Caveat), ruotato in modo
-                    leggermente diverso per ogni step: non sono tre copie
-                    identiche, sembrano tre numeri scritti al volo. */}
-                <span
-                  className="process-step-number"
-                  style={{ transform: `rotate(${rotation}deg)` }}
-                  aria-hidden="true"
-                >
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-                <Icon className="process-step-icon" />
-              </div>
-              <h3 className="process-step-title">{t(`process.${key}.title`)}</h3>
-              <p className="process-step-text">{t(`process.${key}.text`)}</p>
-            </li>
+      <section className="home-trust-bar" aria-label={t('home.trust.label')}>
+        <ul className="home-trust-list">
+          {HOME_TRUST_ITEMS.map((item) => (
+            <li className="home-trust-item" key={item}>{t(`home.trust.${item}`)}</li>
           ))}
-        </ol>
+        </ul>
       </section>
-
-      {/* --- Sezione "Cosa dicono di noi" (testimonianze) ---
-          Riprova sociale, mostrata PRIMA della vetrina prodotti: chi arriva
-          fin qui vede che altre persone hanno già acquistato e sono
-          rimaste soddisfatte, prima ancora di scegliere un pezzo.
-          Se non ci sono ancora recensioni approvate, niente sezione vuota. */}
-      {!loadingTestimonials && testimonials.length > 0 && (
-        <section className="testimonials-section">
-          <h2 className="testimonials-title">{t('testimonials.title')}</h2>
-          <div className="testimonials-grid">
-            {testimonials.map((review) => (
-              <figure className="testimonial-card" key={review.id}>
-                <StarRating rating={review.rating} />
-                {review.comment && (
-                  <blockquote className="testimonial-quote">“{review.comment}”</blockquote>
-                )}
-                <figcaption className="testimonial-name">— {review.customer_name}</figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* --- Sezione prodotti in evidenza --- */}
       <section className="featured-section">
@@ -328,6 +285,53 @@ function Home() {
           </div>
         )}
       </section>
+
+      {/* --- Sezione "Il nostro processo" --- */}
+      <section className="process-section">
+        <h2 className="process-title">{t('process.title')}</h2>
+        <ol className="process-steps">
+          {PROCESS_STEPS.map(({ key, Icon, rotation }, index) => (
+            <li className="process-step" key={key}>
+              <div className="process-step-visual">
+                <span
+                  className="process-step-number"
+                  style={{ transform: `rotate(${rotation}deg)` }}
+                  aria-hidden="true"
+                >
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <Icon className="process-step-icon" />
+              </div>
+              <h3 className="process-step-title">{t(`process.${key}.title`)}</h3>
+              <p className="process-step-text">{t(`process.${key}.text`)}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="home-story-section">
+        <h2 className="home-story-title">{t('home.storyTitle')}</h2>
+        <Link to="/chi-siamo" className="home-story-link">
+          {t('home.storyLink')}
+        </Link>
+      </section>
+
+      {!loadingTestimonials && testimonials.length > 0 && (
+        <section className="testimonials-section">
+          <h2 className="testimonials-title">{t('testimonials.title')}</h2>
+          <div className="testimonials-grid">
+            {testimonials.map((review) => (
+              <figure className="testimonial-card" key={review.id}>
+                <StarRating rating={review.rating} />
+                {review.comment && (
+                  <blockquote className="testimonial-quote">“{review.comment}”</blockquote>
+                )}
+                <figcaption className="testimonial-name">— {review.customer_name}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   )
 }

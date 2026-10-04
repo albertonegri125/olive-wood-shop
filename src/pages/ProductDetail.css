@@ -258,6 +258,60 @@
   line-height: 1.6;
 }
 
+.product-detail-section {
+  max-width: 1000px;
+  margin: 28px auto 0;
+  padding: 24px 20px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.product-detail-section h2 {
+  margin: 0 0 12px;
+}
+
+.product-detail-section > p,
+.product-detail-care p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.65;
+}
+
+.product-detail-measurements table {
+  width: 100%;
+  max-width: 480px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.product-detail-measurements th,
+.product-detail-measurements td {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.product-detail-measurements th {
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.product-detail-measurements td {
+  text-align: right;
+  font-weight: 600;
+}
+
+.product-detail-care summary {
+  cursor: pointer;
+  font-family: var(--font-serif);
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.product-detail-care p {
+  padding-top: 12px;
+}
+
 /* Riga di fiducia: pezzo unico, spedizione, pagamento. Semplice testo con
    icona inline, separati da un punto — niente più box bianco con bordo e
    ombra: deve leggersi come una riga di didascalia, non come una card. */
@@ -441,8 +495,8 @@
 /* --- Sezione "Come nasce questo pezzo" (versione compatta del processo) --- */
 .product-detail-process {
   max-width: 1000px;
-  margin: 48px auto 0;
-  padding: 32px 20px 0;
+  margin: 28px auto 0;
+  padding: 24px 20px 0;
   border-top: 1px solid var(--color-border);
 }
 

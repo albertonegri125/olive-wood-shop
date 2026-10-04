@@ -228,6 +228,16 @@ export function IconTrash(props) {
   )
 }
 
+export function IconCart(props) {
+  return (
+    <IconBase {...props}>
+      <path d="M3 4h2l2.2 11.5h11.2L21 8H6" />
+      <circle cx="9" cy="20" r="1.3" />
+      <circle cx="17" cy="20" r="1.3" />
+    </IconBase>
+  )
+}
+
 // --- Icone social, usate nel Footer (rappresentazioni semplificate,
 // non i loghi ufficiali, per restare coerenti con lo stile "line icon"
 // minimale usato in tutto il sito) ---

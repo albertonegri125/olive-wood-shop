@@ -75,6 +75,14 @@ const EMPTY_FORM = {
   categoryId: '',
   sku: '',
   photoMatchType: 'similar',
+  lengthCm: '',
+  widthCm: '',
+  thicknessCm: '',
+  weightG: '',
+  grainNoteIt: '',
+  grainNoteEn: '',
+  treeAgeNoteIt: '',
+  treeAgeNoteEn: '',
 }
 
 // Opzioni del selettore "corrispondenza con la foto" (vedi
@@ -268,6 +276,14 @@ function Admin() {
       categoryId: product.category_id ?? '',
       sku: product.sku ?? '',
       photoMatchType: product.photo_match_type === 'exact' ? 'exact' : 'similar',
+      lengthCm: product.length_cm == null ? '' : String(product.length_cm),
+      widthCm: product.width_cm == null ? '' : String(product.width_cm),
+      thicknessCm: product.thickness_cm == null ? '' : String(product.thickness_cm),
+      weightG: product.weight_g == null ? '' : String(product.weight_g),
+      grainNoteIt: product.grain_note_it ?? '',
+      grainNoteEn: product.grain_note_en ?? '',
+      treeAgeNoteIt: product.tree_age_note_it ?? '',
+      treeAgeNoteEn: product.tree_age_note_en ?? '',
     })
     setSkuEditing(false)
     setCreatedNotice(null)
@@ -463,6 +479,14 @@ function Admin() {
       image_url: mainImageUrl,
       category_id: form.categoryId,
       photo_match_type: form.photoMatchType,
+      length_cm: form.lengthCm === '' ? null : Number(form.lengthCm),
+      width_cm: form.widthCm === '' ? null : Number(form.widthCm),
+      thickness_cm: form.thicknessCm === '' ? null : Number(form.thicknessCm),
+      weight_g: form.weightG === '' ? null : Number(form.weightG),
+      grain_note_it: form.grainNoteIt.trim() || null,
+      grain_note_en: form.grainNoteEn.trim() || null,
+      tree_age_note_it: form.treeAgeNoteIt.trim() || null,
+      tree_age_note_en: form.treeAgeNoteEn.trim() || null,
     }
 
     // Lo SKU viaggia nel payload SOLO se l'admin l'ha modificato a mano:
@@ -830,6 +854,66 @@ function Admin() {
                   required
                 />
               </div>
+            </div>
+
+            <div className="admin-form-row">
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="admin-length-cm">
+                  {t('admin.form.lengthCm')}
+                </label>
+                <input id="admin-length-cm" className="auth-input" type="number" min="0" step="0.1" value={form.lengthCm} onChange={handleFieldChange('lengthCm')} />
+              </div>
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="admin-width-cm">
+                  {t('admin.form.widthCm')}
+                </label>
+                <input id="admin-width-cm" className="auth-input" type="number" min="0" step="0.1" value={form.widthCm} onChange={handleFieldChange('widthCm')} />
+              </div>
+            </div>
+
+            <div className="admin-form-row">
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="admin-thickness-cm">
+                  {t('admin.form.thicknessCm')}
+                </label>
+                <input id="admin-thickness-cm" className="auth-input" type="number" min="0" step="0.1" value={form.thicknessCm} onChange={handleFieldChange('thicknessCm')} />
+              </div>
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="admin-weight-g">
+                  {t('admin.form.weightG')}
+                </label>
+                <input id="admin-weight-g" className="auth-input" type="number" min="0" step="1" value={form.weightG} onChange={handleFieldChange('weightG')} />
+              </div>
+            </div>
+
+            <div className="auth-field">
+              <label className="auth-label" htmlFor="admin-grain-note-it">
+                {t('admin.form.grainNoteIt')}
+              </label>
+              <textarea id="admin-grain-note-it" className="auth-input admin-textarea" rows={3} value={form.grainNoteIt} onChange={handleFieldChange('grainNoteIt')} />
+            </div>
+
+            <div className="auth-field">
+              <label className="auth-label" htmlFor="admin-grain-note-en">
+                {t('admin.form.grainNoteEn')}
+              </label>
+              <textarea id="admin-grain-note-en" className="auth-input admin-textarea" rows={3} value={form.grainNoteEn} onChange={handleFieldChange('grainNoteEn')} />
+            </div>
+
+            <div className="auth-field">
+              <label className="auth-label" htmlFor="admin-tree-age-note-it">
+                {t('admin.form.treeAgeNoteIt')}
+              </label>
+              <textarea id="admin-tree-age-note-it" className="auth-input admin-textarea" rows={3} value={form.treeAgeNoteIt} onChange={handleFieldChange('treeAgeNoteIt')} />
+              <p className="admin-form-hint">{t('admin.form.treeAgeNoteHint')}</p>
+            </div>
+
+            <div className="auth-field">
+              <label className="auth-label" htmlFor="admin-tree-age-note-en">
+                {t('admin.form.treeAgeNoteEn')}
+              </label>
+              <textarea id="admin-tree-age-note-en" className="auth-input admin-textarea" rows={3} value={form.treeAgeNoteEn} onChange={handleFieldChange('treeAgeNoteEn')} />
+              <p className="admin-form-hint">{t('admin.form.treeAgeNoteHint')}</p>
             </div>
 
             <div className="auth-field">

@@ -46,6 +46,24 @@
   .navbar-topbar {
     display: none;
   }
+
+  .navbar-inner {
+    gap: 8px;
+    padding: 8px 16px;
+  }
+
+  .navbar-logo {
+    gap: 6px;
+  }
+
+  .navbar-logo-image {
+    width: 36px;
+    height: 36px;
+  }
+
+  .navbar-logo-text {
+    font-size: 18px;
+  }
 }
 
 /* Blocco logo: solo il link verso la Home (logo + nome), ora che il badge
@@ -139,9 +157,16 @@
 }
 
 .navbar-mobile-cart .nav-link {
+  justify-content: center;
+  gap: 4px;
   min-height: 44px;
-  padding: 8px 12px;
-  font-size: 14px;
+  min-width: 44px;
+  padding: 8px;
+}
+
+.navbar-mobile-cart-icon {
+  width: 22px;
+  height: 22px;
 }
 
 .navbar-toggle {

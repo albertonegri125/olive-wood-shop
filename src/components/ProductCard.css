@@ -139,6 +139,12 @@
   font-size: 17px;
 }
 
+.product-card-dimensions {
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: 12px;
+}
+
 /* Badge "pezzo unico": testo piccolo e discreto, con una piccola icona */
 .product-card-unique {
   margin: 0;

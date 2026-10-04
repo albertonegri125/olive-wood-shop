@@ -10,15 +10,11 @@
 // processo artigianale specifico per questo pezzo.
 
 import { useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabaseClient'
 import { useCart } from '../context/CartContext'
-import { getCategoryFallbackName } from '../lib/categoryName'
 import {
-  IconUnique,
-  IconShipping,
-  IconPayment,
   IconSketchWood,
   IconSketchChisel,
   IconSketchOil,
@@ -35,11 +31,6 @@ const PROCESS_STEPS = [
   { key: 'step2', Icon: IconSketchChisel },
   { key: 'step3', Icon: IconSketchOil },
 ]
-
-// TODO: sostituire con l'indirizzo email reale del negozio (vedi anche i
-// segnaposto "[email da inserire]" nelle pagine legali). Usato nell'invito
-// a lasciare la prima recensione quando un prodotto non ne ha ancora.
-const CONTACT_EMAIL = 'info@olivewoodcreations.it'
 
 function ProductDetail() {
   // Leggiamo lo slug direttamente dall'URL grazie a react-router
@@ -273,6 +264,16 @@ function ProductDetail() {
     style: 'currency',
     currency: 'EUR',
   }).format(product.price)
+  const measurementFormatter = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 2 })
+  const measurementRows = [
+    { key: 'length', value: product.length_cm, unit: 'cm' },
+    { key: 'width', value: product.width_cm, unit: 'cm' },
+    { key: 'thickness', value: product.thickness_cm, unit: 'cm' },
+    { key: 'weight', value: product.weight_g, unit: 'g' },
+  ].filter(({ value }) => value !== null && value !== undefined)
+  const activeLanguage = i18n.language.toLowerCase().startsWith('it') ? 'it' : 'en'
+  const grainNote = (activeLanguage === 'it' ? product.grain_note_it : product.grain_note_en)?.trim() ?? ''
+  const treeAgeNote = (activeLanguage === 'it' ? product.tree_age_note_it : product.tree_age_note_en)?.trim() ?? ''
 
   // Foto attualmente mostrata come principale (grande, zoomabile): quella
   // selezionata nella striscia di miniature, o la prima della galleria.
@@ -343,71 +344,14 @@ function ProductDetail() {
 
         {/* Informazioni testuali del prodotto */}
         <div className="product-detail-info">
-          {/* Etichetta "pezzo unico fatto a mano": prima cosa che si legge,
-              ancora prima del nome del prodotto. Testo semplice con il
-              trattino decorativo (.eyebrow-tag), non un badge/pillola. */}
-          <span className="eyebrow eyebrow-tag trust-chip">{t('trust.unique')}</span>
-
-          {/* Tag categoria, cliccabile: torna a Shop già filtrato su questa
-              categoria (/shop?category=slug). Assente per i prodotti senza
-              categoria (retrocompatibilità con quelli già esistenti). */}
-          {product.categories && (
-            <Link
-              to={`/shop?category=${product.categories.slug}`}
-              className="product-detail-category-link"
-            >
-              {t(`categories.${product.categories.slug}`, {
-                defaultValue: getCategoryFallbackName(product.categories, i18n.language),
-              })}
-            </Link>
-          )}
-
           <h1 className="product-detail-name">{product.name}</h1>
-
-          {/* Pezzo esatto/simile alla foto, subito sotto il nome: il cliente
-              deve saperlo prima di arrivare al bottone "Aggiungi al
-              carrello", non scoprirlo in fondo alla pagina. */}
           <PhotoMatchBadge type={product.photo_match_type} showDescription />
-
-          {/* Descrizione specifica del pezzo (venatura, dimensioni),
-              caricata da Supabase insieme al resto dei dati del prodotto */}
-          <p className="product-detail-description">{product.description}</p>
-
-          {/* Riga di fiducia: pezzo unico, spedizione, pagamento — semplice
-              testo con icona inline, separati da un punto, senza box/bordo/ombra. */}
-          <p className="product-detail-trust">
-            <span className="product-detail-trust-item">
-              <IconUnique className="product-detail-trust-icon" />
-              {t('trust.unique')}
-            </span>
-            <span className="product-detail-trust-sep" aria-hidden="true">
-              ·
-            </span>
-            <span className="product-detail-trust-item">
-              <IconShipping className="product-detail-trust-icon" />
-              {t('trust.shipping')}
-            </span>
-            <span className="product-detail-trust-sep" aria-hidden="true">
-              ·
-            </span>
-            <span className="product-detail-trust-item">
-              <IconPayment className="product-detail-trust-icon" />
-              {t('trust.payment')}
-            </span>
-          </p>
-
-          {/* Prezzo: dimensione media, volutamente meno importante del
-              titolo del prodotto qui sopra */}
+          {/* Prezzo e pulsante restano nel primo blocco, vicini alla foto e al nome. */}
           {isOutOfStock ? (
             <p className="product-detail-status">{t('productDetail.outOfStock')}</p>
           ) : (
             <p className="product-detail-price">{formattedPrice}</p>
           )}
-
-          {/* Scorte: quando restano solo 1 o 2 pezzi, diventa un'etichetta
-              ambra con un leggero pulse (stesso trattamento del badge in
-              ProductCard) — è un dato reale, va comunicato con sicurezza,
-              non nascosto in un testo grigio qualunque. */}
           <p
             className={
               isLowStock ? 'product-detail-stock product-detail-stock-low' : 'product-detail-stock'
@@ -432,8 +376,48 @@ function ProductDetail() {
           >
             {addToCartLabel()}
           </button>
+          {product.description && (
+            <p className="product-detail-description">{product.description}</p>
+          )}
         </div>
       </div>
+
+      {measurementRows.length > 0 && (
+        <section className="product-detail-section product-detail-measurements">
+          <h2>{t('productDetail.measurementsTitle')}</h2>
+          <table>
+            <tbody>
+              {measurementRows.map(({ key, value, unit }) => (
+                <tr key={key}>
+                  <th scope="row">{t(`productDetail.measurements.${key}`)}</th>
+                  <td>{measurementFormatter.format(value)} {unit}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
+
+      {grainNote && (
+        <section className="product-detail-section">
+          <h2>{t('productDetail.grainTitle')}</h2>
+          <p>{grainNote}</p>
+        </section>
+      )}
+
+      {treeAgeNote && (
+        <section className="product-detail-section">
+          <h2>{t('productDetail.originTitle')}</h2>
+          <p>{treeAgeNote}</p>
+        </section>
+      )}
+
+      <section className="product-detail-section product-detail-care">
+        <details open>
+          <summary>{t('productDetail.careTitle')}</summary>
+          <p>{t('productDetail.careText')}</p>
+        </details>
+      </section>
 
       {showStickyBar && (
         <div className="product-detail-sticky-bar" aria-live="polite">
@@ -447,41 +431,6 @@ function ProductDetail() {
             {addToCartLabel()}
           </button>
         </div>
-      )}
-
-      {/* --- Recensioni clienti (riprova sociale) ---
-          Solo le recensioni approvate (vedi fetch sopra). Se non ce n'è
-          ancora nessuna per questo prodotto, niente sezione vuota: un
-          piccolo invito a essere il primo a recensirlo, con un link di
-          contatto, invece di uno spazio silenziosamente vuoto. */}
-      {!loadingReviews && (
-        <section className="product-detail-reviews">
-          <h2 className="product-detail-reviews-title">{t('productDetail.reviews.title')}</h2>
-
-          {reviews.length === 0 ? (
-            <p className="product-detail-reviews-empty">
-              {t('productDetail.reviews.empty')}{' '}
-              <a href={`mailto:${CONTACT_EMAIL}`} className="product-detail-reviews-empty-link">
-                {t('productDetail.reviews.emptyLink')}
-              </a>
-            </p>
-          ) : (
-            <div className="product-detail-reviews-list">
-              {reviews.map((review) => (
-                <article className="review-card" key={review.id}>
-                  <div className="review-card-header">
-                    <StarRating rating={review.rating} />
-                    <span className="review-card-name">{review.customer_name}</span>
-                  </div>
-                  {review.comment && <p className="review-card-comment">{review.comment}</p>}
-                  {review.photo_url && (
-                    <img className="review-card-photo" src={review.photo_url} alt="" />
-                  )}
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
       )}
 
       {/* --- Sezione "Come nasce questo pezzo" ---
@@ -509,19 +458,23 @@ function ProductDetail() {
         </ol>
       </section>
 
-      {/* --- Nota personale, scritta a mano ---
-          Un piccolo tocco umano in fondo alla pagina: non un testo
-          generico, ma una nota firmata, in font manoscritto. */}
-      <section className="product-detail-note">
-        <p className="product-detail-note-text">{t('productDetail.personalNote')}</p>
-        <div className="product-detail-note-signature">
-          {/* Placeholder per una futura foto profilo tonda e informale */}
-          <span className="product-detail-note-avatar" aria-hidden="true">
-            A
-          </span>
-          <span className="product-detail-note-name">— Alberto</span>
-        </div>
-      </section>
+      {!loadingReviews && reviews.length > 0 && (
+        <section className="product-detail-reviews">
+          <h2 className="product-detail-reviews-title">{t('productDetail.reviews.title')}</h2>
+          <div className="product-detail-reviews-list">
+            {reviews.map((review) => (
+              <article className="review-card" key={review.id}>
+                <div className="review-card-header">
+                  <StarRating rating={review.rating} />
+                  <span className="review-card-name">{review.customer_name}</span>
+                </div>
+                {review.comment && <p className="review-card-comment">{review.comment}</p>}
+                {review.photo_url && <img className="review-card-photo" src={review.photo_url} alt="" />}
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Lightbox: overlay a schermo intero con l'immagine ingrandita.
           Un semplice <div> in position:fixed con un alto z-index: niente

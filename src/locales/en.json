@@ -19,12 +19,23 @@
   },
   "hero": {
     "badge": "Handcrafted in Lombardy, Italy",
-    "title": "Olive wood, shaped by hand",
-    "subtitle": "Each board starts as a single piece of olive wood, shaped with traditional woodworking tools and finished with food-safe oil. No machines, no two boards alike.",
-    "cta": "Shop now",
+    "title": "Every grain has a story",
+    "subtitle": "Cutting boards and objects in olive wood, shaped by hand in Lombardy. No two pieces are alike.",
+    "cta": "Discover the pieces",
     "photoAlt": "Hand-carved olive wood board",
     "carouselLabel": "Featured product photos",
     "carouselDotLabel": "Show photo {{number}}"
+  },
+  "home": {
+    "trust": {
+      "label": "Our guarantees",
+      "handmade": "Handmade in Lombardy",
+      "unique": "One of a kind",
+      "payment": "Secure payment",
+      "shipping": "Insured shipping"
+    },
+    "storyTitle": "Our story",
+    "storyLink": "About us"
   },
   "process": {
     "title": "Our process",
@@ -124,7 +135,17 @@
     "zoomHint": "Click to zoom",
     "closeZoom": "Close zoomed image",
     "galleryLabel": "More photos of this product",
-    "personalNote": "Every piece is different — the grain you see in the photo is unique to this exact board.",
+    "measurementsTitle": "Measurements and weight",
+    "measurements": {
+      "length": "Length",
+      "width": "Width",
+      "thickness": "Thickness",
+      "weight": "Weight"
+    },
+    "grainTitle": "The grain of this piece",
+    "originTitle": "Where the wood comes from",
+    "careTitle": "Care and maintenance",
+    "careText": "Hand wash with warm water and mild soap, never in the dishwasher. Dry immediately. Every two to three months, rub on a thin layer of food-safe oil to keep the wood nourished.",
     "reviews": {
       "title": "Reviews",
       "empty": "Be the first to review this piece.",
@@ -296,6 +317,15 @@
       "category": "Category",
       "categoryPlaceholder": "Select a category",
       "description": "Description",
+      "lengthCm": "Length (cm)",
+      "widthCm": "Width (cm)",
+      "thicknessCm": "Thickness (cm)",
+      "weightG": "Weight (g)",
+      "grainNoteIt": "Grain description (IT)",
+      "grainNoteEn": "Grain description (EN)",
+      "treeAgeNoteIt": "Wood age/origin note (IT)",
+      "treeAgeNoteEn": "Wood age/origin note (EN)",
+      "treeAgeNoteHint": "Fill this in only if you really know",
       "price": "Price (€)",
       "stock": "Stock available",
       "images": "Photos",

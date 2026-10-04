@@ -19,12 +19,23 @@
   },
   "hero": {
     "badge": "Fatto a mano in Lombardia",
-    "title": "Legno d'ulivo, lavorato a mano",
-    "subtitle": "Ogni tagliere nasce da un unico pezzo di legno d'ulivo, lavorato con attrezzi da falegname e rifinito a olio alimentare. Nessuna macchina, nessun pezzo identico all'altro.",
-    "cta": "Vai al negozio",
+    "title": "Ogni venatura ha una storia",
+    "subtitle": "Taglieri e oggetti in legno d'ulivo, sagomati a mano in Lombardia. Nessun pezzo è uguale a un altro.",
+    "cta": "Scopri i pezzi",
     "photoAlt": "Tagliere in legno d'ulivo lavorato a mano",
     "carouselLabel": "Foto prodotto in evidenza",
     "carouselDotLabel": "Mostra foto {{number}}"
+  },
+  "home": {
+    "trust": {
+      "label": "Garanzie",
+      "handmade": "Fatto a mano in Lombardia",
+      "unique": "Pezzo unico",
+      "payment": "Pagamento sicuro",
+      "shipping": "Spedizione assicurata"
+    },
+    "storyTitle": "La storia",
+    "storyLink": "Chi siamo"
   },
   "process": {
     "title": "Il nostro processo",
@@ -124,7 +135,17 @@
     "zoomHint": "Clicca per ingrandire",
     "closeZoom": "Chiudi immagine ingrandita",
     "galleryLabel": "Altre foto di questo prodotto",
-    "personalNote": "Ogni pezzo è diverso dall'altro — le venature che vedi in foto sono uniche di questo esemplare.",
+    "measurementsTitle": "Misure e peso",
+    "measurements": {
+      "length": "Lunghezza",
+      "width": "Larghezza",
+      "thickness": "Spessore",
+      "weight": "Peso"
+    },
+    "grainTitle": "La venatura di questo pezzo",
+    "originTitle": "Da dove viene il legno",
+    "careTitle": "Cura e manutenzione",
+    "careText": "Lavalo a mano con acqua tiepida e sapone neutro, mai in lavastoviglie. Asciugalo subito. Ogni due-tre mesi passa un velo di olio alimentare per mantenere il legno nutrito.",
     "reviews": {
       "title": "Recensioni",
       "empty": "Sii il primo a recensire questo pezzo.",
@@ -296,6 +317,15 @@
       "category": "Categoria",
       "categoryPlaceholder": "Seleziona una categoria",
       "description": "Descrizione",
+      "lengthCm": "Lunghezza (cm)",
+      "widthCm": "Larghezza (cm)",
+      "thicknessCm": "Spessore (cm)",
+      "weightG": "Peso (g)",
+      "grainNoteIt": "Descrizione venatura (IT)",
+      "grainNoteEn": "Descrizione venatura (EN)",
+      "treeAgeNoteIt": "Nota sull'età/provenienza del legno (IT)",
+      "treeAgeNoteEn": "Nota sull'età/provenienza del legno (EN)",
+      "treeAgeNoteHint": "Compila solo se la conosci davvero",
       "price": "Prezzo (€)",
       "stock": "Scorte disponibili",
       "images": "Foto",

@@ -14,6 +14,7 @@ import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import LanguageSwitcher from './LanguageSwitcher'
 import AccountMenu from './AccountMenu'
+import { IconCart } from './icons'
 import logo from '../assets/logo.png'
 import './Navbar.css'
 
@@ -81,7 +82,7 @@ function Navbar() {
 
         <div className="navbar-mobile-cart">
           <NavLink to="/cart" className={linkClassName} aria-label={t('navbar.cart')}>
-            {t('navbar.cart')}
+            <IconCart className="navbar-mobile-cart-icon" />
             {cartItemsCount > 0 && <span className="navbar-cart-count">{cartItemsCount}</span>}
           </NavLink>
         </div>

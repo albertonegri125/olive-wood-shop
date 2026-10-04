@@ -30,6 +30,10 @@ function ProductCard({ product }) {
   // includono): è "undefined"/null per un prodotto senza categoria
   // impostata, gestito semplicemente non mostrando il relativo badge.
   const { name, price, image_url: imageUrl, stock, slug, categories: category } = product
+  const dimensionFormatter = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 2 })
+  const dimensions = product.length_cm != null && product.width_cm != null
+    ? `${dimensionFormatter.format(product.length_cm)} × ${dimensionFormatter.format(product.width_cm)} cm`
+    : null
 
   // Controlla se mostrare il feedback "Aggiunto ✓" al posto del testo
   // normale del bottone, subito dopo un click su "Aggiungi al carrello".
@@ -114,6 +118,7 @@ function ProductCard({ product }) {
         {/* Nome del prodotto in font serif */}
         <InfoTag className="product-card-info" {...linkProps}>
           <h3 className="product-card-name">{name}</h3>
+          {dimensions && <span className="product-card-dimensions">{dimensions}</span>}
           {/* Pezzo esatto/simile alla foto: solo il badge, senza il testo
               esplicativo lungo (che compare invece in ProductDetail). */}
           <PhotoMatchBadge type={product.photo_match_type} />
