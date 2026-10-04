@@ -287,6 +287,7 @@
       "actions": "Actions",
       "edit": "Edit",
       "delete": "Delete",
+      "moreActions": "More product actions",
       "saveStock": "Save",
       "inactive": "Deactivated",
       "reactivate": "Reactivate",

@@ -99,7 +99,7 @@
   height: 40px;
   width: 40px;
 
-  @media (min-width: 768px) {
+  @media (min-width: 1100px) {
     height: 48px;
     width: 48px;
   }
@@ -125,7 +125,7 @@
   text-decoration: none;
   white-space: nowrap;
 
-  @media (min-width: 768px) {
+  @media (min-width: 1100px) {
     font-size: 27px;
   }
 }
@@ -309,7 +309,7 @@
 
 /* Su mobile il menu a tendina è dentro l'overlay a schermo intero: lo
    centriamo sotto al nome invece di ancorarlo a sinistra. */
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
   .account-menu-dropdown {
     left: 50%;
     transform: translateX(-50%);
@@ -347,7 +347,7 @@
 }
 
 /* --- Da qui in su: adattamento per schermi più larghi (tablet/desktop) --- */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .navbar-mobile-cart {
     display: none;
   }

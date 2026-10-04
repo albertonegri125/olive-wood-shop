@@ -151,6 +151,40 @@ function Admin() {
   // il bottone di quella riga soltanto (le altre restano utilizzabili).
   const [savingStockId, setSavingStockId] = useState(null)
   const [stockErrorId, setStockErrorId] = useState(null)
+  const [openProductActionsId, setOpenProductActionsId] = useState(null)
+  const productActionsTriggerRef = useRef(null)
+  const productActionsMenuRef = useRef(null)
+
+  useEffect(() => {
+    if (!openProductActionsId) return undefined
+
+    function handleOutsidePointerDown(event) {
+      if (!event.target.closest('[data-product-actions-menu]')) {
+        setOpenProductActionsId(null)
+      }
+    }
+
+    function handleProductActionsKeyDown(event) {
+      if (event.key === 'Escape') {
+        setOpenProductActionsId(null)
+        productActionsTriggerRef.current?.focus()
+      }
+    }
+
+    document.addEventListener('pointerdown', handleOutsidePointerDown)
+    document.addEventListener('keydown', handleProductActionsKeyDown)
+
+    return () => {
+      document.removeEventListener('pointerdown', handleOutsidePointerDown)
+      document.removeEventListener('keydown', handleProductActionsKeyDown)
+    }
+  }, [openProductActionsId])
+
+  useEffect(() => {
+    if (openProductActionsId) {
+      productActionsMenuRef.current?.querySelector('[role="menuitem"]')?.focus()
+    }
+  }, [openProductActionsId])
 
   function handleStockDraftChange(productId, value) {
     setStockDrafts((drafts) => ({ ...drafts, [productId]: value }))
@@ -1000,21 +1034,13 @@ function Admin() {
       )}
 
       {!loadingProducts && !listErrorKey && products.length > 0 && (
-        <div className="admin-table-wrapper">
-          {/* Tabella costruita con CSS Grid (vedi Admin.css) invece di un
-              <table> HTML: ogni "riga" qui sotto ha display:contents, così
-              le sue celle diventano celle dirette della stessa griglia
-              condivisa da tutte le righe — è la griglia (align-items:
-              center sulle colonne) a garantire l'allineamento verticale,
-              non margini/padding calcolati riga per riga. I ruoli ARIA
-              (table/row/columnheader/cell) mantengono la semantica di
-              tabella per chi usa uno screen reader. */}
-          <div className="admin-table" role="table">
-            <div className="admin-table-row" role="row">
+        <div className="admin-table-wrapper admin-products-table-wrapper">
+          <div className="admin-table admin-products-table" role="table">
+            <div className="admin-table-row admin-products-row admin-products-header" role="row">
               <span className="admin-table-cell admin-table-head-cell" role="columnheader">
                 {t('admin.table.image')}
               </span>
-              <span className="admin-table-cell admin-table-head-cell" role="columnheader">
+              <span className="admin-table-cell admin-table-head-cell admin-products-cell-sku" role="columnheader">
                 {t('admin.table.sku')}
               </span>
               <span className="admin-table-cell admin-table-head-cell" role="columnheader">
@@ -1038,14 +1064,17 @@ function Admin() {
               }).format(product.price)
               const stockDraft = stockDrafts[product.id]
               const isInactive = product.active === false
+              const isActionsOpen = openProductActionsId === product.id
 
               return (
                 <div
-                  className={isInactive ? 'admin-table-row admin-table-row-inactive' : 'admin-table-row'}
+                  className={
+                    `admin-table-row admin-products-row${isInactive ? ' admin-products-row-inactive' : ''}`
+                  }
                   role="row"
                   key={product.id}
                 >
-                  <div className="admin-table-cell" role="cell">
+                  <div className="admin-table-cell admin-products-cell-image" role="cell">
                     {product.image_url ? (
                       <img className="admin-table-thumb" src={product.image_url} alt={product.name} />
                     ) : (
@@ -1054,22 +1083,32 @@ function Admin() {
                       </span>
                     )}
                   </div>
-                  <div className="admin-table-cell" role="cell">
+                  <div className="admin-table-cell admin-products-cell-sku" role="cell">
                     <span className="admin-sku">{product.sku ?? '—'}</span>
                   </div>
-                  <div className="admin-table-cell" role="cell">
-                    {product.name}
-                    {isInactive && <span className="admin-badge-inactive">{t('admin.table.inactive')}</span>}
+                  <div className="admin-table-cell admin-products-cell-name" role="cell">
+                    <div className="admin-product-name-content">
+                      <span className="admin-product-name-text">{product.name}</span>
+                      {isInactive && <span className="admin-badge-inactive">{t('admin.table.inactive')}</span>}
+                    </div>
+                    <span className="admin-product-inline-sku">{product.sku ?? '—'}</span>
                   </div>
-                  <div className="admin-table-cell" role="cell">
+                  <div
+                    className="admin-table-cell admin-products-cell-price"
+                    role="cell"
+                    data-label={t('admin.table.price')}
+                  >
+                    <span className="admin-product-mobile-label">{t('admin.table.price')}</span>
                     {formattedPrice}
                   </div>
-                  <div className="admin-table-cell admin-table-cell-stock" role="cell">
+                  <div className="admin-table-cell admin-table-cell-stock admin-products-cell-stock" role="cell">
+                    <span className="admin-product-stock-label">{t('admin.table.stock')}</span>
                     <div className="admin-stock-editor">
                       <input
                         type="number"
                         min="0"
                         step="1"
+                        aria-label={t('admin.table.stock')}
                         className="admin-stock-input"
                         value={stockDraft ?? product.stock}
                         onChange={(event) => handleStockDraftChange(product.id, event.target.value)}
@@ -1087,30 +1126,79 @@ function Admin() {
                       <p className="admin-stock-error">{t('admin.stockUpdateError')}</p>
                     )}
                   </div>
-                  <div className="admin-table-cell admin-table-cell-actions" role="cell">
-                    <button type="button" className="btn-secondary btn-sm" onClick={() => openEditForm(product)}>
-                      {t('admin.table.edit')}
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-secondary btn-sm"
-                      onClick={() => handlePrintLabel(product)}
-                      disabled={!product.sku}
-                    >
-                      {t('admin.table.printLabel')}
-                    </button>
-                    {isInactive ? (
-                      <button type="button" className="btn-secondary btn-sm" onClick={() => handleReactivate(product)}>
-                        {t('admin.table.reactivate')}
+                  <div className="admin-table-cell admin-table-cell-actions admin-products-cell-actions" role="cell">
+                    <div className="admin-products-primary-actions">
+                      <button type="button" className="btn-secondary btn-sm" onClick={() => openEditForm(product)}>
+                        {t('admin.table.edit')}
                       </button>
-                    ) : (
-                      <button type="button" className="btn-secondary btn-sm" onClick={() => handleDeactivate(product)}>
-                        {t('admin.table.deactivate')}
+                      <button
+                        type="button"
+                        className="btn-secondary btn-sm"
+                        onClick={() => handlePrintLabel(product)}
+                        disabled={!product.sku}
+                      >
+                        {t('admin.table.printLabel')}
                       </button>
-                    )}
-                    <button type="button" className="btn-danger btn-sm" onClick={() => handleDelete(product)}>
-                      {t('admin.table.delete')}
-                    </button>
+                    </div>
+                    <div className="admin-product-actions-menu" data-product-actions-menu>
+                      <button
+                        type="button"
+                        className="btn-secondary admin-product-actions-trigger"
+                        aria-label={t('admin.table.moreActions')}
+                        aria-haspopup="menu"
+                        aria-expanded={isActionsOpen}
+                        aria-controls={`product-actions-${product.id}`}
+                        ref={isActionsOpen ? productActionsTriggerRef : null}
+                        onClick={() => setOpenProductActionsId(isActionsOpen ? null : product.id)}
+                      >
+                        <span aria-hidden="true">⋯</span>
+                      </button>
+                      {isActionsOpen && (
+                        <div
+                          id={`product-actions-${product.id}`}
+                          className="admin-product-actions-dropdown"
+                          role="menu"
+                          ref={productActionsMenuRef}
+                        >
+                          {isInactive ? (
+                            <button
+                              type="button"
+                              role="menuitem"
+                              className="admin-product-actions-item"
+                              onClick={() => {
+                                setOpenProductActionsId(null)
+                                handleReactivate(product)
+                              }}
+                            >
+                              {t('admin.table.reactivate')}
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              role="menuitem"
+                              className="admin-product-actions-item"
+                              onClick={() => {
+                                setOpenProductActionsId(null)
+                                handleDeactivate(product)
+                              }}
+                            >
+                              {t('admin.table.deactivate')}
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            role="menuitem"
+                            className="admin-product-actions-item admin-product-actions-delete"
+                            onClick={() => {
+                              setOpenProductActionsId(null)
+                              handleDelete(product)
+                            }}
+                          >
+                            {t('admin.table.delete')}
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )
