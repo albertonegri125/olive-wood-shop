@@ -45,6 +45,8 @@ function Navbar() {
   // Funzione di comodo per assegnare la classe "active" al link della
   // pagina corrente, così possiamo evidenziarlo visivamente nel CSS.
   const linkClassName = ({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')
+  const cartLinkClassName = ({ isActive }) =>
+    isActive ? 'nav-link navbar-cart-link active' : 'nav-link navbar-cart-link'
 
   return (
     <header className="navbar">
@@ -80,6 +82,13 @@ function Navbar() {
         {/* Bottone hamburger: visibile solo su mobile (nascosto via CSS su desktop).
             Il pulsante è un <button> vero per accessibilità (funziona con tastiera/screen reader).
             Quando il menu è aperto, la classe "open" trasforma le tre barrette in una "X". */}
+        <div className="navbar-actions" aria-label={t('navbar.cart')}>
+          <NavLink to="/cart" className={cartLinkClassName}>
+            <span className="navbar-cart-label">{t('navbar.cart')}</span>
+            {cartItemsCount > 0 && <span className="navbar-cart-count">{cartItemsCount}</span>}
+          </NavLink>
+        </div>
+
         <button
           type="button"
           className={menuOpen ? 'navbar-toggle open' : 'navbar-toggle'}
@@ -117,15 +126,6 @@ function Navbar() {
               {t('navbar.admin')}
             </NavLink>
           )}
-          <NavLink to="/cart" className={linkClassName}>
-            {t('navbar.cart')}
-            {/* Il numero di articoli viene mostrato solo se maggiore di 0,
-                per non riempire la navbar con un "0" inutile */}
-            {cartItemsCount > 0 && (
-              <span className="navbar-cart-count">{cartItemsCount}</span>
-            )}
-          </NavLink>
-
           {/* Selettore di lingua: cambia la lingua di tutta l'app all'istante,
               senza ricaricare la pagina. */}
           <LanguageSwitcher className="navbar-language" />

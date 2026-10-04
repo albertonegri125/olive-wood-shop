@@ -302,24 +302,42 @@ function ProductDetail() {
               product_images, il caso di un prodotto già esistente) niente
               cambia rispetto a prima. */}
           {galleryImages.length > 1 && (
-            <div className="product-detail-thumbs" role="tablist" aria-label={t('productDetail.galleryLabel')}>
-              {galleryImages.map((url, index) => (
-                <button
-                  key={url}
-                  type="button"
-                  role="tab"
-                  aria-selected={index === activeImageIndex}
-                  className={
-                    index === activeImageIndex
-                      ? 'product-detail-thumb product-detail-thumb-active'
-                      : 'product-detail-thumb'
-                  }
-                  onClick={() => setActiveImageIndex(index)}
-                >
-                  <img src={url} alt="" />
-                </button>
-              ))}
-            </div>
+            <>
+              <div className="product-detail-thumbs" role="tablist" aria-label={t('productDetail.galleryLabel')}>
+                {galleryImages.map((url, index) => (
+                  <button
+                    key={url}
+                    type="button"
+                    role="tab"
+                    aria-selected={index === activeImageIndex}
+                    className={
+                      index === activeImageIndex
+                        ? 'product-detail-thumb product-detail-thumb-active'
+                        : 'product-detail-thumb'
+                    }
+                    onClick={() => setActiveImageIndex(index)}
+                  >
+                    <img src={url} alt="" />
+                  </button>
+                ))}
+              </div>
+
+              <div className="product-detail-dots" aria-label={t('productDetail.galleryLabel')}>
+                {galleryImages.map((url, index) => (
+                  <button
+                    key={`${url}-dot`}
+                    type="button"
+                    aria-label={t('productDetail.galleryLabel')}
+                    className={
+                      index === activeImageIndex
+                        ? 'product-detail-dot product-detail-dot-active'
+                        : 'product-detail-dot'
+                    }
+                    onClick={() => setActiveImageIndex(index)}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
 
@@ -416,6 +434,20 @@ function ProductDetail() {
           </button>
         </div>
       </div>
+
+      {showStickyBar && (
+        <div className="product-detail-sticky-bar" aria-live="polite">
+          <span className="product-detail-sticky-price">{formattedPrice}</span>
+          <button
+            type="button"
+            className="btn-primary product-detail-sticky-button"
+            onClick={handleAddToCart}
+            disabled={isOutOfStock}
+          >
+            {addToCartLabel()}
+          </button>
+        </div>
+      )}
 
       {/* --- Recensioni clienti (riprova sociale) ---
           Solo le recensioni approvate (vedi fetch sopra). Se non ce n'è

@@ -77,7 +77,11 @@
     "error": "Non è stato possibile caricare i prodotti. Riprova più tardi.",
     "empty": "Nessun prodotto disponibile al momento.",
     "allCategories": "Tutti",
-    "categoriesLabel": "Filtra per categoria"
+    "categoriesLabel": "Filtra per categoria",
+    "sortLabel": "Ordina per",
+    "sortNewest": "Novità",
+    "sortPriceAsc": "Prezzo: crescente",
+    "sortPriceDesc": "Prezzo: decrescente"
   },
   "product": {
     "outOfStock": "Esaurito",

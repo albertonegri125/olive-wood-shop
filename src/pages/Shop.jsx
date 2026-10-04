@@ -23,6 +23,7 @@ function Shop() {
 
   // "null" significa "Tutti" (nessun filtro): non c'è ?category nell'URL.
   const activeCategorySlug = searchParams.get('category')
+  const [sortBy, setSortBy] = useState('newest')
 
   // --- Categorie (per le tab) ---
   const [categories, setCategories] = useState([])
@@ -101,6 +102,12 @@ function Shop() {
     }
   }
 
+  const sortedProducts = [...products].sort((left, right) => {
+    if (sortBy === 'price_asc') return left.price - right.price
+    if (sortBy === 'price_desc') return right.price - left.price
+    return new Date(right.created_at) - new Date(left.created_at)
+  })
+
   return (
     <div className="shop-page">
       <h1 className="shop-title">{t('shop.title')}</h1>
@@ -149,6 +156,22 @@ function Shop() {
         </div>
       )}
 
+      <div className="shop-toolbar">
+        <label className="shop-sort-label" htmlFor="shop-sort">
+          {t('shop.sortLabel')}
+        </label>
+        <select
+          id="shop-sort"
+          className="shop-sort-select"
+          value={sortBy}
+          onChange={(event) => setSortBy(event.target.value)}
+        >
+          <option value="newest">{t('shop.sortNewest')}</option>
+          <option value="price_asc">{t('shop.sortPriceAsc')}</option>
+          <option value="price_desc">{t('shop.sortPriceDesc')}</option>
+        </select>
+      </div>
+
       {/* Messaggio di caricamento mentre aspettiamo la risposta da Supabase */}
       {loading && <p className="shop-message">{t('shop.loading')}</p>}
 
@@ -161,9 +184,9 @@ function Shop() {
       )}
 
       {/* Griglia dei prodotti: 1 colonna su mobile, 2-3 colonne su schermi più larghi */}
-      {!loading && !errorKey && products.length > 0 && (
+      {!loading && !errorKey && sortedProducts.length > 0 && (
         <div className="shop-grid">
-          {products.map((product) => (
+          {sortedProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

@@ -77,7 +77,11 @@
     "error": "We couldn't load the products. Please try again later.",
     "empty": "No products available at the moment.",
     "allCategories": "All",
-    "categoriesLabel": "Filter by category"
+    "categoriesLabel": "Filter by category",
+    "sortLabel": "Sort by",
+    "sortNewest": "Newest",
+    "sortPriceAsc": "Price: low to high",
+    "sortPriceDesc": "Price: high to low"
   },
   "product": {
     "outOfStock": "Sold out",
