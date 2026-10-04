@@ -1,42 +1,68 @@
-/* src/pages/About.css
-   Pagina "Chi siamo": colonna di lettura centrata, come le pagine legali,
-   ma con una foto grande in apertura (stesso trattamento — angoli
-   arrotondati, ombra, leggera rotazione imperfetta — della foto hero
-   della Home), per dare fin da subito un volto al racconto. */
-
 .about-page {
-  max-width: 720px;
+  max-width: 980px;
   margin: 0 auto;
   padding: 32px 20px 64px;
 }
 
 .about-title {
-  text-align: center;
-  margin-bottom: 24px;
+  margin: 0 0 12px;
+}
+
+.about-intro {
+  max-width: 720px;
+  margin: 0 0 32px;
+  color: var(--color-text-muted);
+  font-family: var(--font-serif);
+  font-size: 20px;
+  line-height: 1.5;
+}
+
+.about-content {
+  display: grid;
+  gap: 28px;
 }
 
 .about-photo-wrapper {
-  margin-bottom: 28px;
+  min-width: 0;
+  margin: 0;
+  align-self: start;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 6px;
 }
 
 .about-photo {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: 100%;
   object-fit: cover;
-  border-radius: 10px;
   box-shadow: var(--shadow-md);
-  transform: rotate(-1deg);
-
-  @media (min-width: 600px) {
-    aspect-ratio: 16 / 9;
-  }
+  transform: scale(2);
 }
 
-.about-body {
+.about-blocks {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 24px;
+}
+
+.about-block {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.about-block-title {
+  margin: 0 0 8px;
+  color: var(--color-secondary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.about-cta {
+  align-self: flex-start;
+  margin-top: 2px;
 }
 
 .about-paragraph {
@@ -45,11 +71,22 @@
   line-height: 1.7;
 }
 
-.about-signature {
-  margin: 28px 0 0;
-  font-family: var(--font-hand);
-  font-size: 24px;
-  color: var(--color-text-muted);
-  text-align: right;
-  transform: rotate(-0.6deg);
+@media (min-width: 860px) {
+  .about-page {
+    padding-top: 48px;
+  }
+
+  .about-content {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 48px;
+  }
+
+  .about-photo {
+    height: 100%;
+  }
+
+  .about-photo-wrapper {
+    aspect-ratio: 4 / 5;
+  }
 }

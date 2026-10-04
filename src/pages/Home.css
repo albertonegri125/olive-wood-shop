@@ -350,10 +350,17 @@
   margin: 0;
 }
 
+.home-story-text {
+  max-width: 680px;
+  margin: 6px 0 0;
+  color: var(--color-text-muted);
+}
+
 .home-story-link {
   color: var(--color-accent-hover);
   font-weight: 700;
   text-underline-offset: 3px;
+  white-space: nowrap;
 }
 
 .featured-title {

@@ -562,55 +562,19 @@
   line-height: 1.5;
 }
 
-/* --- Nota personale scritta a mano --- */
 .product-detail-note {
   max-width: 640px;
-  margin: 40px auto 0;
-  padding: 24px 20px 0;
+  margin: 36px auto 0;
+  padding: 18px 20px 0;
+  border-top: 1px solid var(--color-border);
   text-align: center;
 }
 
 .product-detail-note-text {
   margin: 0;
-  font-family: var(--font-hand);
-  font-size: 26px;
-  line-height: 1.3;
-  color: var(--color-text);
-  transform: rotate(-0.6deg);
-
-  @media (min-width: 600px) {
-    font-size: 30px;
-  }
-}
-
-.product-detail-note-signature {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-/* Cerchio informale al posto di una vera foto profilo (verrà sostituito
-   con una foto reale più avanti): un semplice cerchio con l'iniziale. */
-.product-detail-note-avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px dashed var(--color-border);
-  font-family: var(--font-hand);
-  font-size: 18px;
   color: var(--color-text-muted);
-  transform: rotate(-4deg);
-}
-
-.product-detail-note-name {
-  font-family: var(--font-hand);
-  font-size: 20px;
-  color: var(--color-text-muted);
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 /* --- Barra sticky "Aggiungi al carrello" ---

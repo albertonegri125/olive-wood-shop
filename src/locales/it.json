@@ -35,6 +35,7 @@
       "shipping": "Spedizione assicurata"
     },
     "storyTitle": "La storia",
+    "storyText": "OliveWood Creations nasce in Lombardia, in un laboratorio dove il legno d'ulivo viene lavorato a mano, un pezzo alla volta.",
     "storyLink": "Chi siamo"
   },
   "process": {
@@ -60,11 +61,14 @@
   },
   "about": {
     "title": "Chi siamo",
-    "photoAlt": "Alberto al lavoro nel suo laboratorio",
-    "paragraph1": "Mi chiamo Alberto e lavoro il legno da quando avevo tredici anni, quando passavo i pomeriggi nella bottega di mio nonno, qui in Lombardia, a guardarlo dare forma a un pezzo di legno con niente più di uno scalpello e tanta pazienza. Da lì non mi sono più fermato.",
-    "paragraph2": "Ho scelto di lavorare l'ulivo per la sua venatura irripetibile — non esistono due tavole uguali — e perché ogni pezzo racconta una storia diversa, proprio come le mani che lo lavorano. Ogni tagliere che esce dal mio laboratorio è sagomato, levigato e rifinito completamente a mano, senza macchine a controllo numerico: solo attrezzi da falegname, olio alimentare e il tempo che ogni pezzo richiede.",
-    "paragraph3": "Non produco in serie: preferisco fare meno pezzi, ma farli bene, e sapere esattamente da dove viene ognuno di essi. Se hai domande su un pezzo o vuoi qualcosa di personalizzato, scrivimi pure — a risponderti sono sempre io.",
-    "signature": "— Alberto, dal mio laboratorio in Lombardia"
+    "intro": "OliveWood Creations nasce in Lombardia, in un laboratorio dove il legno d'ulivo viene lavorato a mano, un pezzo alla volta.",
+    "materialTitle": "Il materiale",
+    "material": "Scegliamo legno d'ulivo massello per la sua venatura irregolare e le sue sfumature calde. Ogni tavola ha un disegno suo: per questo nessun pezzo è identico a un altro.",
+    "methodTitle": "Il metodo",
+    "method": "Sagomiamo, levighiamo e rifiniamo con attrezzi da falegname e con le mani. Nessuna produzione in serie. La finitura è a olio alimentare, adatta al contatto con il cibo.",
+    "promiseTitle": "La nostra promessa",
+    "promise": "Ogni oggetto è fotografato e descritto per com'è. Quando il pezzo in foto è esattamente quello che riceverai lo indichiamo; quando è simile, lo diciamo chiaramente.",
+    "cta": "Scopri i pezzi"
   },
   "testimonials": {
     "title": "Cosa dicono di noi"
@@ -143,6 +147,7 @@
       "weight": "Peso"
     },
     "grainTitle": "La venatura di questo pezzo",
+    "anonymousGrainNote": "Ogni pezzo è diverso dall'altro: le venature che vedi in foto sono uniche di questo esemplare.",
     "originTitle": "Da dove viene il legno",
     "careTitle": "Cura e manutenzione",
     "careText": "Lavalo a mano con acqua tiepida e sapone neutro, mai in lavastoviglie. Asciugalo subito. Ogni due-tre mesi passa un velo di olio alimentare per mantenere il legno nutrito.",

@@ -310,7 +310,10 @@ function Home() {
       </section>
 
       <section className="home-story-section">
-        <h2 className="home-story-title">{t('home.storyTitle')}</h2>
+        <div className="home-story-copy">
+          <h2 className="home-story-title">{t('home.storyTitle')}</h2>
+          <p className="home-story-text">{t('home.storyText')}</p>
+        </div>
         <Link to="/chi-siamo" className="home-story-link">
           {t('home.storyLink')}
         </Link>

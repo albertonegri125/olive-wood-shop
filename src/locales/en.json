@@ -35,6 +35,7 @@
       "shipping": "Insured shipping"
     },
     "storyTitle": "Our story",
+    "storyText": "OliveWood Creations was born in Lombardy, in a workshop where olive wood is shaped by hand, one piece at a time.",
     "storyLink": "About us"
   },
   "process": {
@@ -60,11 +61,14 @@
   },
   "about": {
     "title": "About us",
-    "photoAlt": "Alberto at work in his workshop",
-    "paragraph1": "My name is Alberto and I've been working with wood since I was thirteen, spending afternoons in my grandfather's workshop here in Lombardy, watching him shape a piece of wood with nothing more than a chisel and a lot of patience. I never really stopped.",
-    "paragraph2": "I chose to work with olive wood for its unrepeatable grain — no two boards are ever alike — and because every piece tells a different story, just like the hands that shape it. Every board that leaves my workshop is shaped, sanded and finished entirely by hand, with no CNC machines: just traditional woodworking tools, food-safe oil, and the time each piece needs.",
-    "paragraph3": "I don't produce in series: I'd rather make fewer pieces and make them well, knowing exactly where each one comes from. If you have questions about a piece, or want something custom, feel free to write to me — I always answer myself.",
-    "signature": "— Alberto, from my workshop in Lombardy"
+    "intro": "OliveWood Creations was born in Lombardy, in a workshop where olive wood is shaped by hand, one piece at a time.",
+    "materialTitle": "The material",
+    "material": "We choose solid olive wood for its irregular grain and warm tones. Every board has its own pattern, which is why no two pieces are identical.",
+    "methodTitle": "The method",
+    "method": "We shape, sand and finish with woodworking tools and our hands. No mass production. The finish is food-safe oil, suitable for contact with food.",
+    "promiseTitle": "Our promise",
+    "promise": "Every object is photographed and described as it really is. When the piece in the photo is exactly the one you will receive we say so; when it is similar, we say that clearly.",
+    "cta": "Discover the pieces"
   },
   "testimonials": {
     "title": "What people say about us"
@@ -143,6 +147,7 @@
       "weight": "Weight"
     },
     "grainTitle": "The grain of this piece",
+    "anonymousGrainNote": "Every piece is different: the grain you see in the photos is unique to this piece.",
     "originTitle": "Where the wood comes from",
     "careTitle": "Care and maintenance",
     "careText": "Hand wash with warm water and mild soap, never in the dishwasher. Dry immediately. Every two to three months, rub on a thin layer of food-safe oil to keep the wood nourished.",

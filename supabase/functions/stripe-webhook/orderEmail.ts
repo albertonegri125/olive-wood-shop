@@ -85,6 +85,7 @@ const TEXTS = {
     noShipping: 'Indirizzo non disponibile: ti contatteremo per confermarlo.',
     ordersLink: 'Vedi i tuoi ordini',
     footer: 'Hai domande sul tuo ordine? Rispondi a questa email, ti risponderemo al più presto.',
+    signature: 'OliveWood Creations',
     lang: 'it',
   },
   en: {
@@ -102,6 +103,7 @@ const TEXTS = {
     noShipping: "Address not available: we'll contact you to confirm it.",
     ordersLink: 'View your orders',
     footer: "Any questions about your order? Just reply to this email and we'll get back to you soon.",
+    signature: 'OliveWood Creations',
     lang: 'en',
   },
 }
@@ -244,6 +246,7 @@ function buildHtml(data: OrderEmailData): string {
           <tr>
             <td align="center" style="padding:24px 16px 0;font-family:${SANS};font-size:13px;line-height:1.6;color:${COLORS.muted};">
               ${text.footer}
+              <br /><strong style="color:${COLORS.text};">${text.signature}</strong>
             </td>
           </tr>
         </table>
@@ -282,6 +285,8 @@ function buildText(data: OrderEmailData): string {
     '',
     ...(data.siteUrl ? [`${text.ordersLink}: ${data.siteUrl.replace(/\/+$/, '')}/account`, ''] : []),
     text.footer,
+    '',
+    text.signature,
   ].join('\n')
 }
 

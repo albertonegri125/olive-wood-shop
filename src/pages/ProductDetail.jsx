@@ -272,7 +272,9 @@ function ProductDetail() {
     { key: 'weight', value: product.weight_g, unit: 'g' },
   ].filter(({ value }) => value !== null && value !== undefined)
   const activeLanguage = i18n.language.toLowerCase().startsWith('it') ? 'it' : 'en'
-  const grainNote = (activeLanguage === 'it' ? product.grain_note_it : product.grain_note_en)?.trim() ?? ''
+  const storedGrainNote = (activeLanguage === 'it' ? product.grain_note_it : product.grain_note_en)?.trim() ?? ''
+  const hasPersonalGrainNote = /ogni pezzo è diverso dall'altro|every piece is different/i.test(storedGrainNote)
+  const grainNote = hasPersonalGrainNote ? '' : storedGrainNote
   const treeAgeNote = (activeLanguage === 'it' ? product.tree_age_note_it : product.tree_age_note_en)?.trim() ?? ''
 
   // Foto attualmente mostrata come principale (grande, zoomabile): quella
@@ -456,6 +458,10 @@ function ProductDetail() {
             </li>
           ))}
         </ol>
+      </section>
+
+      <section className="product-detail-note">
+        <p className="product-detail-note-text">{t('productDetail.anonymousGrainNote')}</p>
       </section>
 
       {!loadingReviews && reviews.length > 0 && (
