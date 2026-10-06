@@ -20,6 +20,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabaseClient'
 import { formatDate, formatPrice } from '../lib/adminFormat'
+import { createCarrierTrackingUrl, isHttpsUrl, SHIPPING_CARRIERS } from '../lib/carriers'
 import '../pages/AdminOrders.css'
 
 // Colonne da leggere per un ordine da mostrare in questo pannello.
@@ -62,9 +63,12 @@ function formatShippingAddressLines(shippingAddress) {
 function AdminOrderDetail({ order, customerLabel, onClose, onOrderUpdated }) {
   const { t } = useTranslation()
 
+  const [carrierDraft, setCarrierDraft] = useState(order.carrier ?? '')
   const [trackingDraft, setTrackingDraft] = useState(order.tracking_number ?? '')
+  const [trackingUrlDraft, setTrackingUrlDraft] = useState(order.tracking_url ?? '')
   const [savingTracking, setSavingTracking] = useState(false)
   const [trackingError, setTrackingError] = useState(false)
+  const [trackingUrlError, setTrackingUrlError] = useState(false)
   const [statusUpdateError, setStatusUpdateError] = useState(false)
   const [copyState, setCopyState] = useState('idle') // 'idle' | 'copied' | 'error'
 
@@ -74,7 +78,12 @@ function AdminOrderDetail({ order, customerLabel, onClose, onOrderUpdated }) {
     const newStatus = event.target.value
     setStatusUpdateError(false)
 
-    const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', order.id)
+    const statusPatch = { status: newStatus }
+    if (newStatus === 'shipped' && !order.shipped_at) {
+      statusPatch.shipped_at = new Date().toISOString()
+    }
+
+    const { error } = await supabase.from('orders').update(statusPatch).eq('id', order.id)
 
     if (error) {
       logSupabaseError(`Errore nell'aggiornare lo stato dell'ordine ${order.id}`, error)
@@ -82,28 +91,64 @@ function AdminOrderDetail({ order, customerLabel, onClose, onOrderUpdated }) {
       return
     }
 
-    onOrderUpdated(order.id, { status: newStatus })
+    onOrderUpdated(order.id, statusPatch)
   }
 
   async function handleSaveTracking() {
-    setSavingTracking(true)
     setTrackingError(false)
+    setTrackingUrlError(false)
 
     const trimmed = trackingDraft.trim()
+    const trimmedUrl = trackingUrlDraft.trim()
+    if (trimmedUrl && !isHttpsUrl(trimmedUrl)) {
+      setTrackingUrlError(true)
+      return
+    }
+
+    const markAsShipped = Boolean(carrierDraft && trimmed) &&
+      order.status !== 'shipped' &&
+      window.confirm(t('adminOrders.detail.shipConfirm'))
+    const trackingPatch = {
+      carrier: carrierDraft || null,
+      tracking_number: trimmed || null,
+      tracking_url: trimmedUrl || null,
+    }
+    if (markAsShipped) {
+      trackingPatch.status = 'shipped'
+      if (!order.shipped_at) trackingPatch.shipped_at = new Date().toISOString()
+    }
+
+    setSavingTracking(true)
     const { error } = await supabase
       .from('orders')
-      .update({ tracking_number: trimmed || null })
+      .update(trackingPatch)
       .eq('id', order.id)
 
     if (error) {
-      logSupabaseError(`Errore nel salvare il tracking dell'ordine ${order.id}`, error)
+      logSupabaseError(`Errore nel salvare i dati di spedizione dell'ordine ${order.id}`, error)
       setTrackingError(true)
       setSavingTracking(false)
       return
     }
 
-    onOrderUpdated(order.id, { tracking_number: trimmed || null })
+    onOrderUpdated(order.id, trackingPatch)
     setSavingTracking(false)
+  }
+
+  function updateTrackingNumber(value) {
+    setTrackingDraft(value)
+    if (carrierDraft && carrierDraft !== 'other') {
+      setTrackingUrlDraft(createCarrierTrackingUrl(carrierDraft, value))
+    }
+  }
+
+  function updateCarrier(value) {
+    setCarrierDraft(value)
+    setTrackingUrlDraft(
+      value && value !== 'other'
+        ? createCarrierTrackingUrl(value, trackingDraft)
+        : ''
+    )
   }
 
   async function handleCopyAddress() {
@@ -239,6 +284,24 @@ function AdminOrderDetail({ order, customerLabel, onClose, onOrderUpdated }) {
         {/* --- Tracking --- */}
         <section className="adminorders-detail-section">
           <div className="auth-field">
+            <label className="auth-label" htmlFor="adminorders-detail-carrier">
+              {t('adminOrders.detail.carrierLabel')}
+            </label>
+            <select
+              id="adminorders-detail-carrier"
+              className="auth-input"
+              value={carrierDraft}
+              onChange={(event) => updateCarrier(event.target.value)}
+            >
+              <option value="">{t('adminOrders.detail.carrierPlaceholder')}</option>
+              {SHIPPING_CARRIERS.map((carrier) => (
+                <option key={carrier.value} value={carrier.value}>
+                  {t(carrier.labelKey)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="auth-field">
             <label className="auth-label" htmlFor="adminorders-detail-tracking">
               {t('adminOrders.detail.trackingLabel')}
             </label>
@@ -247,20 +310,39 @@ function AdminOrderDetail({ order, customerLabel, onClose, onOrderUpdated }) {
                 id="adminorders-detail-tracking"
                 className="auth-input"
                 value={trackingDraft}
-                onChange={(event) => setTrackingDraft(event.target.value)}
+                onChange={(event) => updateTrackingNumber(event.target.value)}
                 placeholder={t('adminOrders.detail.trackingPlaceholder')}
               />
-              <button
-                type="button"
-                className="btn-secondary btn-sm"
-                disabled={savingTracking}
-                onClick={handleSaveTracking}
-              >
-                {savingTracking ? t('adminOrders.detail.trackingSaving') : t('adminOrders.detail.trackingSave')}
-              </button>
             </div>
-            {trackingError && <p className="admin-stock-error">{t('adminOrders.detail.trackingSaveError')}</p>}
           </div>
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="adminorders-detail-tracking-url">
+              {t('adminOrders.detail.trackingUrlLabel')}
+            </label>
+            <input
+              id="adminorders-detail-tracking-url"
+              className="auth-input"
+              type="url"
+              inputMode="url"
+              value={trackingUrlDraft}
+              onChange={(event) => setTrackingUrlDraft(event.target.value)}
+              placeholder={t('adminOrders.detail.trackingUrlPlaceholder')}
+            />
+            {trackingUrlError && (
+              <p className="admin-stock-error">{t('adminOrders.detail.trackingUrlError')}</p>
+            )}
+          </div>
+          <div className="adminorders-tracking-actions">
+            <button
+              type="button"
+              className="btn-secondary btn-sm"
+              disabled={savingTracking}
+              onClick={handleSaveTracking}
+            >
+              {savingTracking ? t('adminOrders.detail.trackingSaving') : t('adminOrders.detail.trackingSave')}
+            </button>
+          </div>
+          {trackingError && <p className="admin-stock-error">{t('adminOrders.detail.trackingSaveError')}</p>}
         </section>
       </aside>
     </>

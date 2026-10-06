@@ -162,6 +162,35 @@
   line-height: 1.4;
 }
 
+.account-order-tracking {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 10px;
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--color-bg);
+  font-size: 13px;
+}
+
+.account-order-tracking-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+
+.account-order-tracking-number {
+  overflow-wrap: anywhere;
+  color: var(--color-text);
+}
+
+.account-order-tracking-link {
+  justify-self: start;
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .account-order-total {
   display: flex;
   align-items: baseline;

@@ -210,10 +210,11 @@
 }
 
 .adminorders-tracking-editor {
-  display: flex;
+  display: grid;
   gap: 8px;
 }
 
-.adminorders-tracking-editor .auth-input {
-  flex: 1;
+.adminorders-tracking-actions {
+  display: flex;
+  justify-content: flex-start;
 }

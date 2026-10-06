@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../context/AuthContext'
+import { isHttpsUrl } from '../lib/carriers'
 import './Account.css'
 
 function formatPrice(value) {
@@ -191,6 +192,38 @@ function Account() {
                       </div>
                       <div>{order.shipping_address.address.country}</div>
                     </address>
+                  </div>
+                )}
+
+                {(order.carrier || order.tracking_number || isHttpsUrl(order.tracking_url)) && (
+                  <div className="account-order-tracking">
+                    {order.carrier && (
+                      <div className="account-order-tracking-row">
+                        <span>{t('account.carrierLabel')}</span>
+                        <span>
+                          {t(
+                            `adminOrders.detail.carriers.${order.carrier}`,
+                            order.carrier
+                          )}
+                        </span>
+                      </div>
+                    )}
+                    {order.tracking_number && (
+                      <div className="account-order-tracking-row">
+                        <span>{t('account.trackingNumberLabel')}</span>
+                        <span className="account-order-tracking-number">{order.tracking_number}</span>
+                      </div>
+                    )}
+                    {order.tracking_number && isHttpsUrl(order.tracking_url) && (
+                      <a
+                        className="account-order-tracking-link"
+                        href={order.tracking_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {t('account.trackShipment')}
+                      </a>
+                    )}
                   </div>
                 )}
 
