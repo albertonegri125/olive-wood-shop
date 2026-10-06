@@ -16,7 +16,8 @@
 // Va montato con key={order.id}: così lo stato interno (bozza del
 // tracking, errori, "Copiato!") riparte da zero a ogni ordine aperto.
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabaseClient'
 import { formatDate, formatPrice } from '../lib/adminFormat'
@@ -71,8 +72,46 @@ function AdminOrderDetail({ order, customerLabel, onClose, onOrderUpdated }) {
   const [trackingUrlError, setTrackingUrlError] = useState(false)
   const [statusUpdateError, setStatusUpdateError] = useState(false)
   const [copyState, setCopyState] = useState('idle') // 'idle' | 'copied' | 'error'
-
   const addressLines = formatShippingAddressLines(order.shipping_address)
+
+  useEffect(() => {
+    const body = document.body
+    const scrollY = window.scrollY
+    const previousStyles = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      width: body.style.width,
+      overflow: body.style.overflow,
+    }
+
+    body.style.position = 'fixed'
+    body.style.top = `-${scrollY}px`
+    body.style.left = '0'
+    body.style.right = '0'
+    body.style.width = '100%'
+    body.style.overflow = 'hidden'
+
+    return () => {
+      body.style.position = previousStyles.position
+      body.style.top = previousStyles.top
+      body.style.left = previousStyles.left
+      body.style.right = previousStyles.right
+      body.style.width = previousStyles.width
+      body.style.overflow = previousStyles.overflow
+      window.scrollTo(0, scrollY)
+    }
+  }, [])
+
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') onClose()
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [onClose])
 
   async function handleStatusChange(event) {
     const newStatus = event.target.value
@@ -168,10 +207,20 @@ function AdminOrderDetail({ order, customerLabel, onClose, onOrderUpdated }) {
     setTimeout(() => setCopyState('idle'), 2000)
   }
 
-  return (
+  return createPortal(
     <>
-      <div className="adminorders-detail-backdrop" onClick={onClose} />
-      <aside className="adminorders-detail-panel" aria-label={t('adminOrders.detail.title')}>
+      <button
+        type="button"
+        className="adminorders-detail-backdrop"
+        aria-label={t('adminOrders.detail.close')}
+        onClick={onClose}
+      />
+      <aside
+        className="adminorders-detail-panel"
+        aria-label={t('adminOrders.detail.title')}
+        aria-modal="true"
+        role="dialog"
+      >
         <div className="adminorders-detail-header">
           <h2>{t('adminOrders.detail.title')}</h2>
           <button type="button" className="btn-secondary btn-sm" onClick={onClose}>
@@ -179,6 +228,7 @@ function AdminOrderDetail({ order, customerLabel, onClose, onOrderUpdated }) {
           </button>
         </div>
 
+        <div className="adminorders-detail-body">
         {order.status === 'paid_stock_issue' && (
           <span className="adminorders-status-badge adminorders-status-badge-warning">
             {t('adminOrders.stockIssueBadge')}
@@ -332,6 +382,10 @@ function AdminOrderDetail({ order, customerLabel, onClose, onOrderUpdated }) {
               <p className="admin-stock-error">{t('adminOrders.detail.trackingUrlError')}</p>
             )}
           </div>
+          {trackingError && <p className="admin-stock-error">{t('adminOrders.detail.trackingSaveError')}</p>}
+        </section>
+        </div>
+        <div className="adminorders-detail-footer">
           <div className="adminorders-tracking-actions">
             <button
               type="button"
@@ -342,10 +396,10 @@ function AdminOrderDetail({ order, customerLabel, onClose, onOrderUpdated }) {
               {savingTracking ? t('adminOrders.detail.trackingSaving') : t('adminOrders.detail.trackingSave')}
             </button>
           </div>
-          {trackingError && <p className="admin-stock-error">{t('adminOrders.detail.trackingSaveError')}</p>}
-        </section>
+        </div>
       </aside>
-    </>
+    </>,
+    document.body
   )
 }
 

@@ -601,7 +601,7 @@
 .admin-product-actions-menu {
   position: relative;
   flex: 0 0 38px;
-  z-index: 2;
+  z-index: var(--z-admin-action-trigger);
 }
 
 .admin-product-actions-trigger {
@@ -618,7 +618,7 @@
 
 .admin-product-actions-dropdown {
   position: fixed;
-  z-index: 1001;
+  z-index: var(--z-admin-overlay-content);
   display: flex;
   flex-direction: column;
   width: 184px;
@@ -664,7 +664,7 @@
 .admin-product-actions-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: var(--z-admin-overlay-backdrop);
   background: rgba(26, 26, 26, 0.16);
 }
 

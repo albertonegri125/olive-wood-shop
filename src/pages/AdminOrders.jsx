@@ -258,7 +258,7 @@ function AdminOrders() {
   }
 
   return (
-    <div className="admin-page">
+    <div className="admin-page adminorders-page">
       <AdminNav />
 
       <div className="admin-header">
@@ -346,15 +346,19 @@ function AdminOrders() {
               {orders.map((order) => (
                 <div className="admin-table-row" role="row" key={order.id}>
                   <div className="admin-table-cell" role="cell">
+                    <span className="adminorders-mobile-label">{t('adminOrders.table.date')}</span>
                     {formatDate(order.created_at)}
                   </div>
                   <div className="admin-table-cell adminorders-cell-customer" role="cell">
+                    <span className="adminorders-mobile-label">{t('adminOrders.table.customer')}</span>
                     {customerLabel(order)}
                   </div>
                   <div className="admin-table-cell" role="cell">
+                    <span className="adminorders-mobile-label">{t('adminOrders.table.total')}</span>
                     {formatPrice(order.total)}
                   </div>
                   <div className="admin-table-cell" role="cell">
+                    <span className="adminorders-mobile-label">{t('adminOrders.table.status')}</span>
                     <span
                       className={
                         order.status === 'paid_stock_issue'
@@ -366,10 +370,11 @@ function AdminOrders() {
                     </span>
                   </div>
                   <div className="admin-table-cell" role="cell">
+                    <span className="adminorders-mobile-label">{t('adminOrders.table.items')}</span>
                     {countItems(order)}
                   </div>
                   <div className="admin-table-cell admin-table-cell-actions" role="cell">
-                    <button type="button" className="btn-secondary btn-sm" onClick={() => setSelectedOrder(order)}>
+                    <button type="button" className="btn-secondary btn-sm adminorders-detail-button" onClick={() => setSelectedOrder(order)}>
                       {t('adminOrders.table.details')}
                     </button>
                   </div>

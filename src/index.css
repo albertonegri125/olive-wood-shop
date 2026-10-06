@@ -26,6 +26,11 @@
   --color-amber-soft: #f2e6d3;
   --color-brand-text: #2b1f16; /* marrone legno scuro, solo per il nome del brand in Navbar: più ricco del nero/testo standard, per farlo risaltare come logotipo */
 
+  --z-admin-overlay-backdrop: 1000;
+  --z-admin-overlay-content: 1001;
+  --z-admin-overlay-sticky: 2;
+  --z-admin-action-trigger: 2;
+
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.12);
   /* Ombra più decisa, riservata alla card prodotto (vedi ProductCard.css):
