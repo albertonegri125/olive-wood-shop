@@ -33,7 +33,7 @@
 /* --- Tabella ordini: colonne diverse da quella prodotti/categorie --- */
 .adminorders-table {
   display: grid;
-  grid-template-columns: 150px minmax(180px, 1.4fr) 110px 160px 90px 120px;
+  grid-template-columns: 150px minmax(180px, 1.4fr) 110px 160px 90px minmax(150px, 150px);
   align-items: center;
   width: 100%;
   min-width: 860px;
@@ -59,9 +59,13 @@
 .adminorders-table > .admin-table-row > .admin-table-cell-actions {
   position: sticky;
   right: 0;
-  z-index: var(--z-admin-overlay-sticky);
+  z-index: 1;
   background: var(--color-bg);
   box-shadow: -8px 0 10px -10px rgba(43, 24, 16, 0.45);
+  min-width: 150px;
+  white-space: nowrap;
+  overflow: visible;
+  justify-content: flex-start;
 }
 
 .adminorders-table > .admin-table-row:first-child > .admin-table-cell-actions {
@@ -128,16 +132,13 @@
   cursor: pointer;
   appearance: none;
   background: rgba(43, 24, 16, 0.35);
-  z-index: var(--z-admin-overlay-backdrop);
+  z-index: var(--z-overlay);
 }
 
 .adminorders-detail-panel {
   position: fixed;
-  top: 0;
-  right: 0;
-  bottom: auto;
+  inset: 0 0 0 auto;
   width: min(480px, 100vw);
-  height: 100vh;
   height: 100dvh;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -145,7 +146,7 @@
   box-sizing: border-box;
   background: var(--color-card-bg);
   padding: 0 24px;
-  z-index: var(--z-admin-overlay-content);
+  z-index: var(--z-panel);
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -156,7 +157,6 @@
 .adminorders-detail-header {
   position: sticky;
   top: 0;
-  z-index: var(--z-admin-overlay-sticky);
   flex: 0 0 auto;
   display: flex;
   align-items: center;
@@ -189,7 +189,6 @@
 .adminorders-detail-footer {
   position: sticky;
   bottom: 0;
-  z-index: var(--z-admin-overlay-sticky);
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
@@ -364,15 +363,23 @@
 
   .adminorders-table .admin-table-cell-actions {
     position: static;
-    z-index: auto;
     background: transparent;
     box-shadow: none;
     padding-top: 8px;
+    min-width: 0;
+    white-space: normal;
+    overflow: visible;
   }
 
   .adminorders-detail-button {
+    box-sizing: border-box;
     width: 100%;
     min-height: 44px;
+    white-space: nowrap;
+  }
+
+  .adminorders-table .admin-table-cell-actions .adminorders-detail-button {
+    min-width: 0;
   }
 
   .adminorders-detail-panel {

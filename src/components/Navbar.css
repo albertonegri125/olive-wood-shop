@@ -8,7 +8,7 @@
   border-bottom: 1px solid var(--color-border); /* separa leggermente la navbar dal contenuto sottostante */
   position: sticky; /* la navbar resta visibile mentre si scrolla la pagina */
   top: 0;
-  z-index: 100; /* deve restare sopra al contenuto (e l'overlay mobile sopra a tutto) */
+  z-index: var(--z-navbar);
 }
 
 /* Contenitore interno: usiamo flexbox così il logo e il resto si dispongono
@@ -71,7 +71,6 @@
 .navbar-brand {
   display: flex;
   align-items: center;
-  z-index: 101; /* resta visibile e cliccabile anche sopra l'overlay del menu mobile */
 }
 
 /* Link cliccabile verso la Home: contiene l'immagine del logo e, accanto,
@@ -181,7 +180,6 @@
   background: none;
   border: none;
   cursor: pointer;
-  z-index: 101; /* sopra all'overlay, così resta cliccabile per chiudere il menu */
 }
 
 .navbar-toggle-bar {
@@ -216,7 +214,6 @@
   justify-content: center;
   gap: 8px;
   background: var(--color-bg);
-  z-index: 100;
 }
 
 /* Quando il menu mobile è aperto, lo mostriamo come overlay a schermo intero */
@@ -281,7 +278,6 @@
   border-radius: 6px;
   box-shadow: var(--shadow-md);
   padding: 6px;
-  z-index: 102;
 }
 
 .account-menu-item {

@@ -263,44 +263,47 @@ function AdminCustomers() {
 
       {!loading && !listError && customers.length > 0 && (
         <>
-          {/* Tabella da tablet in su, card impilate su mobile: le intestazioni
-              di colonna diventano etichette dentro ogni card (data-label). */}
-          <div className="admincustomers-table" role="table">
-            <div className="admincustomers-row admincustomers-head" role="row">
-              <span role="columnheader">{t('adminCustomers.table.email')}</span>
-              <span role="columnheader">{t('adminCustomers.table.name')}</span>
-              <span role="columnheader">{t('adminCustomers.table.registeredAt')}</span>
-              <span role="columnheader">{t('adminCustomers.table.orders')}</span>
-              <span role="columnheader">{t('adminCustomers.table.totalSpent')}</span>
-              <span role="columnheader">
-                <span className="admincustomers-sr-only">{t('adminCustomers.table.actions')}</span>
-              </span>
-            </div>
-
-            {customers.map((customer) => (
-              <div className="admincustomers-row" role="row" key={customer.id}>
-                <span className="admincustomers-cell admincustomers-cell-email" role="cell">
-                  {customer.email ?? '—'}
-                </span>
-                <span className="admincustomers-cell" role="cell" data-label={t('adminCustomers.table.name')}>
-                  {customer.full_name || '—'}
-                </span>
-                <span className="admincustomers-cell" role="cell" data-label={t('adminCustomers.table.registeredAt')}>
-                  {formatDay(customer.created_at)}
-                </span>
-                <span className="admincustomers-cell" role="cell" data-label={t('adminCustomers.table.orders')}>
-                  {customer.order_count}
-                </span>
-                <span className="admincustomers-cell" role="cell" data-label={t('adminCustomers.table.totalSpent')}>
-                  {formatPrice(customer.total_spent)}
-                </span>
-                <span className="admincustomers-cell admincustomers-cell-actions" role="cell">
-                  <button type="button" className="btn-secondary btn-sm" onClick={() => openCustomer(customer)}>
-                    {t('adminCustomers.viewOrders')}
-                  </button>
-                </span>
-              </div>
-            ))}
+          <div className="admincustomers-table-wrapper">
+            <table className="admincustomers-table">
+              <thead>
+                <tr>
+                  <th scope="col">{t('adminCustomers.table.email')}</th>
+                  <th scope="col">{t('adminCustomers.table.name')}</th>
+                  <th scope="col">{t('adminCustomers.table.registeredAt')}</th>
+                  <th scope="col" className="admincustomers-numeric">{t('adminCustomers.table.orders')}</th>
+                  <th scope="col" className="admincustomers-numeric">{t('adminCustomers.table.totalSpent')}</th>
+                  <th scope="col" className="admincustomers-actions-heading">
+                    <span className="admincustomers-sr-only">{t('adminCustomers.table.actions')}</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {customers.map((customer) => (
+                  <tr key={customer.id}>
+                    <td className="admincustomers-cell-email" data-label={t('adminCustomers.table.email')}>
+                      {customer.email ?? '—'}
+                    </td>
+                    <td data-label={t('adminCustomers.table.name')}>
+                      {customer.full_name || '—'}
+                    </td>
+                    <td data-label={t('adminCustomers.table.registeredAt')}>
+                      {formatDay(customer.created_at)}
+                    </td>
+                    <td className="admincustomers-numeric" data-label={t('adminCustomers.table.orders')}>
+                      {customer.order_count}
+                    </td>
+                    <td className="admincustomers-numeric" data-label={t('adminCustomers.table.totalSpent')}>
+                      {formatPrice(customer.total_spent)}
+                    </td>
+                    <td className="admincustomers-cell-actions">
+                      <button type="button" className="btn-secondary btn-sm" onClick={() => openCustomer(customer)}>
+                        {t('adminCustomers.viewOrders')}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
           {totalPages > 1 && (
