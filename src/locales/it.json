@@ -61,14 +61,12 @@
   },
   "about": {
     "title": "Chi siamo",
-    "intro": "OliveWood Creations nasce in Lombardia, in un laboratorio dove il legno d'ulivo viene lavorato a mano, un pezzo alla volta.",
-    "materialTitle": "Il materiale",
-    "material": "Scegliamo legno d'ulivo massello per la sua venatura irregolare e le sue sfumature calde. Ogni tavola ha un disegno suo: per questo nessun pezzo è identico a un altro.",
-    "methodTitle": "Il metodo",
-    "method": "Sagomiamo, levighiamo e rifiniamo con attrezzi da falegname e con le mani. Nessuna produzione in serie. La finitura è a olio alimentare, adatta al contatto con il cibo.",
-    "promiseTitle": "La nostra promessa",
-    "promise": "Ogni oggetto è fotografato e descritto per com'è. Quando il pezzo in foto è esattamente quello che riceverai lo indichiamo; quando è simile, lo diciamo chiaramente.",
-    "cta": "Scopri i pezzi"
+    "intro": "Facciamo taglieri e piccoli oggetti in legno d'ulivo, in Lombardia. Li lavoriamo a mano, uno alla volta.",
+    "p1": "Usiamo legno d'ulivo massello. Ogni tavola ha una venatura diversa, con nodi e zone più chiare o più scure.",
+    "p2": "Sagomiamo e leviganiamo con attrezzi da falegname e con le mani. Alla fine passiamo l'olio alimentare, adatto al contatto con il cibo.",
+    "p3": "Fotografiamo ogni pezzo com'è. Se la foto mostra proprio il pezzo che ricevi, lo scriviamo. Se è un pezzo simile, lo scriviamo lo stesso: venature e segni possono cambiare un po'.",
+    "imageAlt": "Tagliere artigianale in legno d'ulivo",
+    "cta": "Guarda i pezzi"
   },
   "testimonials": {
     "title": "Cosa dicono di noi"

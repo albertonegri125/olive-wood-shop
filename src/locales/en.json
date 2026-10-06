@@ -61,14 +61,12 @@
   },
   "about": {
     "title": "About us",
-    "intro": "OliveWood Creations was born in Lombardy, in a workshop where olive wood is shaped by hand, one piece at a time.",
-    "materialTitle": "The material",
-    "material": "We choose solid olive wood for its irregular grain and warm tones. Every board has its own pattern, which is why no two pieces are identical.",
-    "methodTitle": "The method",
-    "method": "We shape, sand and finish with woodworking tools and our hands. No mass production. The finish is food-safe oil, suitable for contact with food.",
-    "promiseTitle": "Our promise",
-    "promise": "Every object is photographed and described as it really is. When the piece in the photo is exactly the one you will receive we say so; when it is similar, we say that clearly.",
-    "cta": "Discover the pieces"
+    "intro": "We make cutting boards and small objects in olive wood, in Lombardy. We work them by hand, one at a time.",
+    "p1": "We use solid olive wood. Every board has a different grain, with knots and lighter or darker areas.",
+    "p2": "We shape and sand with woodworking tools and by hand. At the end we apply food-safe oil.",
+    "p3": "We photograph every piece as it is. If the photo shows the exact piece you receive, we say so. If it is a similar piece, we say that too: grain and marks can differ a little.",
+    "imageAlt": "Handmade olive wood cutting board",
+    "cta": "See the pieces"
   },
   "testimonials": {
     "title": "What people say about us"

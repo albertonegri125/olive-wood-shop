@@ -7,6 +7,7 @@ import './About.css'
 function About() {
   const { t } = useTranslation()
   const [imageUrl, setImageUrl] = useState('')
+  const [imageDimensions, setImageDimensions] = useState({ width: 1425, height: 1600 })
 
   useEffect(() => {
     let isCurrent = true
@@ -39,35 +40,35 @@ function About() {
     }
   }, [])
 
+  function handleImageLoad(event) {
+    const { naturalWidth, naturalHeight } = event.currentTarget
+    setImageDimensions({ width: naturalWidth, height: naturalHeight })
+  }
+
   return (
     <div className="about-page">
-      <h1 className="about-title">{t('about.title')}</h1>
-      <p className="about-intro">{t('about.intro')}</p>
-
       <div className="about-content">
         {imageUrl && (
           <figure className="about-photo-wrapper">
             <img
               className="about-photo"
               src={imageUrl}
-              alt="Ramo d'ulivo e scalpello da falegname"
+              alt={t('about.imageAlt')}
+              width={imageDimensions.width}
+              height={imageDimensions.height}
+              onLoad={handleImageLoad}
             />
           </figure>
         )}
 
-        <div className="about-blocks">
-          <section className="about-block">
-            <h2 className="about-block-title">{t('about.materialTitle')}</h2>
-            <p className="about-paragraph">{t('about.material')}</p>
-          </section>
-          <section className="about-block">
-            <h2 className="about-block-title">{t('about.methodTitle')}</h2>
-            <p className="about-paragraph">{t('about.method')}</p>
-          </section>
-          <section className="about-block">
-            <h2 className="about-block-title">{t('about.promiseTitle')}</h2>
-            <p className="about-paragraph">{t('about.promise')}</p>
-          </section>
+        <div className="about-copy">
+          <h1 className="about-title">{t('about.title')}</h1>
+          <p className="about-intro">{t('about.intro')}</p>
+          <div className="about-paragraphs">
+            <p>{t('about.p1')}</p>
+            <p>{t('about.p2')}</p>
+            <p>{t('about.p3')}</p>
+          </div>
           <Link to="/shop" className="btn-primary about-cta">
             {t('about.cta')}
           </Link>
