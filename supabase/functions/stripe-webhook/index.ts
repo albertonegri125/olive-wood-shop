@@ -191,23 +191,6 @@ async function handleCheckoutCompleted(
   const items: { product_id: string; quantity: number; unit_price: number }[] =
     JSON.parse(itemsJson)
 
-  // --- Idempotenza -----------------------------------------------------
-  // Stripe può recapitare lo stesso evento più di una volta (per policy
-  // esplicita: gli handler dei webhook devono gestire consegne duplicate).
-  // Se un ordine con questo stripe_session_id esiste già, questa sessione
-  // è già stata processata: usciamo subito, senza ripetere lo scalo
-  // dello stock una seconda volta.
-  const { data: existingOrder } = await adminClient
-    .from('orders')
-    .select('id')
-    .eq('stripe_session_id', session.id)
-    .maybeSingle()
-
-  if (existingOrder) {
-    console.log(`Sessione ${session.id} già processata (ordine ${existingOrder.id}), salto.`)
-    return
-  }
-
   // amount_total/amount_subtotal sono in centesimi e sono i valori
   // EFFETTIVAMENTE addebitati da Stripe (calcolati da Stripe stesso a
   // partire dai line_items e dal coupon che avevamo applicato in
@@ -255,89 +238,38 @@ async function handleCheckoutCompleted(
     )
   }
 
-  // --- Scalo atomico dello stock -----------------------------------------
-  // Per ogni prodotto, un'unica UPDATE con condizione "stock >= quantity"
-  // (vedi la funzione SQL decrement_product_stock, schema_stripe_orders.sql):
-  // essendo un'unica istruzione SQL, Postgres la esegue in modo atomico —
-  // non c'è nessuna finestra di tempo in cui due richieste concorrenti
-  // potrebbero leggere entrambe "stock disponibile" e scalarlo entrambe,
-  // portandolo sotto zero (il classico problema di due persone che
-  // comprano l'ultimo pezzo quasi nello stesso istante).
-  // Il pagamento è già avvenuto a questo punto: se lo stock nel frattempo
-  // non basta più, NON si può "annullare" il pagamento da qui (servirebbe
-  // un rimborso, decisione che lasciamo al negoziante) — registriamo
-  // comunque l'ordine, ma con uno stato che segnala il problema.
-  let hasStockIssue = false
-  for (const item of items) {
-    const { data: decremented, error: decrementError } = await adminClient.rpc(
-      'decrement_product_stock',
-      { p_product_id: item.product_id, p_quantity: item.quantity }
-    )
-
-    if (decrementError) {
-      console.error(`Errore nello scalo stock per ${item.product_id}:`, decrementError)
-      hasStockIssue = true
-    } else if (!decremented) {
-      console.error(
-        `Stock insufficiente per il prodotto ${item.product_id} (ordine sessione ${session.id}): richiesti ${item.quantity}.`
-      )
-      hasStockIssue = true
+  // Un'unica RPC transazionale salva l'ordine e tutte le righe prima di
+  // scalare lo stock e impostare lo stato pagato. In caso di errore Postgres
+  // annulla l'intera transazione e l'errore produce un 500 per il retry Stripe.
+  const { data: orderResults, error: orderError } = await adminClient.rpc(
+    'create_paid_order',
+    {
+      p_user_id: userId,
+      p_stripe_session_id: session.id,
+      p_total: total,
+      p_discount_percentage: discountPercentage,
+      p_discount_amount: discountAmount,
+      p_shipping_address: shippingAddress,
+      p_items: items,
     }
+  )
+
+  if (orderError) throw orderError
+
+  const orderResult = orderResults?.[0]
+  if (!orderResult || typeof orderResult.order_id !== 'string') {
+    throw new Error(`RPC create_paid_order non ha restituito un ordine per la sessione ${session.id}.`)
   }
 
-  // --- Creazione dell'ordine ---------------------------------------------
-  const { data: order, error: orderError } = await adminClient
-    .from('orders')
-    .insert({
-      user_id: userId,
-      stripe_session_id: session.id,
-      // "paid_stock_issue" segnala che il cliente ha pagato ma almeno un
-      // prodotto non aveva più scorte sufficienti: da controllare a mano
-      // (contattare il cliente per un rimborso parziale o un ordine
-      // posticipato). Non è uno stato "bloccante": l'ordine esiste ed è
-      // pagato, va solo rivisto.
-      status: hasStockIssue ? 'paid_stock_issue' : 'paid',
-      total,
-      discount_percentage: discountPercentage,
-      discount_amount: discountAmount,
-      shipping_address: shippingAddress,
-    })
-    .select()
-    .single()
+  const orderId = orderResult.order_id
+  const hasStockIssue = orderResult.has_stock_issue === true
 
-  if (orderError) {
-    // "23505" = violazione di un vincolo unique: un'altra consegna dello
-    // stesso evento webhook ha inserito l'ordine un istante prima di noi
-    // (corsa tra due richieste concorrenti). Non è un errore vero, è
-    // esattamente il caso di idempotenza che il controllo sopra prova a
-    // intercettare in anticipo — qui lo gestiamo comunque come rete di
-    // sicurezza aggiuntiva.
-    if (orderError.code === '23505') {
-      console.log(`Sessione ${session.id}: ordine già creato da un'altra richiesta concorrente.`)
-      return
-    }
-    throw orderError
+  if (orderResult.already_processed) {
+    console.log(`Sessione ${session.id} già processata (ordine ${orderId}), salto.`)
+    return
   }
 
-  // --- Righe dell'ordine ---------------------------------------------------
-  // "price_at_purchase" usa "unit_price" salvato nei metadata al momento
-  // della creazione della sessione (create-checkout-session): è il prezzo
-  // VERO pagato per quel prodotto, immutabile anche se in seguito il
-  // prezzo del prodotto in "products" dovesse cambiare.
-  const orderItemsPayload = items.map((item) => ({
-    order_id: order.id,
-    product_id: item.product_id,
-    quantity: item.quantity,
-    price_at_purchase: item.unit_price,
-  }))
-
-  const { error: orderItemsError } = await adminClient.from('order_items').insert(orderItemsPayload)
-
-  if (orderItemsError) {
-    console.error(`Errore nella creazione delle righe d'ordine per ${order.id}:`, orderItemsError)
-  }
-
-  console.log(`Ordine ${order.id} creato per la sessione ${session.id}${hasStockIssue ? ' (con problemi di stock)' : ''}.`)
+  console.log(`Ordine ${orderId} creato per la sessione ${session.id}${hasStockIssue ? ' (con problemi di stock)' : ''}.`)
 
   // --- Email di conferma al cliente ----------------------------------------
   // DOPO che ordine e righe sono già salvati, e in un try/catch a parte: se
@@ -348,7 +280,7 @@ async function handleCheckoutCompleted(
   try {
     await sendConfirmationEmail({
       session,
-      orderId: order.id,
+      orderId,
       items,
       total,
       amountSubtotal,
@@ -358,7 +290,7 @@ async function handleCheckoutCompleted(
       adminClient,
     })
   } catch (error) {
-    console.error(`[stripe-webhook] Invio email di conferma fallito per l'ordine ${order.id}:`, error)
+    console.error(`[stripe-webhook] Invio email di conferma fallito per l'ordine ${orderId}:`, error)
   }
 }
 
