@@ -36,16 +36,26 @@
   position: relative;
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 4 / 5;
   background: var(--color-border);
   text-decoration: none;
 }
 
 .product-card-image {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover; /* l'immagine riempie lo spazio senza deformarsi */
   display: block;
+}
+
+.product-card-placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--color-border);
 }
 
 /* Badge sovrapposto in alto all'immagine (base comune) */
@@ -137,6 +147,12 @@
 .product-card-name {
   margin: 0;
   font-size: 17px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
 }
 
 .product-card-dimensions {

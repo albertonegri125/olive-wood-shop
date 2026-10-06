@@ -22,7 +22,7 @@ import { getCategoryFallbackName } from '../lib/categoryName'
 import PhotoMatchBadge from './PhotoMatchBadge'
 import './ProductCard.css'
 
-function ProductCard({ product }) {
+function ProductCard({ product, imageObjectPosition = 'center' }) {
   const { t, i18n } = useTranslation()
   const { addToCart } = useCart()
   // "categories" arriva dalla relazione (category_id -> categories.id) se
@@ -38,6 +38,7 @@ function ProductCard({ product }) {
   // Controlla se mostrare il feedback "Aggiunto ✓" al posto del testo
   // normale del bottone, subito dopo un click su "Aggiungi al carrello".
   const [justAdded, setJustAdded] = useState(false)
+  const [failedImageUrl, setFailedImageUrl] = useState(null)
 
   const isOutOfStock = stock === 0
   // "Scorte basse": 1 o 2 pezzi rimasti (ma non esaurito).
@@ -80,12 +81,20 @@ function ProductCard({ product }) {
     <div className={isOutOfStock ? 'product-card product-card-disabled' : 'product-card'}>
       {/* Immagine grande e dominante: è il primo elemento che si vede */}
       <MediaTag className="product-card-media" {...linkProps}>
-        <img
-          className="product-card-image"
-          src={imageUrl}
-          alt={name}
-          loading="lazy"
-        />
+        {imageUrl && failedImageUrl !== imageUrl ? (
+          <img
+            className="product-card-image"
+            src={imageUrl}
+            alt={name}
+            loading="lazy"
+            width="800"
+            height="1000"
+            style={{ objectPosition: imageObjectPosition }}
+            onError={() => setFailedImageUrl(imageUrl)}
+          />
+        ) : (
+          <div className="product-card-placeholder" role="img" aria-label={name} />
+        )}
         {/* Badge "Esaurito", ben visibile, in alto a destra */}
         {isOutOfStock && (
           <span className="product-card-badge product-card-badge-out">

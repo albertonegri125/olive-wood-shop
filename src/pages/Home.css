@@ -376,6 +376,7 @@
 .featured-grid {
   display: grid;
   grid-template-columns: 1fr;
+  align-items: stretch;
   gap: 20px;
 }
 

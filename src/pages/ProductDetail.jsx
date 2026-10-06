@@ -296,6 +296,9 @@ function ProductDetail() {
               className="product-detail-image"
               src={mainImageUrl}
               alt={product.name}
+              loading="lazy"
+              width="800"
+              height="1000"
             />
             <span className="product-detail-zoom-hint">{t('productDetail.zoomHint')}</span>
           </button>
@@ -320,7 +323,7 @@ function ProductDetail() {
                     }
                     onClick={() => setActiveImageIndex(index)}
                   >
-                    <img src={url} alt="" />
+                    <img src={url} alt="" loading="lazy" width="100" height="100" />
                   </button>
                 ))}
               </div>
@@ -505,6 +508,9 @@ function ProductDetail() {
             className="product-detail-lightbox-image"
             src={mainImageUrl}
             alt={product.name}
+            loading="lazy"
+            width="800"
+            height="1000"
           />
         </div>
       )}
